@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sabrina Carpenter - Concert Tickets</title>
+    <style>
+        /* Basic Reset & Body Styling */
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f0f0; /* Light background for contrast */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh; /* Center banner vertically */
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        /* Banner Container */
+        #concert-banner {
+            display: flex;
+            max-width: 750px; /* Adjust width as needed */
+            width: 100%;
+            background: linear-gradient(135deg, #ff80ab, #d980ff); /* Example gradient - adjust colors */
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+            overflow: hidden; /* Keeps content within rounded corners */
+            position: relative; /* For potential absolute positioning inside */
+            opacity: 0; /* Start hidden for JS fade-in */
+            transform: translateY(20px); /* Start slightly lower for JS effect */
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out; /* Smooth transition */
+        }
+
+        /* Artist Image */
+        .artist-image-container {
+            flex: 0 0 40%;
+            max-width: 300px;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .artist-video {
+            width: 250px;
+            height: 250px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center 30%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .artist-image-container:hover .artist-video {
+            transform: scale(1.05);
+        }
+
+        /* Banner Content (Text & Button) */
+        .banner-content {
+            flex-grow: 1;
+            padding: 25px 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            color: #ffffff;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .headline {
+            font-size: 2.2em; /* Larger headline */
+            font-weight: bold;
+            margin: 0 0 10px 0;
+            line-height: 1.2;
+        }
+
+        .details {
+            font-size: 1.1em;
+            margin: 0 0 20px 0;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 12px 25px;
+            background-color: #ffffff;
+            color: #c445a0; /* Button text color - match gradient */
+            font-size: 1em;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 25px; /* Pill shape */
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .cta-button:hover {
+            background-color: #f0f0f0; /* Slightly off-white on hover */
+            transform: translateY(-2px); /* Subtle lift */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 650px) {
+            #concert-banner {
+                flex-direction: column;
+                max-width: 350px;
+            }
+
+            .artist-image-container {
+                padding: 15px;
+            }
+
+            .artist-video {
+                width: 200px;
+                height: 200px;
+            }
+
+            .banner-content {
+                align-items: center;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .headline {
+                font-size: 1.8em;
+            }
+
+            .details {
+                font-size: 1em;
+            }
+        }
+
+        /* Add chat related styles */
+        .chat-icon {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background-color: #ff80ab;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .chat-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .chat-icon svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        .chat-container {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 350px;
+            height: 500px;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 999;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 15px;
+            background: linear-gradient(135deg, #ff80ab, #d980ff);
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .chat-header .celebrity-name {
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            margin: 5px 0;
+        }
+
+        .celebrity-message {
+            background-color: #f0f0f0;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .user-message {
+            background-color: #ff80ab;
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .chat-input {
+            padding: 15px;
+            border-top: 1px solid #eee;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex-grow: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+        }
+
+        .chat-input button {
+            padding: 10px 20px;
+            background-color: #ff80ab;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            background-color: #d980ff;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="concert-banner">
+        <div class="artist-image-container">
+            <video class="artist-video" loop playsinline poster="./sabrina_carpenter_headshot.png">
+                <source src="./sa_promo2.mp4" type="video/mp4">
+            </video>
+        </div>
+        <div class="banner-content">
+            <h2 class="headline">Sabrina Carpenter</h2>
+            <p class="details">Live On Tour! Get Your Tickets Now!</p>
+            <!-- IMPORTANT: Replace '#' with the actual ticket purchasing link -->
+            <a href="#" class="cta-button" target="_blank" rel="noopener noreferrer">
+                Buy Tickets
+            </a>
+        </div>
+    </div>
+
+    <!-- Add chat interface -->
+    <div class="chat-icon" id="chatIcon">
+        <svg viewBox="0 0 24 24">
+            <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+        </svg>
+    </div>
+
+    <div class="chat-container" id="chatContainer">
+        <div class="chat-header">
+            <img src="./sabrina_carpenter_headshot.png" alt="Sabrina Carpenter">
+            <div class="celebrity-name">Sabrina Carpenter</div>
+        </div>
+        <div class="chat-messages" id="chatMessages">
+            <div class="message celebrity-message">
+                Hey! I'm so excited to chat with you! 💖
+            </div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="messageInput" placeholder="Type your message...">
+            <button id="sendMessage">Send</button>
+        </div>
+    </div>
+
+    <script>
+        // Simple JavaScript for a fade-in effect on load and video control
+        window.addEventListener('load', () => {
+            const banner = document.getElementById('concert-banner');
+            const videoContainer = document.querySelector('.artist-image-container');
+            const video = document.querySelector('.artist-video');
+
+            if (banner) {
+                banner.style.opacity = '1';
+                banner.style.transform = 'translateY(0)';
+            }
+
+            if (videoContainer && video) {
+                console.log('Video elements found and initialized');
+                
+                videoContainer.addEventListener('mouseenter', () => {
+                    console.log('Mouse entered - attempting to play video');
+                    try {
+                        const playPromise = video.play();
+                        if (playPromise !== undefined) {
+                            playPromise.catch(error => {
+                                console.log('Error playing video:', error);
+                            });
+                        }
+                    } catch (error) {
+                        console.log('Error in play attempt:', error);
+                    }
+                });
+                
+                videoContainer.addEventListener('mouseleave', () => {
+                    console.log('Mouse left - pausing video');
+                    video.pause();
+                    video.currentTime = 0;
+                });
+
+                // Add click handler as backup
+                videoContainer.addEventListener('click', () => {
+                    console.log('Video clicked');
+                    if (video.paused) {
+                        video.play();
+                    } else {
+                        video.pause();
+                    }
+                });
+            } else {
+                console.log('Video elements not found');
+            }
+        });
+
+        // Chat functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatIcon = document.getElementById('chatIcon');
+            const chatContainer = document.getElementById('chatContainer');
+            const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendMessage');
+            const chatMessages = document.getElementById('chatMessages');
+            
+            let isChatOpen = false;
+            
+            // Toggle chat
+            chatIcon.addEventListener('click', () => {
+                isChatOpen = !isChatOpen;
+                chatContainer.style.display = isChatOpen ? 'flex' : 'none';
+                if (isChatOpen) {
+                    messageInput.focus();
+                }
+            });
+            
+            // Send message function
+            const sendMessage = () => {
+                const message = messageInput.value.trim();
+                if (message) {
+                    // Add user message
+                    const userMessageDiv = document.createElement('div');
+                    userMessageDiv.className = 'message user-message';
+                    userMessageDiv.textContent = message;
+                    chatMessages.appendChild(userMessageDiv);
+                    
+                    // Clear input
+                    messageInput.value = '';
+                    
+                    // Scroll to bottom
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                    
+                    // Simulate celebrity response after a short delay
+                    setTimeout(() => {
+                        const responses = [
+                            "That's so sweet! Thank you! 💕",
+                            "I love hearing from my fans! 🌟",
+                            "You're amazing! Can't wait to see you at the concert! 🎵",
+                            "Thanks for your support! It means the world to me! 💖"
+                        ];
+                        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                        
+                        const celebrityMessageDiv = document.createElement('div');
+                        celebrityMessageDiv.className = 'message celebrity-message';
+                        celebrityMessageDiv.textContent = randomResponse;
+                        chatMessages.appendChild(celebrityMessageDiv);
+                        
+                        chatMessages.scrollTop = chatMessages.scrollHeight;
+                    }, 1000);
+                }
+            };
+            
+            // Send button click
+            sendButton.addEventListener('click', sendMessage);
+            
+            // Enter key press
+            messageInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
