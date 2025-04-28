@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Your Spot!</title>
+    <style>
+        /* --- Basic Reset & Font --- */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden; /* Prevent scrolling */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f0f0; /* Fallback color */
+        }
+
+        /* --- Main Landing Page Container --- */
+        #landing-page {
+            position: relative; /* Crucial for positioning markers */
+            width: 100vw;
+            height: 100vh;
+            background-image: url('./background_1.jpg'); /* Anime style tropical island */
+            background-size: cover;
+            background-position: center;
+            cursor: crosshair;
+            display: flex; /* Use flexbox for layout */
+            justify-content: flex-end; /* Push sidebar to the right */
+        }
+
+        /* --- Marker Container --- */
+        #markers-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allows clicks to pass through to the background */
+            z-index: 10;
+        }
+
+        /* --- Individual Marker Style --- */
+        .marker {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: rgba(255, 71, 87, 0.8); /* Vibrant red with transparency */
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
+            transform: translate(-50%, -50%); /* Center on click point */
+            pointer-events: auto;
+            cursor: pointer;
+            animation: pulse 1.8s infinite ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+        }
+        /* Simple pulsing animation for markers */
+        @keyframes pulse {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 0.9; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0.9; }
+        }
+
+
+        /* --- Claim Modal --- */
+        #claim-modal {
+            display: none; /* Hidden by default */
+            position: fixed;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            width: 90%;
+            max-width: 400px;
+            backdrop-filter: blur(4px);
+             animation: fadeIn 0.3s ease-out;
+        }
+
+         @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -45%); }
+            to { opacity: 1; transform: translate(-50%, -50%); }
+        }
+
+
+        #claim-modal h2 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+            font-size: 1.5em;
+        }
+
+        #claim-form label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+            font-weight: bold;
+        }
+
+        #claim-form input[type="text"],
+        #claim-form input[type="url"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        #claim-form .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        #claim-form button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+
+        #claim-form button[type="submit"] {
+            background-color: #2ecc71; /* Green */
+            color: white;
+        }
+         #claim-form button[type="submit"]:hover {
+             background-color: #27ae60;
+             transform: scale(1.02);
+         }
+
+
+        #claim-form button[type="button"] {
+            background-color: #e74c3c; /* Red */
+            color: white;
+        }
+         #claim-form button[type="button"]:hover {
+             background-color: #c0392b;
+             transform: scale(1.02);
+         }
+
+        /* --- Claims Sidebar --- */
+        #claims-sidebar {
+            width: 200px;
+            height: 100vh;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            padding: 20px;
+            overflow-y: auto;
+            z-index: 5;
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #claims-sidebar h3 {
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 1.4em;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 10px;
+        }
+
+        #claims-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .claim-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform 0.2s ease;
+            cursor: pointer;
+            text-decoration: none;
+            margin-bottom: 20px;
+        }
+
+        .claim-item::before,
+        .claim-item::after {
+            display: none; /* Ensure no pseudo-elements are adding content */
+        }
+
+        .claim-pfp {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+            object-fit: cover;
+            border: 3px solid #eee;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .claim-name {
+            font-weight: bold;
+            font-size: 1em;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        .claim-name::before,
+        .claim-name::after {
+            display: none; /* Ensure no pseudo-elements are adding content */
+        }
+
+        .claim-url {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            #claims-sidebar {
+                width: 160px;
+            }
+            .claim-pfp {
+                width: 60px;
+                height: 60px;
+            }
+            .claim-name {
+                font-size: 0.9em;
+            }
+        }
+        @media (max-width: 480px) {
+            #claims-sidebar {
+               position: fixed; /* Make it overlay on very small screens */
+               right: -200px; /* Hide it off-screen initially */
+               width: 200px;
+               height: 80vh; /* Don't take full height */
+               top: 10vh;
+               border-radius: 10px 0 0 10px;
+               transition: right 0.3s ease-in-out;
+                /* Add a button/toggle mechanism in JS if you want this behavior */
+            }
+            /* Example: #claims-sidebar.visible { right: 0; } */
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="landing-page">
+        <div id="markers-container">
+            <!-- Markers will be added here by JavaScript -->
+        </div>
+
+        <div id="claims-sidebar">
+            <h3>Claimed Spots</h3>
+            <ul id="claims-list">
+                <!-- Claim items will be added here -->
+            </ul>
+        </div>
+    </div>
+
+    <div id="claim-modal">
+        <h2>Claim This Spot!</h2>
+        <form id="claim-form">
+            <input type="hidden" id="claim-x">
+            <input type="hidden" id="claim-y">
+
+            <div>
+                <label for="claim-url">Your URL:</label>
+                <input type="url" id="claim-url" name="url" placeholder="https://example.com" required>
+            </div>
+            <div>
+                <label for="claim-pfp">Profile Image URL:</label>
+                <input type="url" id="claim-pfp" name="pfp" placeholder="https://example.com/image.jpg" required>
+            </div>
+            <div>
+                <label for="claim-name">Your Name:</label>
+                <input type="text" id="claim-name" name="name" placeholder="Enter your name" required maxlength="50">
+            </div>
+            <div class="form-actions">
+                <button type="submit">Claim Spot</button>
+                <button type="button" id="cancel-claim">Cancel</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const landingPage = document.getElementById('landing-page');
+        const markersContainer = document.getElementById('markers-container');
+        const claimModal = document.getElementById('claim-modal');
+        const claimForm = document.getElementById('claim-form');
+        const cancelClaimButton = document.getElementById('cancel-claim');
+        const claimsList = document.getElementById('claims-list');
+        const claimXInput = document.getElementById('claim-x');
+        const claimYInput = document.getElementById('claim-y');
+        const claimUrlInput = document.getElementById('claim-url');
+        const claimPfpInput = document.getElementById('claim-pfp');
+        const claimNameInput = document.getElementById('claim-name');
+
+        let claims = []; // Array to hold claim objects { x, y, url, pfp, name, id }
+        let nextClaimId = 0;
+
+        // --- Event Listeners ---
+
+        // 1. Click on the landing page to initiate claim
+        landingPage.addEventListener('click', (event) => {
+            // Prevent triggering if the click is on the sidebar or modal
+            if (event.target !== landingPage && event.target !== markersContainer) {
+                 // Allow clicks on markers, but don't open modal again if clicking a marker
+                 if (!event.target.classList.contains('marker')) {
+                    return;
+                 }
+            }
+             // Don't open modal if clicking directly on a marker (can add marker interaction later)
+             if (event.target.classList.contains('marker')) {
+                 console.log("Clicked on an existing marker."); // Optional: Add info popup here
+                 return;
+             }
+
+
+            const rect = landingPage.getBoundingClientRect();
+            // Calculate coordinates as percentages relative to the container
+            const xPercent = ((event.clientX - rect.left) / rect.width) * 100;
+            const yPercent = ((event.clientY - rect.top) / rect.height) * 100;
+
+            // Store coordinates in the hidden form fields
+            claimXInput.value = xPercent.toFixed(2); // Store with 2 decimal places
+            claimYInput.value = yPercent.toFixed(2);
+
+            // Show the modal
+            claimModal.style.display = 'block';
+            claimUrlInput.focus(); // Focus the first input field
+        });
+
+        // 2. Form submission
+        claimForm.addEventListener('submit', (event) => {
+            event.preventDefault(); // Prevent default page reload
+
+            const newClaim = {
+                id: nextClaimId++,
+                x: parseFloat(claimXInput.value),
+                y: parseFloat(claimYInput.value),
+                url: claimUrlInput.value,
+                pfp: claimPfpInput.value,
+                name: claimNameInput.value
+            };
+
+            claims.push(newClaim);
+            saveClaims(); // Save to localStorage
+            renderClaims(); // Update UI
+
+            // Hide modal and clear form
+            claimModal.style.display = 'none';
+            claimForm.reset();
+        });
+
+        // 3. Cancel button in modal
+        cancelClaimButton.addEventListener('click', () => {
+            claimModal.style.display = 'none';
+            claimForm.reset();
+        });
+
+        // 4. Close modal if clicked outside (optional)
+        window.addEventListener('click', (event) => {
+            if (event.target === claimModal) { // Check if click is on the modal backdrop (if it had one)
+                 // Or more simply, just close if click is not inside the form area or on the main page trigger area
+                // This part needs refinement if a backdrop overlay is used.
+                // For now, only the Cancel button works.
+            }
+        });
+
+
+        // --- Functions ---
+
+        // Render all claims (markers and list items)
+        function renderClaims() {
+            // Clear existing markers and list items
+            markersContainer.innerHTML = '';
+            claimsList.innerHTML = '';
+
+            claims.forEach(claim => {
+                // Create and add marker
+                const marker = document.createElement('div');
+                marker.classList.add('marker');
+                marker.style.left = `${claim.x}%`;
+                marker.style.top = `${claim.y}%`;
+                marker.title = `Claimed by: ${claim.name}`;
+                marker.dataset.claimId = claim.id;
+                markersContainer.appendChild(marker);
+
+                // Create and add list item to sidebar
+                const listItem = document.createElement('li');
+                listItem.classList.add('claim-item');
+                listItem.dataset.claimId = claim.id; // Link list item to marker
+
+                // Default image if loading fails
+                const defaultPfp = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23cccccc"/></svg>';
+
+                listItem.innerHTML = `
+                    <img src="${escapeHTML(claim.pfp)}" alt="${escapeHTML(claim.name)}'s profile picture" class="claim-pfp" onerror="this.onerror=null;this.src='${defaultPfp}';">
+                    <div class="claim-name">${escapeHTML(claim.name)}</div>
+                `;
+                claimsList.appendChild(listItem);
+
+                // Add click handler to the list item
+                listItem.addEventListener('click', () => {
+                    window.open(claim.url, '_blank', 'noopener,noreferrer');
+                });
+            });
+        }
+
+        // Save claims array to localStorage
+        function saveClaims() {
+            localStorage.setItem('claimedSpots', JSON.stringify(claims));
+             localStorage.setItem('nextClaimId', nextClaimId.toString()); // Also save the next ID
+        }
+
+        // Load claims from localStorage on page load
+        function loadClaims() {
+            const savedClaims = localStorage.getItem('claimedSpots');
+            const savedNextId = localStorage.getItem('nextClaimId');
+            if (savedClaims) {
+                claims = JSON.parse(savedClaims);
+                 if (savedNextId) {
+                    nextClaimId = parseInt(savedNextId, 10);
+                 } else {
+                     // If only claims exist but not ID, calculate next ID based on loaded claims
+                     nextClaimId = claims.length > 0 ? Math.max(...claims.map(c => c.id)) + 1 : 0;
+                 }
+
+                renderClaims();
+            }
+        }
+
+        // Simple HTML escaping function to prevent XSS
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/&/g, '&amp;')
+                      .replace(/</g, '&lt;')
+                      .replace(/>/g, '&gt;')
+                      .replace(/"/g, '&quot;')
+                      .replace(/'/g, '&#39;');
+        }
+
+        // --- Initial Load ---
+        document.addEventListener('DOMContentLoaded', loadClaims);
+
+    </script>
+
+</body>
+</html>
