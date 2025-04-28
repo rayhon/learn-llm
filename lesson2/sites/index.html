@@ -93,25 +93,43 @@
 
 
         #members-button {
-            background-color: #3498db;
+            background-color: #3498db; /* Solid blue background */
             color: white;
-            padding: 8px 15px;
-            border: none;
-            border-radius: 5px;
+            padding: 10px 20px; /* Keep padding */
+            border: none; /* No border needed with shadow */
+            border-radius: 6px; /* Keep radius */
             cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 500;
-            transition: background-color 0.2s ease;
+            font-size: 1.3em; /* Keep font size */
+            font-weight: normal;
+            font-family: 'Luckiest Guy', cursive;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+            /* 3D Shadow Effect: dark bottom/right shadow + subtle top/left highlight */
+            box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.4),
+                        -1px -1px 1px rgba(255, 255, 255, 0.1);
+            transition: box-shadow 0.15s ease, transform 0.1s ease;
+            line-height: 1;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
         #members-button:hover {
-            background-color: #2980b9;
+            /* Enhance shadow slightly on hover */
+            box-shadow: 4px 4px 7px rgba(0, 0, 0, 0.5),
+                        -1px -1px 1px rgba(255, 255, 255, 0.15);
+        }
+        #members-button:active {
+            /* Pressed effect: inset shadow + move down slightly */
+            box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.5);
+            transform: translateY(2px);
         }
         #member-count {
-            background-color: rgba(255, 255, 255, 0.3);
-            padding: 2px 6px;
-            border-radius: 3px;
-            margin-left: 5px;
-            font-size: 0.9em;
+            background-color: rgba(0, 0, 0, 0.2);
+            padding: 5px 10px 3px 10px; /* Fine-tune padding: T5 R10 B3 L10 */
+            border-radius: 12px; /* Reduced for pill shape */
+            font-size: 1.1em;
+            line-height: 1; /* Ensure consistent line-height */
+            text-shadow: none;
+            box-shadow: inset 0px 1px 2px rgba(0, 0, 0, 0.4);
         }
 
 
@@ -235,7 +253,7 @@
             position: absolute;
             width: 24px;
             height: 24px;
-            background-color: rgba(255, 71, 87, 0.8); /* Vibrant red with transparency */
+            /* background-color will be set by JS */
             border-radius: 50%;
             border: 2px solid white;
             box-shadow: 0 0 8px rgba(0, 0, 0, 0.7);
@@ -243,12 +261,40 @@
             pointer-events: auto;
             cursor: pointer;
             animation: pulse 1.8s infinite ease-in-out;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: white;
-            font-weight: bold;
+            /* display: flex ... removed, not needed now */
+            /* color: white ... removed */
+            /* font-weight: bold ... removed */
+             z-index: 10; /* Ensure markers are interactive */
         }
+        /* Add pseudo-element for hover PFP */
+        .marker::after {
+            content: '';
+            position: absolute;
+            width: 48px; /* Size of the hover PFP */
+            height: 48px;
+            background-image: var(--pfp-url, url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23cccccc"/></svg>')); /* Use variable, fallback to default */
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.6);
+            /* Position above the marker */
+            bottom: 100%; /* Start from the top edge of marker */
+            left: 50%;
+            margin-bottom: 8px; /* Space between marker and PFP */
+            transform: translateX(-50%) scale(0); /* Initial state: hidden */
+            transform-origin: bottom center; /* Scale from bottom */
+            opacity: 0;
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease; /* Add bounce effect */
+            pointer-events: none; /* Don't interfere with marker click */
+            z-index: 11; /* Above marker */
+        }
+
+        .marker:hover::after {
+            transform: translateX(-50%) scale(1); /* Scale up */
+            opacity: 1;
+        }
+
         /* Simple pulsing animation for markers */
         @keyframes pulse {
             0% { transform: translate(-50%, -50%) scale(1); opacity: 0.9; }
@@ -464,6 +510,10 @@
                 <label for="claim-name">Your Name:</label>
                 <input type="text" id="claim-name" name="name" placeholder="Enter your name" required maxlength="50">
             </div>
+            <div>
+                <label for="claim-color">Spot Color:</label>
+                <input type="color" id="claim-color" name="color" value="#FF4757"> <!-- Default color -->
+            </div>
             <div class="form-actions">
                 <button type="submit">Claim Spot</button>
                 <button type="button" id="cancel-claim">Cancel</button>
@@ -482,6 +532,7 @@
         const claimUrlInput = document.getElementById('claim-url');
         const claimPfpInput = document.getElementById('claim-pfp');
         const claimNameInput = document.getElementById('claim-name');
+        const claimColorInput = document.getElementById('claim-color'); // Added color input
 
         // New element references
         const headerMemberCount = document.getElementById('member-count');
@@ -490,7 +541,7 @@
         const membersGrid = document.getElementById('members-grid');
         const closeMembersOverlayButton = document.getElementById('close-members-overlay');
 
-        let claims = []; // Array to hold claim objects { x, y, url, pfp, name, id }
+        let claims = []; // Array to hold claim objects { x, y, url, pfp, name, id, color }
         let nextClaimId = 0;
 
         // --- Event Listeners ---
@@ -535,7 +586,8 @@
                 y: parseFloat(claimYInput.value),
                 url: claimUrlInput.value,
                 pfp: claimPfpInput.value,
-                name: claimNameInput.value
+                name: claimNameInput.value,
+                color: claimColorInput.value // Added color value
             };
 
             claims.push(newClaim);
@@ -596,8 +648,15 @@
                 marker.classList.add('marker');
                 marker.style.left = `${claim.x}%`;
                 marker.style.top = `${claim.y}%`;
-                marker.title = `Claimed by: ${claim.name}`;
+                marker.style.backgroundColor = claim.color || '#FF4757'; // Use saved color or default
+                marker.title = `Claimed by: ${escapeHTML(claim.name)}`; // Tooltip shows name
                 marker.dataset.claimId = claim.id;
+
+                // Set PFP URL as CSS variable for hover effect
+                const pfpUrl = escapeHTML(claim.pfp);
+                const defaultPfp = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23cccccc"/></svg>';
+                marker.style.setProperty('--pfp-url', `url("${pfpUrl || defaultPfp}")`);
+
                 markersContainer.appendChild(marker);
             });
 
@@ -614,10 +673,22 @@
                 const memberDiv = document.createElement('div');
                 memberDiv.classList.add('member-profile');
                 memberDiv.title = `Visit ${escapeHTML(claim.name)}'s site`;
-                memberDiv.innerHTML = `
-                    <img src="${escapeHTML(claim.pfp)}" alt="${escapeHTML(claim.name)}'s profile" class="member-pfp" onerror="this.onerror=null;this.src='${defaultPfp}';">
-                    <div class="member-name">${escapeHTML(claim.name)}</div>
-                `;
+
+                // Create image element
+                const img = document.createElement('img');
+                img.src = escapeHTML(claim.pfp) || defaultPfp;
+                img.alt = `${escapeHTML(claim.name)}'s profile`;
+                img.classList.add('member-pfp');
+                img.onerror = function() { this.onerror=null; this.src=defaultPfp; }; // Set onerror handler
+
+                // Create name element
+                const nameDiv = document.createElement('div');
+                nameDiv.classList.add('member-name');
+                nameDiv.textContent = escapeHTML(claim.name); // Use textContent which is safer
+
+                // Append elements
+                memberDiv.appendChild(img);
+                memberDiv.appendChild(nameDiv);
 
                 // Add click handler to open the member's URL
                 memberDiv.addEventListener('click', () => {
@@ -658,7 +729,7 @@
 
         // Simple HTML escaping function to prevent XSS
         function escapeHTML(str) {
-            if (!str) return '';
+            if (!str) return ''; // Return empty string if input is null/undefined/empty
             return str.replace(/&/g, '&amp;')
                       .replace(/</g, '&lt;')
                       .replace(/>/g, '&gt;')
