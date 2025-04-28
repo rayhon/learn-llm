@@ -657,6 +657,19 @@
                 const defaultPfp = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="%23cccccc"/></svg>';
                 marker.style.setProperty('--pfp-url', `url("${pfpUrl || defaultPfp}")`);
 
+                // --- ADD CLICK LISTENER ---
+                marker.addEventListener('click', (event) => {
+                    event.stopPropagation(); // Prevent triggering landing page click
+                    const clickedClaimId = parseInt(marker.dataset.claimId, 10);
+                    const clickedClaim = claims.find(c => c.id === clickedClaimId);
+                    if (clickedClaim && clickedClaim.url) {
+                        window.open(clickedClaim.url, '_blank', 'noopener,noreferrer');
+                    } else {
+                        console.warn('Could not find claim or URL for marker:', clickedClaimId);
+                    }
+                });
+                // --- END ADD CLICK LISTENER ---
+
                 markersContainer.appendChild(marker);
             });
 
