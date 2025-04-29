@@ -54,9 +54,13 @@
                 text: "thespruce.com › backyard ideas",
                 url: "#" // Placeholder link
             },
-            bannerImages: [
-                "https://placehold.co/600x250/e9ecef/adb5bd?text=Backyard+Inspiration+1",
-                "https://placehold.co/600x200/dee2e6/6c757d?text=Backyard+Detail"
+            relatedProducts: [
+                { name: "Camera Product", imageUrl: "https://placehold.co/150x100/f1f1f1/666?text=Camera", originalPrice: "70.00", salePrice: "65.00", tags: "Featured Product, New" },
+                { name: "Baby Toy", imageUrl: "https://placehold.co/150x100/f1f1f1/e67e22?text=Drone", originalPrice: "60.00", salePrice: "50.00", tags: "Featured Product, New" },
+                { name: "Baby Shoes", imageUrl: "https://placehold.co/150x100/f1f1f1/3498db?text=Shoes", originalPrice: "90.00", salePrice: "85.00", tags: "Featured Product, New" },
+                { name: "Sample Product", imageUrl: "https://placehold.co/150x100/f1f1f1/f368e0?text=Pink+Bag", originalPrice: "50.00", salePrice: "40.00", tags: "New" },
+                { name: "Baby Product", imageUrl: "https://placehold.co/150x100/f1f1f1/f1c40f?text=Yellow+Bag", originalPrice: "60.00", salePrice: "54.00", tags: "New" },
+                 { name: "Another Gadget", imageUrl: "https://placehold.co/150x100/f1f1f1/2ecc71?text=Gadget", originalPrice: null, salePrice: "75.00", tags: "Sale" },
             ],
             // Content in Markdown format
             bodyMarkdown: `
@@ -70,12 +74,30 @@ Remember to consider your budget and the specific needs of your space when plann
             `
         },
         citations: [
-            { title: "The Spruce: 43 Backyard Ideas on a Budget", url: "#", snippet: "August 25, 2024 - Set up a hammock and add pillows, string lighting in trees, blankets..." },
-            { title: "Family Handyman: 50 Brilliant Ways to Spruce Up", url: "#", snippet: "October 6, 2024 - Make Your Own Cornhole Game. Cornhole boards are a classic backyard game..." },
-            { title: "Better Homes & Gardens: 50 Stunning Ideas", url: "#", snippet: "May 7, 2024 - Whether you're looking for patio suggestions, outdoor dining, or a fun space..." },
-            { title: "Extra Space Storage: DIY Guide on a Budget", url: "#", snippet: "September 24, 2024 - Give your outdoor living space a facelift with a calming meditation space..." }
+            { title: "The Spruce: 43 Backyard Ideas on a Budget", url: "#", domain: "The Spruce", snippet: "August 25, 2024 - Set up a hammock and add pillows, string lighting in trees, blankets..." },
+            { title: "Family Handyman: 50 Brilliant Ways to Spruce Up", url: "#", domain: "Family Handyman", snippet: "October 6, 2024 - Make Your Own Cornhole Game. Cornhole boards are a classic backyard game..." },
+            { title: "Better Homes & Gardens: 50 Stunning Ideas", url: "#", domain: "Better Homes & Gardens", snippet: "May 7, 2024 - Whether you're looking for patio suggestions, outdoor dining, or a fun space..." },
+            { title: "Extra Space Storage: DIY Guide on a Budget", url: "#", domain: "Extra Space Storage", snippet: "September 24, 2024 - Give your outdoor living space a facelift with a calming meditation space..." }
         ]
     };
+
+    // --- Placeholder Icons ---
+    const agentIconSvg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24px" height="24px" style="flex-shrink: 0;">
+          <path d="M12.0001 9.1716C11.4139 9.1716 10.9411 9.6444 10.9411 10.2306C10.9411 10.8168 11.4139 11.2896 12.0001 11.2896C12.5863 11.2896 13.0591 10.8168 13.0591 10.2306C13.0591 9.6444 12.5863 9.1716 12.0001 9.1716Z"/>
+          <path d="M12.0001 12.7105C11.4139 12.7105 10.9411 13.1833 10.9411 13.7695C10.9411 14.3557 11.4139 14.8285 12.0001 14.8285C12.5863 14.8285 13.0591 14.3557 13.0591 13.7695C13.0591 13.1833 12.5863 12.7105 12.0001 12.7105Z"/>
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M12.0004 1.91895C6.9798 1.91895 2.91992 5.97883 2.91992 11.0001C2.91992 16.0213 6.9798 20.0812 12.0004 20.0812C17.021 20.0812 21.0809 16.0213 21.0809 11.0001C21.0809 5.97883 17.021 1.91895 12.0004 1.91895ZM4.37758 11.0001C4.37758 6.8009 7.7822 3.37661 12.0004 3.37661C16.2186 3.37661 19.6232 6.8009 19.6232 11.0001C19.6232 15.1993 16.2186 18.6235 12.0004 18.6235C7.7822 18.6235 4.37758 15.1993 4.37758 11.0001Z"/>
+          <path d="M8.4654 12.7105C7.8792 12.7105 7.4064 13.1833 7.4064 13.7695C7.4064 14.3557 7.8792 14.8285 8.4654 14.8285C9.0516 14.8285 9.5244 14.3557 9.5244 13.7695C9.5244 13.1833 9.0516 12.7105 8.4654 12.7105Z"/>
+          <path d="M15.5345 12.7105C14.9483 12.7105 14.4755 13.1833 14.4755 13.7695C14.4755 14.3557 14.9483 14.8285 15.5345 14.8285C16.1207 14.8285 16.5935 14.3557 16.5935 13.7695C16.5935 13.1833 16.1207 12.7105 15.5345 12.7105Z"/>
+        </svg>
+    `;
+    const domainIconSvg = `
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" width="14px" height="14px" style="flex-shrink: 0;">
+          <path d="M8.707 1.5a1 1 0 0 0-1.414 0L.646 8.146a.5.5 0 0 0 .708.708L8 2.207l6.646 6.647a.5.5 0 0 0 .708-.708L8.707 1.5z"/>
+          <path d="m7 14 4-4-4 4z"/> <!-- Simple element to make it slightly different -->
+          <path d="M2.5 12.5a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 .5.5v3a.5.5 0 0 1-.5.5h-10a.5.5 0 0 1-.5-.5v-3z"/>
+        </svg>
+    `;
 
     // --- Popular Questions ---
     const popularQuestions = [
@@ -221,6 +243,37 @@ Remember to consider your budget and the specific needs of your space when plann
         #chat-widget-article-area li { margin-bottom: 0.5rem; }
         #chat-widget-article-area strong { color: #343a40; }
 
+        /* Carousel Styles */
+        #chat-widget-product-carousel { margin: 20px 0; }
+        #chat-widget-product-carousel h4 { font-size: 1.1rem; margin-bottom: 15px; color: #343a40; font-weight: 600; }
+        .chat-widget-carousel-wrapper { display: flex; overflow-x: auto; gap: 0px; padding-bottom: 15px; /* Space for scrollbar if visible */ scrollbar-width: thin; /* Firefox */ border-top: 1px solid #eee; /* Add border like image */ border-bottom: 1px solid #eee; }
+        /* Hide scrollbar for Chrome/Safari/Edge */
+        .chat-widget-carousel-wrapper::-webkit-scrollbar { height: 8px; }
+        .chat-widget-carousel-wrapper::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+        .chat-widget-carousel-wrapper::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+        .chat-widget-carousel-wrapper::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+        .chat-widget-product-item { 
+            /* border: 1px solid #eee; REMOVED */
+            border-right: 1px solid #eee; /* Separator */
+            border-radius: 0px; /* REMOVED radius */
+            padding: 15px 10px; /* Adjust padding */
+            text-align: center; 
+            width: 180px; 
+            flex-shrink: 0; 
+            background-color: #fff; 
+            /* transition: box-shadow 0.2s ease; REMOVED */ 
+        }
+        .chat-widget-carousel-wrapper .chat-widget-product-item:first-child {
+             border-left: 1px solid #eee; /* Add left border only to the first item */
+        }
+        /* .chat-widget-product-item:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.1); REMOVED } */
+        .chat-widget-product-item img { max-width: 100%; height: 140px; /* Increased height */ object-fit: contain; margin-bottom: 8px; /* Slightly reduced margin */ }
+        .chat-widget-product-item .product-name { font-size: 0.9rem; font-weight: 500; color: #333; margin-bottom: 3px; /* Reduced margin */ height: 2.4em; overflow: hidden; }
+        .chat-widget-product-item .product-price { font-size: 0.95rem; margin-bottom: 5px; /* Reduced margin */ color: #e74c3c; font-weight: 600; }
+        .chat-widget-product-item .product-price del { color: #999; font-weight: normal; margin-right: 5px; font-size: 0.85rem; }
+        .chat-widget-product-item .product-tags { font-size: 0.75rem; color: #777; }
+
         /* Message Area - always present */
         #chat-widget-messages {
             flex-grow: 1; /* Allows it to push footer down */
@@ -266,6 +319,8 @@ Remember to consider your budget and the specific needs of your space when plann
         #chat-widget-citations-sidebar li { margin-bottom: 15px; font-size: 0.85rem; }
         #chat-widget-citations-sidebar li a { color: #0056b3; text-decoration: none; font-weight: 500; display: block; margin-bottom: 3px; }
         #chat-widget-citations-sidebar li a:hover { text-decoration: underline; }
+        #chat-widget-citations-sidebar .citation-domain-info { display: flex; align-items: center; gap: 5px; margin-bottom: 5px; font-size: 0.8rem; color: #555; }
+        #chat-widget-citations-sidebar .citation-domain-info svg { /* Styles for domain icon */ }
         #chat-widget-citations-sidebar li span { color: #555; display: block; font-size: 0.8rem; line-height: 1.4; }
 
         /* Suggestions */
@@ -300,35 +355,69 @@ Remember to consider your budget and the specific needs of your space when plann
         return messageElement; // Return the created element
     }
 
-    // Basic Markdown to HTML converter
+    // Basic Markdown to HTML converter (CORRECTED)
     function markdownToHtml(md) {
         if (!md) return '';
         let html = md.trim();
+
         // **bold** to <strong>
         html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        // 1. list items to <li>
-        html = html.replace(/^(\d+)\.\s+(.*)/gm, '<li>$2</li>');
-        // * list items to <li>
-        html = html.replace(/^[\*\-]\s+(.*)/gm, '<li>$2</li>');
-        // Wrap consecutive <li> in <ol> or <ul>
-        html = html.replace(/^(<li>.*<\/li>\s*)+/gm, (match) => {
-            const isOrdered = /<li>/.test(match.substring(0, match.indexOf('</li>')+5)) && match.trim().startsWith('<li>'); // Rough check
-            const tag = isOrdered && /^\d+\./.test(md.substring(md.indexOf(match.split('\n')[0].replace(/<\/?li>/g, '').trim()))) ? 'ol' : 'ul';
-            return `<${tag}>${match.trim()}</${tag}>`;
-        });
-        // Paragraphs (split by double newline, wrap non-list lines)
-        html = html.split(/\n\s*\n/).map(paragraph => {
-            if (!paragraph.trim().startsWith('<ul') && !paragraph.trim().startsWith('<ol') && !paragraph.trim().startsWith('<li') && !paragraph.trim().startsWith('<h') && paragraph.trim().length > 0) {
-                return `<p>${paragraph.trim().replace(/\n/g, '<br>')}</p>`; // Use <br> for single newlines within paragraph
+
+        // Process Blocks (Lists and Paragraphs)
+        const blocks = html.split(/\n\s*\n/);
+        let processedHtml = '';
+        let currentListType = null; // null, 'ul', or 'ol'
+
+        blocks.forEach(block => {
+            const lines = block.split('\n');
+            let isListBlock = lines.some(line => line.trim().match(/^(\d+\.|[\*\-])\s+/));
+
+            if (isListBlock) {
+                lines.forEach(line => {
+                    const trimmedLine = line.trim();
+                    let listMatch = trimmedLine.match(/^(\d+)\.\s+(.*)/); // Ordered list
+                    let listType = 'ol';
+                    if (!listMatch) {
+                        listMatch = trimmedLine.match(/^[\*\-]\s+(.*)/); // Unordered list
+                        listType = 'ul';
+                    }
+
+                    if (listMatch) {
+                        if (currentListType !== listType) {
+                            if (currentListType) processedHtml += `</${currentListType}>`; // Close previous list
+                            processedHtml += `<${listType}>`;
+                            currentListType = listType;
+                        }
+                        processedHtml += `<li>${listMatch[2]}</li>`; // Use content from group 2
+                    } else {
+                        // This line is not a list item within a list block (might be whitespace)
+                        if (currentListType) {
+                            processedHtml += `</${currentListType}>`; // Close current list
+                            currentListType = null;
+                        }
+                        if (trimmedLine.length > 0) { // Treat as paragraph if not empty
+                             processedHtml += `<p>${trimmedLine}</p>`;
+                        }
+                    }
+                });
+            } else {
+                // Not a list block, treat as a paragraph
+                if (currentListType) {
+                     processedHtml += `</${currentListType}>`; // Close any open list
+                     currentListType = null;
+                }
+                if (block.trim().length > 0) {
+                    processedHtml += `<p>${block.trim().replace(/\n/g, '<br>')}</p>`;
+                }
             }
-            return paragraph.trim();
-        }).join('\n');
+        });
 
-        // Handle potential wrapping issues from list processing (ensure <ol>/<ul> are block)
-         html = html.replace(/<\/p>\n?<([ou]l)>/g, '</p><$1>'); // Fix paragraphs ending before lists
-         html = html.replace(/<\/[ou]l>\n?<p>/g, '</$1><p>'); // Fix lists ending before paragraphs
+         // Close any remaining open list
+         if (currentListType) {
+             processedHtml += `</${currentListType}>`;
+         }
 
-        return html;
+        return processedHtml;
     }
 
     // **UPDATED to use mock JSON data and reposition user query**
@@ -371,36 +460,55 @@ Remember to consider your budget and the specific needs of your space when plann
             articleArea.id = 'chat-widget-article-area';
 
             // Build article HTML from JSON
-            let articleHtml = '';
+            let articleHeaderHtml = '';
+            let articleBodyHtml = '';
             if (responseData.article) {
                 const article = responseData.article;
-                articleHtml += `<h2>${article.title || ''}</h2>`;
-                if (article.source && article.source.text && article.source.url) {
-                    articleHtml += `<a href="${article.source.url}" target="_blank" class="source-link">${article.source.text}</a>`;
-                }
-                // Add the FIRST banner image here, if it exists
-                if (article.bannerImages && article.bannerImages.length > 0) {
-                     articleHtml += `<img src="${article.bannerImages[0]}" alt="Article Banner Top" class="banner">`;
-                }
-                /* REMOVED BANNER LOOP
-                if (article.bannerImages && article.bannerImages.length > 0) {
-                    article.bannerImages.forEach(imgUrl => {
-                         // Simple banner determination based on index or add specific class/size later
-                         const bannerClass = article.bannerImages.indexOf(imgUrl) === 0 ? 'banner' : 'banner detail'; // Example
-                         articleHtml += `<img src="${imgUrl}" alt="Article Banner" class="${bannerClass}">`;
-                    });
-                }
-                */
-                // Add the main content body converted from Markdown
-                articleHtml += markdownToHtml(article.bodyMarkdown); // Convert Markdown body
 
-                // Add the LAST banner image here, if there are more than one
-                if (article.bannerImages && article.bannerImages.length > 1) {
-                    // Wrap in a paragraph for spacing
-                    articleHtml += `<p><img src="${article.bannerImages[article.bannerImages.length - 1]}" alt="Article Banner Bottom" class="banner detail"></p>`;
+                // Header Part (Icon + Title + Source)
+                articleHeaderHtml += `<div class="article-header-section" style="display: flex; align-items: flex-start; gap: 10px; margin-bottom: 5px;">`;
+                articleHeaderHtml += agentIconSvg; // Add agent icon
+                articleHeaderHtml += `<div style="flex-grow: 1;">`; // Wrapper for title and source
+                articleHeaderHtml += `<h2 style="margin:0; padding:0; line-height:1.2;">${article.title || ''}</h2>`;
+                if (article.source && article.source.text && article.source.url) {
+                    articleHeaderHtml += `<a href="${article.source.url}" target="_blank" class="source-link" style="margin-bottom: 0;">${article.source.text}</a>`;
                 }
+                articleHeaderHtml += `</div></div>`; // Close wrapper and section
+
+                // Product Carousel Section
+                let productCarouselHtml = '';
+                if (article.relatedProducts && article.relatedProducts.length > 0) {
+                    productCarouselHtml += `<div id="chat-widget-product-carousel">`;
+                    productCarouselHtml += `<h4>Related Products</h4>`;
+                    productCarouselHtml += `<div class="chat-widget-carousel-wrapper">`;
+
+                    article.relatedProducts.forEach(product => {
+                        productCarouselHtml += `<div class="chat-widget-product-item">`;
+                        productCarouselHtml += `<img src="${product.imageUrl}" alt="${product.name}">`;
+                        productCarouselHtml += `<div class="product-name">${product.name}</div>`;
+                        productCarouselHtml += `<div class="product-price">`;
+                        if (product.originalPrice) {
+                            productCarouselHtml += `<del>$${product.originalPrice}</del> `; // Strikethrough original price
+                        }
+                        productCarouselHtml += `$${product.salePrice}`; // Sale price
+                        productCarouselHtml += `</div>`;
+                        if (product.tags) {
+                            productCarouselHtml += `<div class="product-tags">${product.tags}</div>`;
+                        }
+                        productCarouselHtml += `</div>`; // Close product-item
+                    });
+
+                    productCarouselHtml += `</div>`; // Close carousel-wrapper
+                    productCarouselHtml += `</div>`; // Close product-carousel
+                }
+
+                // Body Part (Banners + Content)
+                // Add the main content body converted from Markdown
+                articleBodyHtml += markdownToHtml(article.bodyMarkdown); // Convert Markdown body
+
+                // Combine header, product carousel (if any), and body
+                articleArea.innerHTML = articleHeaderHtml + productCarouselHtml + articleBodyHtml;
             }
-            articleArea.innerHTML = articleHtml;
 
             // Insert the article content *after* the user message, but before the messages area
             mainContent.appendChild(articleArea); // Append article to main content
@@ -410,8 +518,12 @@ Remember to consider your budget and the specific needs of your space when plann
             if (responseData.citations && responseData.citations.length > 0) {
                 citationsHtml += '<ul>';
                 responseData.citations.forEach(citation => {
+                    const domainInfoHtml = citation.domain ?
+                        `<div class="citation-domain-info">${domainIconSvg} <span>${citation.domain}</span></div>`
+                        : ''; // Only add if domain exists
                     citationsHtml += `
                         <li>
+                            ${domainInfoHtml}
                             <a href="${citation.url || '#'}" target="_blank">${citation.title || 'Source'}</a>
                             <span>${citation.snippet || ''}</span>
                         </li>`;
