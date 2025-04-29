@@ -1,3 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Widget Example (Combined)</title>
+    <style id="chat-widget-styles">
+        /* CSS will be injected by the script below */
+    </style>
+</head>
+<body>
+
+<h1>My Awesome Web Page</h1>
+<p>Some content here...</p>
+<p>Scroll down to see the chat icon.</p>
+<div style="height: 1000px;"></div> <!-- To make page scrollable -->
+
+<!-- Embedded Chat Widget Script -->
+<script>
 (function() {
     // --- Configuration ---
     const chatIconColor = '#1a1a1a'; // Example: Dark color for icon background
@@ -179,6 +198,9 @@
             background-color: #fff; /* Or a different background */
             /* Use Flexbox for main content and sidebar */
             display: flex;
+            /* Make body take remaining space and allow its children to scroll */
+            flex: 1; /* Changed from flex-grow: 1 */
+            min-height: 0; /* Important for flex item scrolling */
         }
          /* Show expanded content when panel is expanded */
         #chat-widget-panel.expanded .chat-widget-body-expanded {
@@ -461,27 +483,15 @@
         return expandedBody;
     }
 
-     // --- Helper to Create Default View ---
-     function createDefaultViewContent(messagesArea, questionsListContainer) {
-         const defaultBody = document.createElement('div');
-         defaultBody.className = 'chat-widget-body-default';
-
-         const questionsTitle = document.createElement('h4');
-         questionsTitle.textContent = 'Popular Questions';
-         defaultBody.appendChild(questionsTitle);
-         defaultBody.appendChild(questionsListContainer); // Add the existing list
-         defaultBody.appendChild(messagesArea);          // Add the existing messages area
-
-         return defaultBody;
-     }
-
     // --- Dynamic Element Creation ---
     function createWidget() {
-        // 1. Inject CSS
+        // 1. Inject CSS into the existing <style> tag
         const styleSheet = document.getElementById('chat-widget-styles');
         if (styleSheet) {
             styleSheet.textContent = styles;
         } else {
+            console.error('Chat Widget Error: Could not find #chat-widget-styles tag.');
+            // Optionally create and append if not found, though it should exist in the template
             const styleEl = document.createElement('style');
             styleEl.textContent = styles;
             document.head.appendChild(styleEl);
@@ -532,15 +542,12 @@
         const body = document.createElement('div');
         body.className = 'chat-widget-body';
 
-        // --- Create Elements for Default View ---
-        const questionsTitleDefault = document.createElement('h4'); // Title for default view
-        questionsTitleDefault.textContent = 'Popular Questions';
-        // questionsTitleDefault.style.padding = '0 20px'; // Match original padding if needed
+        // Create essential elements that persist
+        const messagesArea = document.createElement('div');
+        messagesArea.id = 'chat-widget-messages';
 
         const questionList = document.createElement('ul');
         questionList.className = 'chat-widget-questions';
-
-        // Add question icon SVG (optional)
         const questionIconSvg = `
             <svg class="chat-widget-question-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
                 <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
@@ -552,35 +559,19 @@
             const link = document.createElement('a');
             link.href = q.url; // Keep href for semantics/SEO if needed
             link.textContent = q.text;
-            // link.target = '_blank'; // Remove target blank if click triggers expansion
             link.dataset.query = q.query; // Store query data
+            link.innerHTML = questionIconSvg + link.innerHTML; // Prepend icon
 
-            // Prepend the icon SVG to the link
-            link.innerHTML = questionIconSvg + link.innerHTML;
-
-             // --- Modified Click Listener for Questions ---
-             link.addEventListener('click', (event) => {
-                 event.preventDefault(); // Prevent default link navigation
-                 displayExpandedView(link.dataset.query || q.text); // Use specific query or fall back to text
-             });
-
+            link.addEventListener('click', (event) => {
+                 event.preventDefault();
+                 displayExpandedView(link.dataset.query || q.text);
+            });
             listItem.appendChild(link);
             questionList.appendChild(listItem);
         });
 
-        // Container for default question list elements
-        const defaultQuestionsContainer = document.createElement('div');
-        // defaultQuestionsContainer.appendChild(questionsTitleDefault); // Append title
-        // defaultQuestionsContainer.appendChild(questionList);          // Append list
-
-        const messagesArea = document.createElement('div');
-        messagesArea.id = 'chat-widget-messages';
-        // body.appendChild(messagesArea); // Append later inside default view container
-
-        // Create the default body content structure
-        const defaultBodyContent = createDefaultViewContent(messagesArea, questionList);
-        body.appendChild(defaultBodyContent);
-
+        // Initially populate body with default content
+        body.appendChild(createDefaultViewContent(messagesArea, questionList));
 
         // 7. Create panel footer (for input and send button)
         const footer = document.createElement('div');
@@ -596,12 +587,12 @@
         const chatInput = document.createElement('textarea');
         chatInput.id = 'chat-widget-input';
         chatInput.placeholder = inputPlaceholder;
-        chatInput.rows = 1; // Start with one row, can expand with CSS or JS later
+        chatInput.rows = 1;
         const sendButton = document.createElement('button');
-        sendButton.id = 'chat-widget-send-btn'; // New ID for clarity
-        sendButton.innerHTML = sendButtonIcon; // Use SVG Icon
-        sendButton.setAttribute('aria-label', 'Send Message'); // Accessibility
-        sendButton.disabled = true; // Disabled by default
+        sendButton.id = 'chat-widget-send-btn';
+        sendButton.innerHTML = sendButtonIcon;
+        sendButton.setAttribute('aria-label', 'Send Message');
+        sendButton.disabled = true;
 
         footer.appendChild(chatInput);
         footer.appendChild(sendButton);
@@ -622,43 +613,33 @@
         function togglePanel() {
             const isOpen = panel.classList.contains('open');
             if (isOpen && isExpanded) {
-                // If closing while expanded, reset to default first
                 resetToDefaultView();
             }
             panel.classList.toggle('open');
-             // Reset state if panel is closed completely
-             if (!panel.classList.contains('open')) {
+            if (!panel.classList.contains('open')) {
                  isExpanded = false;
                  panel.classList.remove('expanded');
              }
         }
 
         iconButton.addEventListener('click', togglePanel);
-        closeButton.addEventListener('click', togglePanel); // Close button hides panel
+        closeButton.addEventListener('click', togglePanel);
 
          // --- Function to Display Expanded View ---
          function displayExpandedView(query) {
              isExpanded = true;
              panel.classList.add('expanded');
 
-             // Remove default body content if it exists
-             const defaultBody = body.querySelector('.chat-widget-body-default');
-             if (defaultBody) {
-                 defaultBody.remove();
-             }
-             // Remove old expanded body if exists (prevent duplicates)
+             // Remove default body content
+             const defaultBody = body.querySelector('.chat-widget-body-default-content');
+             if (defaultBody) defaultBody.remove();
+
+             // Remove old expanded body if exists
              const oldExpandedBody = body.querySelector('.chat-widget-body-expanded');
-             if (oldExpandedBody) {
-                 oldExpandedBody.remove();
-             }
+             if (oldExpandedBody) oldExpandedBody.remove();
 
              // Create and append the new expanded content
-             const expandedContent = createExpandedViewContent(query);
-             body.appendChild(expandedContent);
-
-             // Ensure footer is visible and at the bottom (CSS should handle this now)
-             // Bring footer back into the normal flow if it was hidden
-             // footer.style.display = 'flex'; // Or its default display type
+             body.appendChild(createExpandedViewContent(query));
          }
 
          // --- Function to Reset to Default View ---
@@ -668,99 +649,124 @@
 
              // Remove expanded body content
              const expandedBody = body.querySelector('.chat-widget-body-expanded');
-             if (expandedBody) {
-                 expandedBody.remove();
-             }
+             if (expandedBody) expandedBody.remove();
 
-             // Recreate and append the default content structure if it's not there
-             if (!body.querySelector('.chat-widget-body-default')) {
-                  const defaultContent = createDefaultViewContent(messagesArea, questionList); // Pass references
-                  body.appendChild(defaultContent);
+             // Recreate and append the default content structure if not already present
+             if (!body.querySelector('.chat-widget-body-default-content')) {
+                  body.appendChild(createDefaultViewContent(messagesArea, questionList));
              }
-
-             // Show footer again - REMOVED
-             // footer.style.display = 'flex'; // Assuming footer uses flex
          }
+
+        // Action for the send button
+        sendButton.addEventListener('click', () => {
+            const messageText = chatInput.value.trim();
+            if (messageText) {
+                // Add user message to the messagesArea (within the default view)
+                const messageElement = document.createElement('p');
+                messageElement.textContent = `You: ${messageText}`;
+                messageElement.style.textAlign = 'right';
+                messagesArea.appendChild(messageElement);
+                messagesArea.scrollTop = messagesArea.scrollHeight;
+
+                // Clear input & reset UI for input area
+                chatInput.value = '';
+                sendButton.disabled = true;
+                chatInput.style.height = '48px';
+                suggestionsContainer.style.display = 'none';
+
+                // Trigger Expanded View
+                 displayExpandedView(messageText);
+            }
+        });
 
         // Enable/disable send button AND handle autocomplete based on input
         chatInput.addEventListener('input', () => {
             sendButton.disabled = chatInput.value.trim().length === 0;
 
             // Auto-resize textarea height
-            chatInput.style.height = 'auto'; // Temporarily shrink
+            chatInput.style.height = 'auto';
             const scrollHeight = chatInput.scrollHeight;
             const maxHeight = parseInt(window.getComputedStyle(chatInput).maxHeight, 10);
             const minHeight = parseInt(window.getComputedStyle(chatInput).minHeight, 10);
-
             let newHeight = Math.max(minHeight, scrollHeight);
-            if (newHeight > maxHeight) {
-                newHeight = maxHeight;
-             }
+            newHeight = Math.min(newHeight, maxHeight);
             chatInput.style.height = `${newHeight}px`;
 
-            // --- Autocomplete Logic ---
+            // Autocomplete Logic
             const currentInput = chatInput.value.toLowerCase().trim();
-            suggestionsList.innerHTML = ''; // Clear previous suggestions
+            suggestionsList.innerHTML = '';
 
             if (currentInput.length > 0) {
                 const filteredSuggestions = autocompleteSuggestions.filter(s =>
                     s.toLowerCase().includes(currentInput)
                 );
-
                 if (filteredSuggestions.length > 0) {
                     filteredSuggestions.forEach(suggestionText => {
                         const li = document.createElement('li');
                         li.textContent = suggestionText;
                         li.addEventListener('click', () => {
-                            chatInput.value = suggestionText; // Fill input
-                            suggestionsContainer.style.display = 'none'; // Hide suggestions
-                            sendButton.disabled = false; // Enable send button
-                            chatInput.focus(); // Keep focus on input
-                            // Trigger input event again to resize textarea properly
+                            chatInput.value = suggestionText;
+                            suggestionsContainer.style.display = 'none';
+                            sendButton.disabled = false;
+                            chatInput.focus();
                             chatInput.dispatchEvent(new Event('input'));
                         });
                         suggestionsList.appendChild(li);
                     });
-                    suggestionsContainer.style.display = 'block'; // Show suggestions
+                    suggestionsContainer.style.display = 'block';
                 } else {
-                    suggestionsContainer.style.display = 'none'; // Hide if no matches
+                    suggestionsContainer.style.display = 'none';
                 }
             } else {
-                suggestionsContainer.style.display = 'none'; // Hide if input is empty
+                suggestionsContainer.style.display = 'none';
             }
         });
 
-        // Optional: Send message on Enter key press in textarea
+        // Send message on Enter key press
         chatInput.addEventListener('keypress', function(event) {
-            // Check if Enter is pressed (without Shift for newline)
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault(); // Prevent default newline insertion
-                sendButton.click(); // Trigger send button click
+            if (event.key === 'Enter' && !event.shiftKey && !sendButton.disabled) {
+                event.preventDefault();
+                sendButton.click();
             }
         });
 
-        // Hide suggestions when clicking outside the input/suggestions area
+        // Hide suggestions when clicking outside
         document.addEventListener('click', function(event) {
             const isClickInsideContainer = container.contains(event.target);
-
-            // Hide suggestions if click is outside the footer AND suggestions box
             if (!footer.contains(event.target) && !suggestionsContainer.contains(event.target)) {
                 suggestionsContainer.style.display = 'none';
             }
-
-            // Optional: Close panel when clicking outside (uncomment if desired)
-            // if (!isClickInsideContainer && panel.classList.contains('open')) {
-            //      togglePanel();
-            // }
         });
+    }
+
+    // --- Helper Function to Create Default View ---
+    function createDefaultViewContent(messagesAreaRef, questionsListRef) {
+        const defaultBodyContainer = document.createElement('div');
+        defaultBodyContainer.className = 'chat-widget-body-default-content';
+
+        const questionsTitle = document.createElement('h4');
+        questionsTitle.textContent = 'Popular Questions';
+        defaultBodyContainer.appendChild(questionsTitle);
+        defaultBodyContainer.appendChild(questionsListRef);
+        defaultBodyContainer.appendChild(messagesAreaRef);
+
+        defaultBodyContainer.style.display = 'flex';
+        defaultBodyContainer.style.flexDirection = 'column';
+        defaultBodyContainer.style.flexGrow = '1';
+        defaultBodyContainer.style.padding = '15px 0px';
+
+        return defaultBodyContainer;
     }
 
     // --- Initialization ---
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', createWidget);
     } else {
-        // DOMContentLoaded has already fired
         createWidget();
     }
 
-})(); 
+})();
+</script>
+
+</body>
+</html> 
