@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Widget Example (Combined & Improved)</title>
+    <title>Chat Widget Example (Combined & Enhanced)</title>
     <style id="chat-widget-styles">
         /* CSS will be injected by the script below */
     </style>
@@ -19,55 +19,79 @@
 <script>
 (function() {
     // --- Configuration ---
-    const chatIconColor = '#1a1a1a'; // Example: Dark color for icon background
+    const chatIconColor = '#1a1a1a';
     const chatIconContent = `
         <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" width="28px" height="28px">
           <path d="M0 0h24v24H0z" fill="none"/>
           <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-2 12H6v-2h12v2zm0-3H6V9h12v2zm0-3H6V6h12v2z"/>
-        </svg>`; // SVG Icon
+        </svg>`;
 
-    const panelHeaderTitle = ''; // Removed title text
-    const panelBackgroundColor = '#f8f9fa'; // Light background for panel
-    const panelHeaderColor = '#e9ecef'; // Slightly different header bg
-    const defaultPanelWidth = '400px'; // Default width
-    const defaultPanelHeight = '500px'; // Default height
-    const expandedPanelWidth = '80vw';   // Expanded width (e.g., 80% of viewport width)
-    const expandedPanelHeight = '80vh';  // Expanded height (e.g., 80% of viewport height)
-    const sendButtonText = 'Send'; // Changed button text (not used, using icon)
+    const panelHeaderTitle = ''; // Can be set dynamically later
+    const panelBackgroundColor = '#f8f9fa';
+    const panelHeaderColor = '#e9ecef';
+    const defaultPanelWidth = '400px';
+    const defaultPanelHeight = '550px'; // Slightly taller default
+    const expandedPanelWidth = '85vw';  // Wider expansion
+    const expandedPanelHeight = '90vh'; // **Increased expanded height**
+    const sidebarWidth = '300px';      // Width for citation sidebar
     const inputPlaceholder = 'Type your message...';
     const sendButtonIcon = `
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20px" height="20px">
           <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/>
-        </svg>`; // Send icon SVG
+        </svg>`;
+     const shrinkIcon = `
+        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16" width="18px" height="18px">
+          <path fill-rule="evenodd" d="M5.5 2.5a.5.5 0 0 0-.5.5v4a.5.5 0 0 1-1 0v-4a1.5 1.5 0 0 1 1.5-1.5h4a.5.5 0 0 1 0 1h-4zM11 9.5a.5.5 0 0 1-.5.5h-4a.5.5 0 0 1 0-1h4a.5.5 0 0 1 .5.5zm-5.5 4a.5.5 0 0 1 .5-.5h4a.5.5 0 0 1 0 1h-4a.5.5 0 0 1-.5-.5zm10-4a.5.5 0 0 0-.5-.5h-4a.5.5 0 0 0 0 1h4a.5.5 0 0 0 .5-.5z"/>
+          <path d="M3.5 1a.5.5 0 0 0-.5.5v13a.5.5 0 0 0 1 0v-13a.5.5 0 0 0-.5-.5z"/>
+        </svg>`; // Icon for shrinking
 
-    // --- Updated Popular Questions ---
+    // --- Mock LLM Response Data (Simulating External Load) ---
+    const mockLLMResponse = {
+        queryContext: "fix up backyard ideas", // Example context, can be ignored for now
+        article: {
+            title: "54 Backyard Ideas to Upgrade Your Outdoor Space",
+            source: {
+                text: "thespruce.com › backyard ideas",
+                url: "#" // Placeholder link
+            },
+            bannerImages: [
+                "https://placehold.co/600x250/e9ecef/adb5bd?text=Backyard+Inspiration+1",
+                "https://placehold.co/600x200/dee2e6/6c757d?text=Backyard+Detail"
+            ],
+            // Content in Markdown format
+            bodyMarkdown: `
+Transforming your backyard into a welcoming and functional space can be both enjoyable and rewarding. Here are several ideas to enhance your outdoor area:
+
+1.  **Create a Cozy Seating Area:** Arrange comfortable outdoor furniture, such as sofas, chairs, or hammocks, to establish a relaxing spot for reading or entertaining guests. Adding colorful cushions and throw pillows can infuse personality and comfort.
+2.  **Incorporate Outdoor Lighting:** Enhance ambiance and extend usability into the evenings by installing string lights, lanterns, or solar-powered fixtures. Soft, warm lighting can create a magical atmosphere.
+3.  **Add a Fire Pit:** Introducing a fire pit provides a focal point for gatherings and allows for enjoyable evenings outdoors, even when it's cooler.
+
+Remember to consider your budget and the specific needs of your space when planning your backyard upgrade. Even small changes can make a big difference!
+            `
+        },
+        citations: [
+            { title: "The Spruce: 43 Backyard Ideas on a Budget", url: "#", snippet: "August 25, 2024 - Set up a hammock and add pillows, string lighting in trees, blankets..." },
+            { title: "Family Handyman: 50 Brilliant Ways to Spruce Up", url: "#", snippet: "October 6, 2024 - Make Your Own Cornhole Game. Cornhole boards are a classic backyard game..." },
+            { title: "Better Homes & Gardens: 50 Stunning Ideas", url: "#", snippet: "May 7, 2024 - Whether you're looking for patio suggestions, outdoor dining, or a fun space..." },
+            { title: "Extra Space Storage: DIY Guide on a Budget", url: "#", snippet: "September 24, 2024 - Give your outdoor living space a facelift with a calming meditation space..." }
+        ]
+    };
+
+    // --- Popular Questions ---
     const popularQuestions = [
         { text: 'What monitor is best for competitive FPS?', query: 'best monitor for competitive FPS' },
         { text: 'How do I choose the right gaming chair?', query: 'how to choose gaming chair' },
-        { text: 'Mechanical vs Membrane keyboards for gaming?', query: 'mechanical vs membrane keyboards gaming' },
+        { text: 'What are some great ways to fix up a backyard?', query: 'fix up backyard ideas' }, // Added example
         { text: 'Where can I find PS5 stock updates?', query: 'PS5 stock updates' },
         { text: "What's the return policy on peripherals?", query: 'return policy peripherals' }
     ];
 
-    // --- Sample Autocomplete Data ---
-    const autocompleteSuggestions = [
-        "How do I reset my password?",
-        "What are your pricing plans?",
-        "How can I contact support?",
-        "Where is my invoice?",
-        "How to upgrade my account?",
-        "Can I get a demo?",
-        "What features do you offer?",
-        "best monitor for competitive FPS",
-        "how to choose gaming chair",
-        "mechanical vs membrane keyboards gaming",
-        "PS5 stock updates",
-        "return policy peripherals"
-    ];
+    // --- Autocomplete Data ---
+    const autocompleteSuggestions = [ /* ... same as before ... */ ];
 
     // --- State Variables ---
-    let isExpanded = false; // Track panel expanded state
-    let hasChatStarted = false; // Track if a message has been sent or question clicked
+    let isExpanded = false;
+    let hasChatStarted = false;
 
     // --- CSS Styles ---
     const styles = `
@@ -75,41 +99,20 @@
             --chat-widget-default-width: ${defaultPanelWidth};
             --chat-widget-default-height: ${defaultPanelHeight};
             --chat-widget-expanded-width: ${expandedPanelWidth};
-            --chat-widget-expanded-height: ${expandedPanelHeight};
+            --chat-widget-expanded-height: ${expandedPanelHeight}; /* Taller */
+            --chat-widget-sidebar-width: ${sidebarWidth};
             --chat-widget-icon-color: ${chatIconColor};
             --chat-widget-panel-bg: ${panelBackgroundColor};
             --chat-widget-panel-header-bg: ${panelHeaderColor};
         }
 
-        #chat-widget-container {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
-
-        #chat-widget-icon {
-            background-color: var(--chat-widget-icon-color);
-            color: white;
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: transform 0.2s ease;
-        }
-
-        #chat-widget-icon:hover {
-            transform: scale(1.1);
-        }
+        #chat-widget-container { /* ... same as before ... */ position: fixed; bottom: 20px; right: 20px; z-index: 1000; }
+        #chat-widget-icon { /* ... same as before ... */ background-color: var(--chat-widget-icon-color); color: white; width: 56px; height: 56px; border-radius: 50%; border: none; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; transition: transform 0.2s ease; }
+        #chat-widget-icon:hover { transform: scale(1.1); }
 
         #chat-widget-panel {
             position: absolute;
-            bottom: 70px; /* Position above the icon */
+            bottom: 70px;
             right: 0;
             width: var(--chat-widget-default-width);
             height: var(--chat-widget-default-height);
@@ -117,247 +120,166 @@
             background-color: var(--chat-widget-panel-bg);
             border-radius: 10px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            overflow: hidden; /* IMPORTANT: Prevent content overflow before expansion */
-            display: none; /* Hidden by default */
-            flex-direction: column; /* Use flexbox for layout */
+            overflow: hidden; /* Prevent overflow before layout adjusts */
+            display: none;
+            flex-direction: column; /* Main axis: top to bottom */
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-            font-size: 15px; /* Base font size for rem units */
-            transition: width 0.3s ease, height 0.3s ease, bottom 0.3s ease, right 0.3s ease; /* Smooth transition */
+            font-size: 15px;
+            transition: width 0.3s ease, height 0.3s ease, bottom 0.3s ease, right 0.3s ease;
         }
 
-        #chat-widget-panel.open {
-            display: flex; /* Use flex display */
-        }
+        #chat-widget-panel.open { display: flex; }
 
-        /* Styles for the expanded panel */
         #chat-widget-panel.expanded {
             width: var(--chat-widget-expanded-width);
             height: var(--chat-widget-expanded-height);
             max-height: var(--chat-widget-expanded-height);
-            bottom: 20px; /* Adjust position */
-            right: 20px;  /* Adjust position */
-        }
-
-        /* Hide popular questions when expanded */
-        #chat-widget-panel.expanded .chat-widget-popular-questions-container {
-             display: none;
+            bottom: 20px;
+            right: 20px;
         }
 
         .chat-widget-header {
             background-color: var(--chat-widget-panel-header-bg);
-            padding: 15px 20px;
+            padding: 10px 15px; /* Slightly reduced padding */
             border-bottom: 1px solid #dee2e6;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-shrink: 0; /* Prevent header shrinking */
-        }
-
-        .chat-widget-header img {
-            height: 24px;
-            margin-right: 10px;
-        }
-
-        .chat-widget-header h3 {
-            margin: 0;
-            font-size: 1.1em;
-            color: #333;
-            white-space: nowrap; /* Prevent title wrap */
-            overflow: hidden;     /* Hide overflow */
-            text-overflow: ellipsis; /* Add ellipsis */
-        }
-
-         .chat-widget-close-btn {
-             background: none;
-             border: none;
-             font-size: 1.5em;
-             cursor: pointer;
-             color: #6c757d;
-             padding: 0 5px;
-         }
-         .chat-widget-close-btn:hover {
-             color: #333;
-         }
-
-        .chat-widget-body {
-            flex-grow: 1; /* Takes available vertical space */
-            overflow-y: auto; /* Scroll if content overflows */
-            padding: 15px 20px; /* Padding for content inside body */
-            background-color: #fff; /* White background for message area */
-            display: flex; /* Use flex to help manage children like message area */
-            flex-direction: column; /* Stack children vertically */
-            min-height: 0; /* CRUCIAL for flex-grow and overflow-y to work correctly */
-        }
-
-        /* Container specifically for popular questions (initially visible) */
-        .chat-widget-popular-questions-container {
-            padding-bottom: 15px; /* Space below questions */
-             border-bottom: 1px solid #eee; /* Separator */
-             margin-bottom: 15px; /* Space below separator */
-        }
-
-         .chat-widget-popular-questions-container h4 {
-             font-size: 0.75rem;
-             color: #6c757d;
-             margin: 0 0 10px 0;
-             text-transform: uppercase;
-             font-weight: normal;
-             padding: 0; /* Reset padding, rely on body padding */
-             letter-spacing: 0.5px;
-         }
-
-        .chat-widget-questions {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .chat-widget-questions li a {
-            display: flex;
-            align-items: center;
-            padding: 10px 0; /* Use body padding */
-            color: #333;
-            text-decoration: none;
-            font-size: 0.95rem;
-            border-bottom: 1px solid #eee;
-            transition: background-color 0.2s ease;
-            gap: 8px;
-        }
-         .chat-widget-questions li:last-child a {
-              border-bottom: none;
-          }
-
-        .chat-widget-questions li a:hover {
-            background-color: #e9ecef; /* Needs margin/padding adjustment to look good */
-             /* Consider adding slight horizontal padding on hover if needed */
-             /* margin: 0 -20px; padding: 10px 20px; */
-        }
-
-        .chat-widget-question-icon {
-            width: 16px;
-            height: 16px;
-            fill: #6c757d;
             flex-shrink: 0;
         }
+        .chat-widget-header-left { display: flex; align-items: center; overflow: hidden; /* Prevent title push */ }
+        .chat-widget-header img { height: 24px; margin-right: 10px; flex-shrink: 0; }
+        .chat-widget-header h3 { margin: 0; font-size: 1.1em; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-        /* Message Area - always present, grows */
-        #chat-widget-messages {
-             flex-grow: 1; /* Fill available space within body */
-             /* Styles for individual messages */
-             line-height: 1.5;
-             margin-bottom: 10px; /* Space above footer */
-             word-wrap: break-word;
+        .chat-widget-header-right { display: flex; align-items: center; gap: 5px; /* Space between icons */ }
+        .chat-widget-header-btn { /* Base style for header buttons */
+             background: none; border: none; font-size: 1.5em; cursor: pointer; color: #6c757d; padding: 0 5px; line-height: 1; display: flex; align-items: center; justify-content: center;
+        }
+        .chat-widget-header-btn:hover { color: #333; }
+
+        #chat-widget-shrink-btn {
+            display: none; /* Hidden by default */
+            font-size: 1.2em; /* Adjust size if needed */
+        }
+        #chat-widget-panel.expanded #chat-widget-shrink-btn {
+            display: flex; /* Show only when expanded */
         }
 
-        #chat-widget-messages p {
+        .chat-widget-body {
+            flex-grow: 1;
+            overflow: hidden; /* IMPORTANT: Hide overflow here, children will scroll */
+            background-color: #fff;
+            display: flex; /* Default to column for initial view */
+            flex-direction: column;
+            min-height: 0; /* Crucial for flex + overflow */
+        }
+        /* Styles for when sidebar is active */
+        .chat-widget-body.has-sidebar {
+            flex-direction: row; /* Switch to row layout */
+        }
+
+        /* Initial content (questions) container */
+        .chat-widget-popular-questions-container {
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 15px;
+            flex-shrink: 0; /* Don't let it shrink */
+        }
+         #chat-widget-panel.expanded .chat-widget-popular-questions-container {
+             display: none; /* Hide questions when expanded */
+         }
+        .chat-widget-popular-questions-container h4 { /* ... styles ... */ font-size: 0.75rem; color: #6c757d; margin: 0 0 10px 0; text-transform: uppercase; font-weight: normal; padding: 0; letter-spacing: 0.5px; }
+        .chat-widget-questions { /* ... styles ... */ list-style: none; padding: 0; margin: 0; }
+        .chat-widget-questions li a { /* ... styles ... */ display: flex; align-items: center; padding: 10px 0; color: #333; text-decoration: none; font-size: 0.95rem; border-bottom: 1px solid #eee; transition: background-color 0.2s ease; gap: 8px; }
+        .chat-widget-questions li:last-child a { border-bottom: none; }
+        .chat-widget-questions li a:hover { background-color: #e9ecef; /* margin: 0 -20px; padding: 10px 20px; */ }
+        .chat-widget-question-icon { /* ... styles ... */ width: 16px; height: 16px; fill: #6c757d; flex-shrink: 0; }
+
+        /* Main Content Area (Left/Center Column when expanded) */
+        #chat-widget-main-content {
+             flex-grow: 1; /* Takes remaining space */
+             overflow-y: auto; /* Scrollable */
+             padding: 20px 30px;
+             display: flex; /* Allow messages to grow */
+             flex-direction: column;
+             background-color: #fff; /* Ensure white background */
+        }
+         /* Default view only has messages in the main content area effectively */
+         /* When expanded, it contains article + messages */
+
+        /* Area for generated article-like content */
+        #chat-widget-article-area {
+            margin-bottom: 20px; /* Space between article and chat messages */
+            line-height: 1.6;
+        }
+        #chat-widget-article-area h2 { font-size: 1.4rem; margin-top: 0; margin-bottom: 0.5rem; color: #212529; }
+        #chat-widget-article-area .source-link { font-size: 0.9rem; color: #0d6efd; text-decoration: none; display: block; margin-bottom: 1rem; }
+        #chat-widget-article-area .source-link:hover { text-decoration: underline;}
+        #chat-widget-article-area img.banner { max-width: 100%; height: auto; border-radius: 8px; margin: 1rem 0; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        #chat-widget-article-area p, #chat-widget-article-area ol, #chat-widget-article-area ul { font-size: 1rem; margin-bottom: 1rem; color: #495057; }
+        #chat-widget-article-area ol, #chat-widget-article-area ul { padding-left: 25px; }
+        #chat-widget-article-area li { margin-bottom: 0.5rem; }
+        #chat-widget-article-area strong { color: #343a40; }
+
+        /* Message Area - always present */
+        #chat-widget-messages {
+            flex-grow: 1; /* Allows it to push footer down */
+            /* The rest of the message styles remain similar */
+            line-height: 1.5;
+            word-wrap: break-word;
+            padding-bottom: 10px; /* Space above footer visual */
+            /* Note: User messages might now be directly in main-content, adjust if needed */
+            /* Or keep messages here and style differently */
+        }
+        #chat-widget-main-content > p.user-message { /* Style for user message directly in main content */
             font-size: 1rem;
-            margin: 0 0 0.8em 0;
-            max-width: 85%; /* Prevent messages taking full width */
+            margin: 0 0 1em 15%; /* Indent from left */
+            max-width: 85%;
             padding: 8px 12px;
             border-radius: 15px;
-            background-color: #e9ecef; /* Default message bg */
-            clear: both; /* Ensure floats don't interfere */
-            display: block; /* Or inline-block */
-        }
-        #chat-widget-messages p.user-message {
             background-color: #007bff;
             color: white;
-            float: right; /* Align user messages to the right */
-            margin-left: 15%; /* Push from left */
-            text-align: left; /* Keep text left-aligned within the bubble */
+            float: right;
+            clear: both; /* Ensure it clears previous floats */
+            text-align: left;
+            display: block; /* Ensure block display */
         }
-        #chat-widget-messages p.bot-message {
-            background-color: #e9ecef;
-            color: #333;
-            float: left; /* Align bot messages to the left */
-            margin-right: 15%; /* Push from right */
-        }
-        #chat-widget-messages p.thinking-message {
-            font-style: italic;
-            color: #6c757d;
-            background-color: transparent;
-            float: left;
-            margin-right: 15%;
-            padding: 5px 0;
+        #chat-widget-messages p { /* Bot/Thinking messages remain in #chat-widget-messages */
+             /* ... same float/clear styles as before ... */
         }
 
-         /* Clearfix for floats within messages div */
-        #chat-widget-messages::after {
-            content: "";
-            display: table;
-            clear: both;
+        /* Citations Sidebar (Right Column when expanded) */
+        #chat-widget-citations-sidebar {
+            width: var(--chat-widget-sidebar-width);
+            flex-shrink: 0;
+            background-color: #f8f9fa; /* Slightly different background */
+            border-left: 1px solid #dee2e6;
+            padding: 20px 15px;
+            overflow-y: auto; /* Scrollable sidebar */
+            display: none; /* Hidden by default, shown via JS/CSS */
         }
+         #chat-widget-panel.expanded .chat-widget-body.has-sidebar #chat-widget-citations-sidebar {
+             display: block; /* Show when expanded and sidebar is active */
+         }
+        #chat-widget-citations-sidebar h4 { font-size: 0.9rem; color: #333; margin-top: 0; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 0.5px; }
+        #chat-widget-citations-sidebar ul { list-style: none; padding: 0; margin: 0; }
+        #chat-widget-citations-sidebar li { margin-bottom: 15px; font-size: 0.85rem; }
+        #chat-widget-citations-sidebar li a { color: #0056b3; text-decoration: none; font-weight: 500; display: block; margin-bottom: 3px; }
+        #chat-widget-citations-sidebar li a:hover { text-decoration: underline; }
+        #chat-widget-citations-sidebar li span { color: #555; display: block; font-size: 0.8rem; line-height: 1.4; }
 
-        /* Suggestions container positioning relative to footer */
-        #chat-widget-suggestions {
-            position: absolute;
-            bottom: 100%;
-            left: 15px;
-            right: 15px;
-            background-color: #fff;
-            border: 1px solid #dee2e6;
-            border-bottom: none;
-            border-radius: 8px 8px 0 0;
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
-            max-height: 180px;
-            overflow-y: auto;
-            z-index: 1001;
-            display: none;
-            margin-bottom: 1px;
-        }
-
+        /* Suggestions */
+        #chat-widget-suggestions { /* ... same as before ... */ position: absolute; bottom: 100%; left: 15px; right: 15px; background-color: #fff; border: 1px solid #dee2e6; border-bottom: none; border-radius: 8px 8px 0 0; box-shadow: 0 -4px 10px rgba(0,0,0,0.1); max-height: 180px; overflow-y: auto; z-index: 1001; display: none; margin-bottom: 1px; }
         #chat-widget-suggestions ul { list-style: none; padding: 0; margin: 0; }
         #chat-widget-suggestions li { padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #eee; font-size: 0.9rem; color: #333; }
         #chat-widget-suggestions li:last-child { border-bottom: none; }
         #chat-widget-suggestions li:hover { background-color: #f8f9fa; }
 
-        .chat-widget-footer {
-            position: relative; /* Needed for absolute positioning of suggestions */
-            padding: 10px 15px;
-            border-top: 1px solid #dee2e6;
-            background-color: var(--chat-widget-panel-bg);
-            display: flex;
-            align-items: flex-end;
-            flex-shrink: 0; /* Prevent footer shrinking */
-            gap: 8px;
-        }
-
-        #chat-widget-input {
-            flex-grow: 1;
-            border: 1px solid #ced4da;
-            border-radius: 18px;
-            padding: 10px 18px;
-            font-size: 1rem;
-            resize: none;
-            min-height: 40px; /* Adjusted min height */
-            max-height: 120px; /* Adjusted max height */
-            height: 40px; /* Initial height */
-            box-sizing: border-box;
-            line-height: 1.4;
-            overflow-y: auto;
-        }
-         #chat-widget-input:focus {
-             outline: none;
-             border-color: #86b7fe;
-             box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25);
-         }
-
-        #chat-widget-send-btn {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            padding: 0;
-            cursor: pointer;
-            transition: background-color 0.2s ease;
-            flex-shrink: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
+        /* Footer */
+        .chat-widget-footer { /* ... same as before ... */ position: relative; padding: 10px 15px; border-top: 1px solid #dee2e6; background-color: var(--chat-widget-panel-bg); display: flex; align-items: flex-end; flex-shrink: 0; gap: 8px; }
+        #chat-widget-input { /* ... same as before ... */ flex-grow: 1; border: 1px solid #ced4da; border-radius: 18px; padding: 10px 18px; font-size: 1rem; resize: none; min-height: 40px; max-height: 120px; height: 40px; box-sizing: border-box; line-height: 1.4; overflow-y: auto; }
+        #chat-widget-input:focus { outline: none; border-color: #86b7fe; box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, .25); }
+        #chat-widget-send-btn { /* ... same as before ... */ background-color: #007bff; color: white; border: none; border-radius: 50%; width: 36px; height: 36px; padding: 0; cursor: pointer; transition: background-color 0.2s ease; flex-shrink: 0; display: flex; justify-content: center; align-items: center; }
         #chat-widget-send-btn:hover { background-color: #0056b3; }
         #chat-widget-send-btn:disabled { background-color: #e0e0e0; cursor: not-allowed; }
         #chat-widget-send-btn svg { display: block; }
@@ -365,45 +287,231 @@
 
     // --- Helper Functions ---
 
-    // Adds a message to the chat display
-    function addMessage(text, type = 'bot') { // type can be 'user', 'bot', 'thinking'
-        const messagesArea = document.getElementById('chat-widget-messages');
-        if (!messagesArea) return;
-
+    function addMessage(text, type = 'bot', containerId = 'chat-widget-messages') {
+        const container = document.getElementById(containerId);
+        if (!container) return null; // Return null if container not found
         const messageElement = document.createElement('p');
         messageElement.textContent = text;
-        messageElement.classList.add(`${type}-message`); // Add class based on type
-
-        messagesArea.appendChild(messageElement);
-        // Scroll to the bottom
-        messagesArea.scrollTop = messagesArea.scrollHeight;
-        return messageElement; // Return the element if we need to remove it (e.g., 'thinking' message)
+        messageElement.classList.add(`${type}-message`);
+        container.appendChild(messageElement);
+        // Scroll the specific container or the main content area
+        const scrollTarget = containerId === 'chat-widget-messages' ? document.getElementById('chat-widget-main-content') : container;
+        if(scrollTarget) scrollTarget.scrollTop = scrollTarget.scrollHeight;
+        return messageElement; // Return the created element
     }
 
-    // Simulates getting a response
-    function simulateBotResponse(query) {
-       const thinkingMsg = addMessage('Thinking...', 'thinking');
+    // Basic Markdown to HTML converter
+    function markdownToHtml(md) {
+        if (!md) return '';
+        let html = md.trim();
+        // **bold** to <strong>
+        html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        // 1. list items to <li>
+        html = html.replace(/^(\d+)\.\s+(.*)/gm, '<li>$2</li>');
+        // * list items to <li>
+        html = html.replace(/^[\*\-]\s+(.*)/gm, '<li>$2</li>');
+        // Wrap consecutive <li> in <ol> or <ul>
+        html = html.replace(/^(<li>.*<\/li>\s*)+/gm, (match) => {
+            const isOrdered = /<li>/.test(match.substring(0, match.indexOf('</li>')+5)) && match.trim().startsWith('<li>'); // Rough check
+            const tag = isOrdered && /^\d+\./.test(md.substring(md.indexOf(match.split('\n')[0].replace(/<\/?li>/g, '').trim()))) ? 'ol' : 'ul';
+            return `<${tag}>${match.trim()}</${tag}>`;
+        });
+        // Paragraphs (split by double newline, wrap non-list lines)
+        html = html.split(/\n\s*\n/).map(paragraph => {
+            if (!paragraph.trim().startsWith('<ul') && !paragraph.trim().startsWith('<ol') && !paragraph.trim().startsWith('<li') && !paragraph.trim().startsWith('<h') && paragraph.trim().length > 0) {
+                return `<p>${paragraph.trim().replace(/\n/g, '<br>')}</p>`; // Use <br> for single newlines within paragraph
+            }
+            return paragraph.trim();
+        }).join('\n');
 
-        setTimeout(() => {
-            if(thinkingMsg) thinkingMsg.remove(); // Remove "Thinking..." message
-            const response = `This is a simulated response for: "${query}". In a real application, this would be generated based on your query and might include more details, formatting, or citations.`;
-            addMessage(response, 'bot');
+        // Handle potential wrapping issues from list processing (ensure <ol>/<ul> are block)
+         html = html.replace(/<\/p>\n?<([ou]l)>/g, '</p><$1>'); // Fix paragraphs ending before lists
+         html = html.replace(/<\/[ou]l>\n?<p>/g, '</$1><p>'); // Fix lists ending before paragraphs
+
+        return html;
+    }
+
+    // **UPDATED to use mock JSON data and reposition user query**
+    function simulateBotResponse(userQueryText) {
+       const mainContent = document.getElementById('chat-widget-main-content');
+       const sidebar = document.getElementById('chat-widget-citations-sidebar');
+       const messagesArea = document.getElementById('chat-widget-messages'); // Still used for bot msgs
+
+       if (!mainContent || !sidebar || !messagesArea) return;
+
+       // --- Clear previous dynamic content ---
+       const existingArticle = document.getElementById('chat-widget-article-area');
+       if (existingArticle) existingArticle.remove();
+       messagesArea.innerHTML = ''; // Clear previous bot messages/thinking
+       sidebar.innerHTML = ''; // Clear previous citations
+       // Clear previous user messages directly added to mainContent (if any)
+       mainContent.querySelectorAll('p.user-message').forEach(el => el.remove());
+       // --- End Clear ---
+
+       // 1. Add User Query to Main Content FIRST
+       const userMessageElement = document.createElement('p');
+       userMessageElement.textContent = userQueryText;
+       userMessageElement.className = 'user-message';
+       mainContent.appendChild(userMessageElement); // Add user query above everything else
+       // Scroll main content down slightly past user message
+       mainContent.scrollTop = mainContent.scrollHeight;
+
+       // 2. Add Thinking Message (to messagesArea below article placeholder)
+       const thinkingMsg = addMessage('Thinking...', 'thinking', 'chat-widget-messages'); // Add to messages area
+
+       // Simulate fetching data
+       setTimeout(() => {
+            if(thinkingMsg) thinkingMsg.remove(); // Remove thinking message
+
+            // Assume we fetched 'mockLLMResponse' based on userQueryText
+            const responseData = mockLLMResponse; // Using the global mock data for now
+
+            // 3. Create and Insert Article Content (using mock data)
+            const articleArea = document.createElement('div');
+            articleArea.id = 'chat-widget-article-area';
+
+            // Build article HTML from JSON
+            let articleHtml = '';
+            if (responseData.article) {
+                const article = responseData.article;
+                articleHtml += `<h2>${article.title || ''}</h2>`;
+                if (article.source && article.source.text && article.source.url) {
+                    articleHtml += `<a href="${article.source.url}" target="_blank" class="source-link">${article.source.text}</a>`;
+                }
+                // Add the FIRST banner image here, if it exists
+                if (article.bannerImages && article.bannerImages.length > 0) {
+                     articleHtml += `<img src="${article.bannerImages[0]}" alt="Article Banner Top" class="banner">`;
+                }
+                /* REMOVED BANNER LOOP
+                if (article.bannerImages && article.bannerImages.length > 0) {
+                    article.bannerImages.forEach(imgUrl => {
+                         // Simple banner determination based on index or add specific class/size later
+                         const bannerClass = article.bannerImages.indexOf(imgUrl) === 0 ? 'banner' : 'banner detail'; // Example
+                         articleHtml += `<img src="${imgUrl}" alt="Article Banner" class="${bannerClass}">`;
+                    });
+                }
+                */
+                // Add the main content body converted from Markdown
+                articleHtml += markdownToHtml(article.bodyMarkdown); // Convert Markdown body
+
+                // Add the LAST banner image here, if there are more than one
+                if (article.bannerImages && article.bannerImages.length > 1) {
+                    // Wrap in a paragraph for spacing
+                    articleHtml += `<p><img src="${article.bannerImages[article.bannerImages.length - 1]}" alt="Article Banner Bottom" class="banner detail"></p>`;
+                }
+            }
+            articleArea.innerHTML = articleHtml;
+
+            // Insert the article content *after* the user message, but before the messages area
+            mainContent.appendChild(articleArea); // Append article to main content
+
+            // 4. Create and Insert Citations (using mock data)
+            let citationsHtml = '<h4>Citations</h4>';
+            if (responseData.citations && responseData.citations.length > 0) {
+                citationsHtml += '<ul>';
+                responseData.citations.forEach(citation => {
+                    citationsHtml += `
+                        <li>
+                            <a href="${citation.url || '#'}" target="_blank">${citation.title || 'Source'}</a>
+                            <span>${citation.snippet || ''}</span>
+                        </li>`;
+                });
+                citationsHtml += '</ul>';
+            } else {
+                 citationsHtml += '<p>No citations available.</p>'; // Handle no citations
+            }
+            sidebar.innerHTML = citationsHtml;
+
+            // 5. Add any final bot message (optional) - Added to messagesArea
+            // addMessage(`Here are some ideas for "${userQueryText}".`, 'bot', 'chat-widget-messages');
+
+             // Scroll main content area to the top of the *article* after loading
+             if (articleArea) {
+                 mainContent.scrollTop = articleArea.offsetTop - 15; // Scroll to just above the article
+             } else {
+                 mainContent.scrollTop = 0; // Fallback scroll to top
+             }
+
         }, 1500); // Simulate network delay
     }
 
+    // --- Panel State Management Functions ---
+
+    function expandPanel() {
+        const panel = document.getElementById('chat-widget-panel');
+        const body = panel.querySelector('.chat-widget-body');
+        const popularQuestionsContainer = panel.querySelector('.chat-widget-popular-questions-container');
+        let sidebar = document.getElementById('chat-widget-citations-sidebar');
+
+        if (!isExpanded) {
+            panel.classList.add('expanded');
+            isExpanded = true;
+
+            // Hide popular questions
+            if(popularQuestionsContainer) popularQuestionsContainer.style.display = 'none';
+
+            // Create sidebar if it doesn't exist
+            if (!sidebar) {
+                sidebar = document.createElement('div');
+                sidebar.id = 'chat-widget-citations-sidebar';
+                body.appendChild(sidebar); // Append to body
+            }
+            sidebar.style.display = 'block'; // Ensure it's visible
+            body.classList.add('has-sidebar'); // Activate flex row layout
+        }
+    }
+
+    function shrinkPanel() {
+        const panel = document.getElementById('chat-widget-panel');
+        const body = panel.querySelector('.chat-widget-body');
+        const sidebar = document.getElementById('chat-widget-citations-sidebar');
+        const popularQuestionsContainer = panel.querySelector('.chat-widget-popular-questions-container');
+
+
+        if (isExpanded) {
+            panel.classList.remove('expanded');
+            isExpanded = false;
+
+            // Hide sidebar and remove layout class
+            if(sidebar) sidebar.style.display = 'none';
+            body.classList.remove('has-sidebar');
+
+            // Show popular questions ONLY if chat hasn't really started
+            // (Or decide if you always want them back when shrunk)
+            if (!hasChatStarted && popularQuestionsContainer) {
+                 popularQuestionsContainer.style.display = '';
+            }
+
+            // Remove any dynamically added article content? Optional.
+            // const articleArea = document.getElementById('chat-widget-article-area');
+            // if (articleArea) articleArea.remove();
+        }
+    }
+
+    function togglePanel() {
+        const panel = document.getElementById('chat-widget-panel');
+        const chatInput = document.getElementById('chat-widget-input');
+
+        if (panel.classList.contains('open')) {
+            panel.classList.remove('open');
+            // Don't automatically shrink when closing, keep the state
+        } else {
+            panel.classList.add('open');
+            // If chat has started and it's not already expanded, expand it.
+            if (hasChatStarted && !isExpanded) {
+                 expandPanel();
+            }
+             // Auto-focus input when opened
+             setTimeout(() => chatInput.focus(), 50);
+        }
+    }
 
     // --- Dynamic Element Creation ---
     function createWidget() {
         // 1. Inject CSS
         const styleSheet = document.getElementById('chat-widget-styles');
-        if (styleSheet) {
-            styleSheet.textContent = styles;
-        } else {
-            console.error('Chat Widget Error: Could not find #chat-widget-styles tag.');
-            const styleEl = document.createElement('style');
-            styleEl.textContent = styles;
-            document.head.appendChild(styleEl);
-        }
+        if (styleSheet) styleSheet.textContent = styles;
+        else { /* ... error handling or create style tag ... */ }
 
         // 2. Create main container
         const container = document.createElement('div');
@@ -422,103 +530,103 @@
         // 5. Create panel header
         const header = document.createElement('div');
         header.className = 'chat-widget-header';
-        const headerTitle = document.createElement('h3');
-        headerTitle.textContent = panelHeaderTitle;
 
+        const headerLeft = document.createElement('div'); // Group logo & title
+        headerLeft.className = 'chat-widget-header-left';
         const logoImg = document.createElement('img');
         logoImg.src = 'https://ad.net/wp-content/themes/wp-adnet/assets/images/adnet.svg';
         logoImg.alt = 'Logo';
+        const headerTitle = document.createElement('h3');
+        headerTitle.id = 'chat-widget-header-title'; // ID for potential updates
+        headerTitle.textContent = panelHeaderTitle;
+        headerLeft.appendChild(logoImg);
+        headerLeft.appendChild(headerTitle);
 
-        const logoTitleContainer = document.createElement('div');
-        logoTitleContainer.style.display = 'flex';
-        logoTitleContainer.style.alignItems = 'center';
-        logoTitleContainer.appendChild(logoImg);
-        logoTitleContainer.appendChild(headerTitle);
-
+        const headerRight = document.createElement('div'); // Group buttons
+        headerRight.className = 'chat-widget-header-right';
+        const shrinkButton = document.createElement('button'); // **Shrink Button**
+        shrinkButton.id = 'chat-widget-shrink-btn';
+        shrinkButton.className = 'chat-widget-header-btn';
+        shrinkButton.innerHTML = shrinkIcon;
+        shrinkButton.setAttribute('aria-label', 'Shrink Chat');
         const closeButton = document.createElement('button');
-        closeButton.className = 'chat-widget-close-btn';
+        closeButton.id = 'chat-widget-close-btn';
+        closeButton.className = 'chat-widget-header-btn';
         closeButton.innerHTML = '×';
         closeButton.setAttribute('aria-label', 'Close Chat');
+        headerRight.appendChild(shrinkButton); // Add shrink button
+        headerRight.appendChild(closeButton);
 
-        header.appendChild(logoTitleContainer);
-        header.appendChild(closeButton);
+        header.appendChild(headerLeft);
+        header.appendChild(headerRight);
 
-        // 6. Create panel body (consistent structure)
+        // 6. Create panel body
         const body = document.createElement('div');
         body.className = 'chat-widget-body';
 
-        // 6a. Create Popular Questions Container (initially visible)
+        // 6a. Create Popular Questions Container
         const popularQuestionsContainer = document.createElement('div');
         popularQuestionsContainer.className = 'chat-widget-popular-questions-container';
-
         const questionsTitle = document.createElement('h4');
         questionsTitle.textContent = 'Popular Questions';
-
         const questionList = document.createElement('ul');
         questionList.className = 'chat-widget-questions';
         const questionIconSvg = `
             <svg class="chat-widget-question-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor">
-                <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-                <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z"/>
-            </svg>`;
-
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.064.293.006.399.287.47l.45.083.082.38-.229.287-.079.032c-.26.107-.64.026-1.153-.197l-.424-.187-.073.38.23.287.073.032c.417.178.92.22 1.352.22.417 0 .84-.03 1.148-.131l.424-.187.073-.38-.23-.287-.073-.032c-.276-.117-.502-.13-.617-.291l-.569-2.68c-.074-.34.042-.447.288-.47l.45-.083.082-.38-.229-.287zm1.57 4.734c.03-.147.03-.294.03-.431 0-.21-.04-.414-.12-.608l-.24-.63c-.18-.47-.51-.82-.98-1.06l-.27-.135c-.23-.115-.39-.29-.48-.51l-.08-.18c-.08-.19-.11-.39-.11-.59 0-.19.03-.37.08-.54l.09-.28c.17-.54.57-1 1.14-1.23l.29-.115c.26-.1.54-.14.82-.14.29 0 .57.04.83.13l.29.115c.57.23.97.69 1.14 1.23l.09.28c.05.17.08.35.08.54 0 .2-.03.4-.11.59l-.08.18c-.09.22-.25.395-.48.51l-.27.135c-.47.24-.8.59-1.06.98l-.24.63c-.08.194-.12.398-.12.608 0 .137 0 .284.03.431z"/>
+            </svg>`; // Simple question mark icon
         popularQuestions.forEach(q => {
             const listItem = document.createElement('li');
             const link = document.createElement('a');
-            link.href = '#'; // Prevent page jump
-            link.textContent = q.text;
+            link.href = '#';
+            link.innerHTML = questionIconSvg + `<span>${q.text}</span>`; // Wrap text in span
             link.dataset.query = q.query;
-            link.innerHTML = questionIconSvg + link.innerHTML;
-
             link.addEventListener('click', (event) => {
                  event.preventDefault();
                  const query = link.dataset.query || q.text;
-                 addMessage(query, 'user'); // Add question as user message
-                 expandAndRespond(query); // Expand and get bot response
-                 // Optionally clear input and disable send if needed
-                 const chatInput = document.getElementById('chat-widget-input');
-                 const sendButton = document.getElementById('chat-widget-send-btn');
-                 chatInput.value = '';
-                 sendButton.disabled = true;
+                 // REMOVED: addMessage(query, 'user'); // Don't add user msg here anymore
+                 if (!hasChatStarted) hasChatStarted = true;
+                 expandPanel(); // Ensure expanded view
+                 simulateBotResponse(query); // Generate rich response, passing the query text
+                 // Clear input
+                 document.getElementById('chat-widget-input').value = '';
+                 document.getElementById('chat-widget-send-btn').disabled = true;
+                 // Close suggestions if open
+                 document.getElementById('chat-widget-suggestions').style.display = 'none';
             });
             listItem.appendChild(link);
             questionList.appendChild(listItem);
         });
-
         popularQuestionsContainer.appendChild(questionsTitle);
         popularQuestionsContainer.appendChild(questionList);
 
-        // 6b. Create Messages Area (always present)
+        // 6b. Create Main Content Area (will hold article + messages)
+        const mainContent = document.createElement('div');
+        mainContent.id = 'chat-widget-main-content';
+
+        // 6c. Create Messages Area (INSIDE main content)
         const messagesArea = document.createElement('div');
         messagesArea.id = 'chat-widget-messages';
+        mainContent.appendChild(messagesArea); // Messages area is always inside main content
 
         // Add initial elements to body
-        body.appendChild(popularQuestionsContainer); // Add questions first
-        body.appendChild(messagesArea);             // Then the message area
+        body.appendChild(popularQuestionsContainer); // Questions first
+        body.appendChild(mainContent);            // Then main content (holding messages)
+        // Sidebar is added dynamically on expansion
 
         // 7. Create panel footer
         const footer = document.createElement('div');
         footer.className = 'chat-widget-footer';
-
-        // 7.5 Create Suggestions container
-        const suggestionsContainer = document.createElement('div');
+        const suggestionsContainer = document.createElement('div'); /* ... suggestions setup ... */
         suggestionsContainer.id = 'chat-widget-suggestions';
         const suggestionsList = document.createElement('ul');
         suggestionsContainer.appendChild(suggestionsList);
-        // Append suggestions container *before* input/button in the footer's DOM
-        // but use absolute positioning to place it visually above.
         footer.appendChild(suggestionsContainer);
-
-        const chatInput = document.createElement('textarea');
-        chatInput.id = 'chat-widget-input';
-        chatInput.placeholder = inputPlaceholder;
-        chatInput.rows = 1;
-        const sendButton = document.createElement('button');
-        sendButton.id = 'chat-widget-send-btn';
-        sendButton.innerHTML = sendButtonIcon;
-        sendButton.setAttribute('aria-label', 'Send Message');
-        sendButton.disabled = true;
-
+        const chatInput = document.createElement('textarea'); /* ... input setup ... */
+        chatInput.id = 'chat-widget-input'; chatInput.placeholder = inputPlaceholder; chatInput.rows = 1;
+        const sendButton = document.createElement('button'); /* ... send button setup ... */
+        sendButton.id = 'chat-widget-send-btn'; sendButton.innerHTML = sendButtonIcon; sendButton.setAttribute('aria-label', 'Send Message'); sendButton.disabled = true;
         footer.appendChild(chatInput);
         footer.appendChild(sendButton);
 
@@ -535,94 +643,45 @@
         document.body.appendChild(container);
 
         // --- Event Listeners ---
-
-        // Function to handle expanding the panel and simulating response
-        function expandAndRespond(query) {
-            if (!isExpanded) {
-                panel.classList.add('expanded');
-                isExpanded = true;
-            }
-            hasChatStarted = true; // Mark that interaction has begun
-            simulateBotResponse(query);
-            // Ensure input gets focus after expansion/response trigger
-            setTimeout(() => chatInput.focus(), 0);
-        }
-
-        // Toggle panel visibility
-        function togglePanel() {
-            const isOpen = panel.classList.contains('open');
-            if (isOpen) {
-                panel.classList.remove('open');
-                // Reset expansion state ONLY when closing
-                if (isExpanded) {
-                    panel.classList.remove('expanded');
-                    isExpanded = false;
-                }
-                // Optional: Reset hasChatStarted if you want questions
-                // to reappear every time it's reopened after closing.
-                // hasChatStarted = false;
-                // panel.querySelector('.chat-widget-popular-questions-container').style.display = '';
-
-            } else {
-                panel.classList.add('open');
-                // If chat has started, immediately go to expanded view on open
-                if (hasChatStarted && !isExpanded) {
-                     panel.classList.add('expanded');
-                     isExpanded = true;
-                }
-                 // Auto-focus input when opened
-                 setTimeout(() => chatInput.focus(), 50); // Small delay for transition
-            }
-        }
-
         iconButton.addEventListener('click', togglePanel);
         closeButton.addEventListener('click', togglePanel);
+        shrinkButton.addEventListener('click', shrinkPanel); // **Listener for shrink**
 
-
-        // Send button action
         sendButton.addEventListener('click', () => {
             const messageText = chatInput.value.trim();
             if (messageText) {
-                addMessage(messageText, 'user'); // Add user message to display
-                expandAndRespond(messageText);   // Expand (if needed) and get bot response
+                // REMOVED: addMessage(messageText, 'user'); // Don't add user msg here
+                if (!hasChatStarted) hasChatStarted = true;
+                expandPanel(); // Ensure expanded view
+                simulateBotResponse(messageText); // Generate rich response, passing text
 
-                // Clear input & reset UI
                 chatInput.value = '';
                 sendButton.disabled = true;
-                chatInput.style.height = '40px'; // Reset height
+                chatInput.style.height = '40px';
                 suggestionsContainer.style.display = 'none';
-                chatInput.focus(); // Keep focus on input
+                chatInput.focus();
             }
         });
 
-        // Enable/disable send button & handle autocomplete & resize input
-        chatInput.addEventListener('input', () => {
+        // Input listener (suggestions, resize, enable button) - same as before
+        chatInput.addEventListener('input', () => { /* ... same logic ... */
             const trimmedValue = chatInput.value.trim();
             sendButton.disabled = trimmedValue.length === 0;
-
-            // Auto-resize textarea height
-            chatInput.style.height = 'auto'; // Temporarily shrink to get correct scrollHeight
+            // Auto-resize
+            chatInput.style.height = 'auto';
             const scrollHeight = chatInput.scrollHeight;
             const maxHeight = parseInt(window.getComputedStyle(chatInput).maxHeight, 10);
             const minHeight = parseInt(window.getComputedStyle(chatInput).minHeight, 10);
-
-            // Calculate desired height, clamped between min/max
             let newHeight = Math.max(minHeight, scrollHeight);
             newHeight = Math.min(newHeight, maxHeight);
-
             chatInput.style.height = `${newHeight}px`;
-
-            // Autocomplete Logic
+            // Autocomplete
             const currentInput = chatInput.value.toLowerCase().trim();
-            suggestionsList.innerHTML = ''; // Clear previous suggestions
-
+            suggestionsList.innerHTML = '';
             if (currentInput.length > 0) {
-                const filteredSuggestions = autocompleteSuggestions.filter(s =>
-                    s.toLowerCase().includes(currentInput)
-                );
-
+                const filteredSuggestions = autocompleteSuggestions.filter(s => s.toLowerCase().includes(currentInput));
                 if (filteredSuggestions.length > 0) {
-                    filteredSuggestions.slice(0, 5).forEach(suggestionText => { // Limit suggestions shown
+                    filteredSuggestions.slice(0, 5).forEach(suggestionText => {
                         const li = document.createElement('li');
                         li.textContent = suggestionText;
                         li.addEventListener('click', () => {
@@ -630,30 +689,25 @@
                             suggestionsContainer.style.display = 'none';
                             sendButton.disabled = false;
                             chatInput.focus();
-                            // Trigger input event again to resize correctly after setting value
                             chatInput.dispatchEvent(new Event('input'));
                         });
                         suggestionsList.appendChild(li);
                     });
                     suggestionsContainer.style.display = 'block';
-                } else {
-                    suggestionsContainer.style.display = 'none';
-                }
-            } else {
-                suggestionsContainer.style.display = 'none';
-            }
+                } else { suggestionsContainer.style.display = 'none'; }
+            } else { suggestionsContainer.style.display = 'none'; }
         });
 
-        // Send message on Enter key press (but not Shift+Enter)
-        chatInput.addEventListener('keypress', function(event) {
+        // Enter key listener - same as before
+        chatInput.addEventListener('keypress', function(event) { /* ... same logic ... */
             if (event.key === 'Enter' && !event.shiftKey && !sendButton.disabled) {
-                event.preventDefault(); // Prevent newline in textarea
-                sendButton.click();     // Trigger send button click
+                event.preventDefault();
+                sendButton.click();
             }
         });
 
-        // Hide suggestions when clicking outside the suggestions or input area
-        document.addEventListener('click', function(event) {
+        // Click outside suggestions listener - same as before
+        document.addEventListener('click', function(event) { /* ... same logic ... */
             if (!footer.contains(event.target) && suggestionsContainer.style.display === 'block') {
                  suggestionsContainer.style.display = 'none';
             }
@@ -664,7 +718,6 @@
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', createWidget);
     } else {
-        // DOM is already loaded
         createWidget();
     }
 
