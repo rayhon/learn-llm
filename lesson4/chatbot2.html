@@ -7,6 +7,75 @@
     <style id="chat-widget-styles">
         /* CSS will be injected by the script below */
     </style>
+    <!-- Separate styles for the bottom search bar -->
+    <style>
+        /* --- Bottom Search Bar Styles --- */
+        #bottom-search-bar {
+            position: fixed;
+            bottom: 20px; /* Adjust distance from bottom */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            background-color: #ffffff; /* White background */
+            border: none; /* Remove border */
+            padding: 10px 15px; /* Adjusted padding */
+            border-radius: 30px; /* Pill shape */
+            /* Updated shadow for fade effect + standard shadow */
+            box-shadow: 0 0 10px 4px rgba(255, 0, 122, 0.5), /* Fading pink outline (reduced opacity) */
+                        0 2px 5px rgba(0, 0, 0, 0.15);      /* Standard subtle shadow */
+            width: 450px; /* Adjusted width */
+            max-width: 90%; /* Max width for smaller screens */
+            z-index: 1001;
+            box-sizing: border-box;
+         }
+ 
+        #search-bar-gr-logo { /* Changed ID back */
+             height: 40px; /* Made icon bigger and more obvious */
+             width: auto;
+             margin-right: 0px;
+             flex-shrink: 0;
+        }
+ 
+        #search-bar-input {
+            flex-grow: 1;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #000000; /* Changed to black */
+            font-size: 1rem;
+            line-height: 1.5;
+            padding: 5px 0; /* Vertical padding for input */
+            min-width: 50px; /* Prevent collapsing */
+        }
+        #search-bar-input::placeholder {
+            color: rgba(0, 0, 0, 0.5); /* Back to darker gray placeholder */
+            opacity: 1; /* Ensure placeholder is visible */
+        }
+
+        #search-bar-button {
+            background-color: #ffffff; /* Back to white background */
+            border: none; /* Remove border */
+            border-radius: 50%;
+            width: 36px;  /* Button size */
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-left: 10px;
+            flex-shrink: 0;
+            transition: background-color 0.2s ease;
+        }
+        /* Removed hover effect to match image */
+
+        #search-bar-button svg {
+            width: 20px; /* Arrow icon size */
+            height: 20px;
+            fill: #FF007A; /* Back to GR Pink arrow */
+        }
+        /* --- End Bottom Search Bar Styles --- */
+    </style>
 </head>
 <body>
 
@@ -19,7 +88,7 @@
 <script>
 (function() {
     // --- Configuration ---
-    const chatIconColor = '#1a1a1a';
+    const chatIconColor = '#FF007A';
     const chatIconContent = `
         <svg xmlns="http://www.w3.org/2000/svg" fill="white" viewBox="0 0 24 24" width="28px" height="28px">
           <path d="M0 0h24v24H0z" fill="none"/>
@@ -835,6 +904,16 @@ Remember to consider your budget and the specific needs of your space when plann
 
 })();
 </script>
+
+<!-- Bottom Search Bar HTML -->
+<div id="bottom-search-bar">
+    <img id="search-bar-gr-logo" src="gamerevolution.png" alt="GameRevolution Logo">
+    <input type="text" id="search-bar-input" placeholder="Ask Me Anything...">
+    <button id="search-bar-button" aria-label="Submit Search" style="padding-right: 2px;">
+        <!-- Paper Plane Send Icon SVG -->
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#FF007A"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+</div>
 
 </body>
 </html>
