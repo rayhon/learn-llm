@@ -43,7 +43,8 @@
             outline: none;
             background: transparent;
             color: #000000; /* Changed to black */
-            font-size: 1rem;
+            font-size: 16px; /* Explicit font size */
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; /* System font stack */
             line-height: 1.5;
             padding: 5px 0; /* Vertical padding for input */
             min-width: 50px; /* Prevent collapsing */
@@ -75,6 +76,64 @@
             fill: #FF007A; /* Back to GR Pink arrow */
         }
         /* --- End Bottom Search Bar Styles --- */
+
+        /* --- Autocomplete Suggestions Styles --- */
+        #bottom-search-suggestions {
+            position: absolute;
+            bottom: calc(100% + 10px); /* Increased gap above search bar */
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            max-height: 280px; /* Further increased max-height */
+            overflow-y: auto;
+            z-index: 1000; /* Just below search bar (1001) */
+            display: none; /* Hidden by default */
+        }
+        #bottom-search-suggestions ul {
+            list-style: none;
+            padding: 15px 10px 15px 10px; /* Restore vertical padding */
+            margin: 0;
+        }
+        #bottom-search-suggestions h4 {
+            padding: 15px 30px 0px 20px; /* Adjusted padding for alignment */
+            margin: 0;
+            font-size: 0.95rem; /* Slightly larger header font */
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif; /* Cleaner sans-serif stack */
+            color: #010911; /* Gray color */
+            font-weight: 500; /* Slightly bolder */
+            /* border-bottom: 1px solid #eee; Removed border */
+        }
+        #bottom-search-suggestions li {
+            padding: 9px 20px; /* Restore horizontal padding */
+            cursor: pointer;
+            font-size: 16px; /* Reduced font size */
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol"; /* System font stack */
+            font-weight: normal; /* Ensure font weight matches input */
+            color: #333;
+            display: flex; /* Align icon and text */
+            align-items: center;
+            gap: 8px; /* Space between icon and text */
+        }
+        #bottom-search-suggestions li .suggestion-icon {
+            flex-shrink: 0; /* Prevent icon from shrinking */
+        }
+        #bottom-search-suggestions li span {
+            white-space: nowrap; /* Prevent text wrapping */
+            overflow: hidden; /* Hide overflow */
+            text-overflow: ellipsis; /* Show ellipsis (...) */
+            /* Optional: ensure it takes available space if needed */
+            /* flex-grow: 1; */
+            /* min-width: 0; */
+        }
+        #bottom-search-suggestions li:last-child {
+            border-bottom: none;
+        }
+        #bottom-search-suggestions li:hover {
+            background-color: #f8f9fa;
+        }
     </style>
 </head>
 <body>
@@ -908,12 +967,72 @@ Remember to consider your budget and the specific needs of your space when plann
 <!-- Bottom Search Bar HTML -->
 <div id="bottom-search-bar">
     <img id="search-bar-gr-logo" src="gamerevolution.png" alt="GameRevolution Logo">
-    <input type="text" id="search-bar-input" placeholder="Ask Me Anything...">
+    <input type="text" id="search-bar-input" placeholder="Looking for the best option? Try me!" autocomplete="off">
     <button id="search-bar-button" aria-label="Submit Search" style="padding-right: 2px;">
         <!-- Paper Plane Send Icon SVG -->
         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#FF007A"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
     </button>
+    <!-- Autocomplete Suggestions Container -->
+    <div id="bottom-search-suggestions">
+        <h4>Popular Questions</h4>
+        <ul></ul>
+    </div>
 </div>
+
+<!-- Script for Bottom Search Bar Autocomplete -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('search-bar-input');
+    const suggestionsContainer = document.getElementById('bottom-search-suggestions');
+    const suggestionsList = suggestionsContainer.querySelector('ul');
+
+    const popularGameQuestions = [
+        'What monitor is best for competitive FPS?',
+        'How do I choose the right gaming chair?',
+        'What are some great ways to fix up a backyard?',
+        'Where can I find PS5 stock updates?',
+        'What\'s the return policy on peripherals?' // Escaped apostrophe
+    ];
+
+    // Function to show suggestions
+    function showSuggestions() {
+        suggestionsList.innerHTML = ''; // Clear previous suggestions
+        const searchIconSvg = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#6c757d" class="bi bi-search suggestion-icon" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0\"/></svg>';
+        popularGameQuestions.forEach(question => {
+            const li = document.createElement('li');
+            li.innerHTML = searchIconSvg + `<span>${question}</span>`; // Add icon and wrap text in span
+            li.addEventListener('click', () => {
+                searchInput.value = question;
+                suggestionsContainer.style.display = 'none';
+                // Optional: Trigger search or button click here
+                // document.getElementById('search-bar-button').click();
+            });
+            suggestionsList.appendChild(li);
+        });
+        suggestionsContainer.style.display = 'block';
+    }
+
+    // Function to hide suggestions
+    function hideSuggestions() {
+        // Delay hiding to allow click events on suggestions to register
+        setTimeout(() => {
+            suggestionsContainer.style.display = 'none';
+        }, 150);
+    }
+
+    // Event listeners
+    searchInput.addEventListener('focus', showSuggestions);
+    searchInput.addEventListener('blur', hideSuggestions);
+
+    // Optional: Hide if clicking outside the search bar area
+    document.addEventListener('click', (event) => {
+        const searchBar = document.getElementById('bottom-search-bar');
+        if (!searchBar.contains(event.target)) {
+            suggestionsContainer.style.display = 'none';
+        }
+    });
+});
+</script>
 
 </body>
 </html>
