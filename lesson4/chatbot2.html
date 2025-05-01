@@ -1238,6 +1238,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const suggestionsList = suggestionsContainer.querySelector('ul');
     const searchButton = document.getElementById('search-bar-button');
 
+    // Flag to track if tab just became visible
+    let isTabJustMadeVisible = false;
+
     // Use the same questions as the chat widget for consistency
     const popularGameQuestions = [
         'What monitor is best for competitive FPS?',
@@ -1298,8 +1301,28 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 150); // Keep the delay to allow clicks on suggestions
     }
 
-    // Event listeners
-    searchInput.addEventListener('focus', showSuggestions);
+    // --- Event Listeners ---
+
+    // Handle tab visibility change
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            isTabJustMadeVisible = true;
+            // Reset the flag shortly after, allowing subsequent focus events
+            setTimeout(() => {
+                isTabJustMadeVisible = false;
+            }, 100); // 100ms window
+        }
+    });
+
+    // Modified Focus listener
+    searchInput.addEventListener('focus', () => {
+        // Only show suggestions if the focus wasn't immediately after tab became visible
+        if (!isTabJustMadeVisible) {
+            showSuggestions();
+        }
+    });
+
+    // Blur listener remains the same
     searchInput.addEventListener('blur', hideSuggestions); // Hide when losing focus
 
     // Keep suggestions open if clicking inside the suggestions list
