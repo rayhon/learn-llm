@@ -281,11 +281,15 @@ Remember to consider your budget and the specific needs of your space when plann
         #chat-widget-panel.open { display: flex; }
 
         #chat-widget-panel.expanded {
-            width: var(--chat-widget-expanded-width);
-            height: var(--chat-widget-expanded-height);
-            max-height: var(--chat-widget-expanded-height);
-            bottom: 20px;
-            right: 20px;
+            /* Full Screen Overlay Styles */
+            position: fixed; /* Changed to fixed */
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            max-height: 100vh;
+            border-radius: 0; /* No rounded corners when full screen */
+            z-index: 2000; /* Ensure it's above other page content */
         }
 
         .chat-widget-header {
@@ -312,7 +316,7 @@ Remember to consider your budget and the specific needs of your space when plann
             font-size: 1.2em; /* Adjust size if needed */
         }
         #chat-widget-panel.expanded #chat-widget-shrink-btn {
-            display: flex; /* Show only when expanded */
+            display: none;
         }
 
         .chat-widget-body {
@@ -466,6 +470,22 @@ Remember to consider your budget and the specific needs of your space when plann
         #chat-widget-send-btn:hover { background-color: #0056b3; }
         #chat-widget-send-btn:disabled { background-color: #e0e0e0; cursor: not-allowed; }
         #chat-widget-send-btn svg { display: block; }
+
+        /* Ensure close button is visible and positioned in full screen */
+        #chat-widget-panel.expanded #chat-widget-close-btn {
+            /* Optional: Style for better visibility on full screen */
+             position: absolute; /* Position relative to panel */
+             top: 15px;
+             right: 20px;
+             z-index: 2001; /* Above other header content */
+             font-size: 2em; /* Make it larger */
+             color: #333; /* Darker color */
+        }
+
+        /* Hide shrink button completely when expanded */
+        #chat-widget-panel.expanded #chat-widget-shrink-btn {
+            display: none;
+        }
     `;
 
     // --- Helper Functions ---
@@ -884,8 +904,13 @@ Remember to consider your budget and the specific needs of your space when plann
 
         // --- Event Listeners ---
         iconButton.addEventListener('click', togglePanel);
-        closeButton.addEventListener('click', togglePanel);
-        shrinkButton.addEventListener('click', shrinkPanel); // **Listener for shrink**
+        closeButton.addEventListener('click', () => {
+            const panel = document.getElementById('chat-widget-panel');
+            panel.classList.remove('open');
+            panel.classList.remove('expanded'); // Ensure expanded is removed
+            isExpanded = false; // Reset state
+            // Optionally, add a small delay for animation if needed
+        });
 
         sendButton.addEventListener('click', () => {
             const messageText = chatInput.value.trim();
@@ -961,6 +986,14 @@ Remember to consider your budget and the specific needs of your space when plann
         createWidget();
     }
 
+    // --- Expose functions for external use (e.g., bottom search bar) ---
+    window.chatWidget = {
+        togglePanel,
+        expandPanel,
+        simulateBotResponse
+        // Add other functions here if needed
+    };
+
 })();
 </script>
 
@@ -985,6 +1018,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('search-bar-input');
     const suggestionsContainer = document.getElementById('bottom-search-suggestions');
     const suggestionsList = suggestionsContainer.querySelector('ul');
+    const searchButton = document.getElementById('search-bar-button');
 
     const popularGameQuestions = [
         'What monitor is best for competitive FPS?',
@@ -1002,14 +1036,32 @@ document.addEventListener('DOMContentLoaded', () => {
             const li = document.createElement('li');
             li.innerHTML = searchIconSvg + `<span>${question}</span>`; // Add icon and wrap text in span
             li.addEventListener('click', () => {
+                const queryText = question; // Use the clicked question text
                 searchInput.value = question;
                 suggestionsContainer.style.display = 'none';
-                // Optional: Trigger search or button click here
-                // document.getElementById('search-bar-button').click();
+ 
+                // --- Trigger full screen chat response --- 
+                if (queryText && window.chatWidget) { // Check if widget functions are exposed
+                    const chatPanel = document.getElementById('chat-widget-panel');
+ 
+                    // Ensure panel element exists and is open before expanding
+                    if (chatPanel && !chatPanel.classList.contains('open')) {
+                        window.chatWidget.togglePanel(); // Open it if closed
+                    }
+                    
+                    // Expand to full screen and simulate response
+                    window.chatWidget.expandPanel(); 
+                    window.chatWidget.simulateBotResponse(queryText);
+ 
+                    // Reset bottom search bar input
+                    searchInput.value = ''; // Clear after sending to chat
+                }
+                // --- End trigger --- 
+ 
             });
             suggestionsList.appendChild(li);
         });
-        suggestionsContainer.style.display = 'block';
+        suggestionsContainer.style.display = 'block'; // Restore line to show suggestions
     }
 
     // Function to hide suggestions
@@ -1029,6 +1081,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const searchBar = document.getElementById('bottom-search-bar');
         if (!searchBar.contains(event.target)) {
             suggestionsContainer.style.display = 'none';
+        }
+    });
+
+    // --- Add listener to bottom search button --- 
+    searchButton.addEventListener('click', () => {
+        const queryText = searchInput.value.trim();
+        if (queryText && window.chatWidget) { // Check if query exists and widget functions are exposed
+            const chatPanel = document.getElementById('chat-widget-panel');
+
+            // Ensure panel element exists and is open before expanding
+            if (chatPanel && !chatPanel.classList.contains('open')) {
+                window.chatWidget.togglePanel(); // Open it if closed
+            }
+            
+            // Expand to full screen and simulate response
+            window.chatWidget.expandPanel(); 
+            window.chatWidget.simulateBotResponse(queryText);
+
+            // Reset bottom search bar
+            searchInput.value = '';
+            hideSuggestions(); // Hide suggestions list
         }
     });
 });
