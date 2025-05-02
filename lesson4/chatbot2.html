@@ -334,7 +334,7 @@ Remember to consider your budget and the specific needs of your space when plann
             --chat-widget-panel-header-bg: ${panelHeaderColor};
         }
 
-        #chat-widget-container { position: fixed; bottom: 90px; right: 20px; z-index: 1000; } /* Increased bottom to 90px */
+        #chat-widget-container { position: fixed; bottom: 20px; right: 20px; z-index: 1000; } /* Reset bottom to 20px */
         #chat-widget-icon { background-color: var(--chat-widget-icon-color); color: white; width: 56px; height: 56px; border-radius: 50%; border: none; cursor: pointer; box-shadow: 0 4px 8px rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; transition: transform 0.2s ease; }
         #chat-widget-icon:hover { transform: scale(1.1); }
 
@@ -474,15 +474,14 @@ Remember to consider your budget and the specific needs of your space when plann
         #chat-widget-main-content {
              flex-grow: 1; /* Takes remaining space */
              overflow-y: auto; /* Scrollable */
-             padding: 20px 30px 90px 30px; /* Added 90px bottom padding */
+             padding: 20px 30px;
              display: flex; /* Allow messages to grow */
              flex-direction: column;
              background-color: #fff; /* Ensure white background */
              position: relative; /* Needed for spinner positioning */
-             box-sizing: border-box; /* Include padding in height calculation */
         }
-          /* Default view only has messages in the main content area effectively */
-          /* When expanded, it contains article + messages */
+         /* Default view only has messages in the main content area effectively */
+         /* When expanded, it contains article + messages */
 
         /* Area for generated article-like content */
         #chat-widget-article-area {
@@ -812,7 +811,7 @@ Remember to consider your budget and the specific needs of your space when plann
             }
 
             // Insert the article content *before* the messages area in the DOM flow
-            messagesArea.appendChild(articleArea);
+            mainContent.insertBefore(articleArea, messagesArea);
 
             // 4. Create and Insert Citations (using mock data)
             let citationsHtml = '<h4>Citations</h4>';
