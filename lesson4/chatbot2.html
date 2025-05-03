@@ -437,15 +437,21 @@
 
     // --- NEW: Mock Espresso Response Data ---
     const mockEspressoResponse = {
-        // Article header and body paragraphs
-        articleTitle: "Your Guide to the Best Espresso Machines Under $200",
-        articleContent: [
-            "We've tested a dozen espresso machines under $200 to bring you the top three that balance flavor, pressure consistency, and ease of use.",
-            "Our evaluation focused on extraction quality, build materials, and frothing performance to replicate an Italian café experience at home.",
-            "Each machine offers unique features—from manual steam wands to high-pressure pumps—ensuring great espresso shots without breaking the bank."
-        ],
-        userQuery: "What's the best espresso machine under $200 for café-quality shots?",
-        botIntro: "Finding a high-quality espresso machine under $200 can be challenging. Below you'll find my top recommendations based on real-world testing.",
+        // Full article as markdown (title, explanation, references)
+        markdown: `# Your Guide to the Best Espresso Machines Under $200
+We've tested a dozen espresso machines under $200 to bring you the top three that balance flavor, pressure consistency, and ease of use.
+Our evaluation focused on extraction quality, build materials, and frothing performance to replicate an Italian café experience at home.
+
+## Explanation
+- **De'Longhi ECP3220 Espresso Machine**: With adjustable controls and a self-priming operation, this machine simplifies the espresso-making process. The manual steam wand lets you texture milk to your liking for cappuccinos and lattes. Its 15-bar pressure ensures quality extraction.
+- **Gevi Compact Professional Semi-Automatic Espresso Machine**: This Gevi machine offers a compact footprint ideal for smaller kitchens. It features a professional 20-bar pressure pump for rich crema and allows for both automatic flow control and manual adjustments.
+- **De'Longhi Stilosa Manual Espresso Machine**: The Stilosa is a great entry-point manual machine. It consistently pulls good shots with its 15-bar pump and includes a durable stainless steel boiler and a milk frother for cappuccinos.
+
+## References
+- [Budget Espresso Machine Tests](https://coffee-lab.com/budget-tests) (coffee-lab.com)
+- [Espresso Under $200 Roundup](https://homebrewpro.com/espresso-roundup) (homebrewpro.com)
+        `,
+        // Ad unit products
         products: [
             {
                 tag: "Versatile Choice",
@@ -475,29 +481,6 @@
                 details: "",
                 imageUrl: "images/4.png"
             }
-        ],
-        disclaimer: "ChatGPT chooses products independently. <a href='#'>Learn more ></a>", // Added link possibility
-        explanations: [
-            {
-                name: "De'Longhi ECP3220 Espresso Machine",
-                tag: "Versatile Choice",
-                description: "With adjustable controls and a self-priming operation, this machine simplifies the espresso-making process. The manual steam wand lets you texture milk to your liking for cappuccinos and lattes. Its 15-bar pressure ensures quality extraction."
-            },
-             { // Add explanation for the second product for completeness
-                name: "Gevi Compact Professional Semi-Automatic Espresso...",
-                tag: "Compact Design",
-                description: "This Gevi machine offers a compact footprint ideal for smaller kitchens. It features a professional 20-bar pressure pump for rich crema and allows for both automatic flow control and manual adjustments."
-             },
-             { // Add explanation for the third product
-                name: "De'Longhi Stilosa Manual Espresso Machine",
-                tag: "Best Budget Choice",
-                description: "The Stilosa is a great entry-point manual machine. It consistently pulls good shots with its 15-bar pump and includes a durable stainless steel boiler and a milk frother for cappuccinos."
-             }
-        ],
-        // References for further reading
-        citations: [
-            { title: "Budget Espresso Machine Tests", url: "https://coffee-lab.com/budget-tests", domain: "coffee-lab.com" },
-            { title: "Espresso Under $200 Roundup", url: "https://homebrewpro.com/espresso-roundup", domain: "homebrewpro.com" }
         ]
     };
 
@@ -893,30 +876,36 @@
             userQueryBubble.textContent = userQueryText;
             responseContainer.appendChild(userQueryBubble);
 
-            // 2. Add Bot Intro (Icon + Text)
-            const botIntroBlock = document.createElement('div');
-            botIntroBlock.className = 'bot-intro-block';
-            botIntroBlock.innerHTML = `
-                ${agentIconSvg}
-                <p>${responseData.botIntro}</p>
-            `;
-            responseContainer.appendChild(botIntroBlock);
-
-            // 2a. Article Title and Intro Paragraphs
-            if (responseData.articleTitle) {
-                const articleHeader = document.createElement('h1');
-                articleHeader.textContent = responseData.articleTitle;
-                articleHeader.style.margin = '20px 0';
-                responseContainer.appendChild(articleHeader);
-            }
-            if (Array.isArray(responseData.articleContent)) {
-                responseData.articleContent.forEach(text => {
-                    const p = document.createElement('p');
-                    p.textContent = text;
+            // 2. Parse markdown into header, explanation, and reference sections
+            const rawLines = responseData.markdown.trim().split('\n');
+            const headerLines = [], explanationLines = [], referenceLines = [];
+            let section = 'header';
+            rawLines.forEach(raw => {
+                const line = raw.trim();
+                if (line === '## Explanation') { section = 'explanation'; return; }
+                if (line === '## References') { section = 'reference'; return; }
+                if (section === 'header') headerLines.push(raw);
+                else if (section === 'explanation') explanationLines.push(raw);
+                else if (section === 'reference') referenceLines.push(raw);
+            });
+            // Render header: title and intro paragraphs
+            headerLines.forEach(raw => {
+                const line = raw.trim();
+                if (line.startsWith('# ')) {
+                    const headerWrapper = document.createElement('div');
+                    headerWrapper.style.display = 'flex'; headerWrapper.style.alignItems = 'center';
+                    const logo = document.createElement('img');
+                    logo.src = 'gamerevolution.png'; logo.alt = 'GR Logo';
+                    logo.style.height = '40px'; logo.style.marginRight = '10px';
+                    const h1 = document.createElement('h1'); h1.textContent = line.slice(2);
+                    headerWrapper.appendChild(logo); headerWrapper.appendChild(h1);
+                    responseContainer.appendChild(headerWrapper);
+                } else if (line) {
+                    const p = document.createElement('p'); p.textContent = line;
                     p.style.margin = '0 0 10px';
                     responseContainer.appendChild(p);
-                });
-            }
+                }
+            });
 
             // 3. Add Product Carousel
             if (responseData.products && responseData.products.length > 0) {
@@ -948,56 +937,40 @@
                 responseContainer.appendChild(carouselContainer);
             }
 
-            // 4. Add Disclaimer
-            if (responseData.disclaimer) {
-                 const disclaimerText = document.createElement('p');
-                 disclaimerText.className = 'disclaimer-text';
-                 // Use innerHTML to allow potential links in the disclaimer
-                 disclaimerText.innerHTML = responseData.disclaimer;
-                 responseContainer.appendChild(disclaimerText);
-            }
-
-            // 5. Add Explanations Section
-            if (responseData.explanations && responseData.explanations.length > 0) {
-                const explanationsSection = document.createElement('div');
-                explanationsSection.className = 'explanations-section';
-                explanationsSection.innerHTML = '<h4>Top Selections Explained:</h4>'; // Add heading
-                const explanationList = document.createElement('ul');
-                responseData.explanations.forEach(explanation => {
-                     const item = document.createElement('li');
-                     item.className = 'explanation-item';
-                     // Constructing the HTML as per the image structure
-                     item.innerHTML = `
-                         <p><strong>• ${explanation.name}</strong></p>
-                         <p><em style="margin-left: 0;">${explanation.tag}</em></p> {/* Adjusted style for direct P tag */}
-                         <p>${explanation.description}</p> {/* Keep description unindented */}
-                     `;
-                     // Find matching product to potentially link or add actions later
-                     // const matchingProduct = responseData.products.find(p => p.name === explanation.name);
-
-                     explanationList.appendChild(item);
+            // 4. Render explanation section
+            if (explanationLines.length) {
+                const expHeader = document.createElement('h4'); expHeader.textContent = 'Explanation';
+                // style to match Related Products heading
+                expHeader.style.fontSize = '1.1rem'; expHeader.style.fontWeight = '600'; expHeader.style.color = '#343a40'; expHeader.style.marginBottom = '15px';
+                responseContainer.appendChild(expHeader);
+                const expList = document.createElement('ul');
+                explanationLines.forEach(raw => {
+                    const line = raw.trim();
+                    if (line.startsWith('- ')) {
+                        const li = document.createElement('li'); li.textContent = line.slice(2);
+                        expList.appendChild(li);
+                    }
                 });
-                explanationsSection.appendChild(explanationList);
-                responseContainer.appendChild(explanationsSection);
+                responseContainer.appendChild(expList);
             }
 
-            // 6. Add References section
-            if (responseData.citations && responseData.citations.length > 0) {
-                const refSection = document.createElement('div');
-                refSection.className = 'disclaimer-text';
-                refSection.style.marginTop = '30px';
-                refSection.style.fontSize = '0.8rem';
-                const refHeader = document.createElement('h4');
-                refHeader.textContent = 'References';
-                refSection.appendChild(refHeader);
+            // 5. Render references section
+            if (referenceLines.length) {
+                const refHeader = document.createElement('h4'); refHeader.textContent = 'References';
+                // style to match Related Products heading
+                refHeader.style.fontSize = '1.1rem'; refHeader.style.fontWeight = '600'; refHeader.style.color = '#343a40'; refHeader.style.marginBottom = '15px';
+                responseContainer.appendChild(refHeader);
                 const refList = document.createElement('ul');
-                responseData.citations.forEach(cit => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `<a href="${cit.url}" target="_blank">${cit.title}</a> (${cit.domain})`;
-                    refList.appendChild(li);
+                referenceLines.forEach(raw => {
+                    const match = raw.match(/\[(.+?)\]\((.+?)\)/);
+                    if (match) {
+                        const li = document.createElement('li');
+                        const a = document.createElement('a'); a.href = match[2]; a.target = '_blank'; a.textContent = match[1];
+                        li.appendChild(a); li.insertAdjacentText('beforeend', ` (${new URL(match[2]).hostname})`);
+                        refList.appendChild(li);
+                    }
                 });
-                refSection.appendChild(refList);
-                responseContainer.appendChild(refSection);
+                responseContainer.appendChild(refList);
             }
 
             // --- Insert the whole new container into mainContent ---
@@ -1223,19 +1196,9 @@
         // UPDATED Close Button Listener (Handles expanded state reset)
         closeButton.addEventListener('click', () => {
             const panel = document.getElementById('chat-widget-panel');
-            const isOpen = panel.classList.contains('open');
-            const isCurrentlyExpanded = panel.classList.contains('expanded'); // Check current state
-
-            if (isOpen) {
-                 panel.classList.remove('open'); // Close the panel visibility
+            if (panel.classList.contains('open')) {
+                panel.classList.remove('open');
             }
-
-            // If it was expanded when the close button was clicked, reset everything
-            if (isCurrentlyExpanded) {
-                shrinkPanel(); // Call shrinkPanel to handle state reset and content clearing
-                // Note: shrinkPanel now sets isExpanded = false
-            }
-            // No need to explicitly set display styles here, removing 'expanded' and 'open' classes handles it via CSS
         });
 
 
