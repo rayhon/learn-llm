@@ -438,21 +438,28 @@
                 name: "De'Longhi ECP3220 Espresso Machine",
                 price: "$119.95",
                 details: "De'Longhi and 9 others",
-                imageUrl: "https://m.media-amazon.com/images/I/71VICFsReNL._AC_SX679_.jpg"
+                imageUrl: "images/3in1Machine_Ecom_3.webp"
             },
             {
                 tag: "Compact Design",
                 name: "Gevi Compact Professional Semi-Automatic Espresso...",
                 price: "$124.99",
                 details: "GEVI and 3 others",
-                imageUrl: "https://m.media-amazon.com/images/I/710YD4w9e1L._AC_SX679_.jpg"
+                imageUrl: "images/gevi.jpg"
             },
             {
                 tag: "Best Budget Choice",
                 name: "De'Longhi Stilosa Manual Espresso Machine",
                 price: "$99.95",
                 details: "PuriLite",
-                imageUrl: "https://m.media-amazon.com/images/I/71B6hG2yM9L._AC_SX679_.jpg"
+                imageUrl: "images/2.jpg"
+            },
+            {
+                tag: "Sponsored",
+                name: "Special Offer",
+                price: "",
+                details: "",
+                imageUrl: "images/4.png"
             }
         ],
         disclaimer: "ChatGPT chooses products independently. <a href='#'>Learn more ></a>", // Added link possibility
@@ -871,27 +878,34 @@
             `;
             responseContainer.appendChild(botIntroBlock);
 
-            // 3. Add Product Cards
+            // 3. Add Product Carousel
             if (responseData.products && responseData.products.length > 0) {
-                const productCardsContainer = document.createElement('div');
-                productCardsContainer.className = 'product-cards-container';
+                // Create carousel container and title
+                const carouselContainer = document.createElement('div');
+                carouselContainer.id = 'chat-widget-product-carousel';
+                const carouselTitle = document.createElement('h4');
+                carouselTitle.textContent = 'Related Products';
+                carouselContainer.appendChild(carouselTitle);
+
+                // Create horizontal scroll wrapper
+                const carouselWrapper = document.createElement('div');
+                carouselWrapper.className = 'chat-widget-carousel-wrapper';
+
+                // Populate each item
                 responseData.products.forEach(product => {
-                    const card = document.createElement('div');
-                    card.className = 'product-card';
-                    card.innerHTML = `
-                        <div class="product-image-wrapper">
-                            <img src="${product.imageUrl}" alt="${product.name}">
-                            ${product.tag ? `<span class="product-tag">${product.tag}</span>` : ''}
-                        </div>
-                        <div class="product-info">
-                            <p class="product-name">${product.name}</p>
-                            <p class="product-price">${product.price}</p>
-                            <p class="product-details">${product.details}</p>
-                        </div>
+                    const item = document.createElement('div');
+                    item.className = 'chat-widget-product-item';
+                    item.innerHTML = `
+                        <img src="${product.imageUrl}" alt="${product.name}">
+                        <p class="product-name">${product.name}</p>
+                        <p class="product-price">${product.price}</p>
+                        <p class="product-tags">${product.details}</p>
                     `;
-                    productCardsContainer.appendChild(card);
+                    carouselWrapper.appendChild(item);
                 });
-                responseContainer.appendChild(productCardsContainer);
+
+                carouselContainer.appendChild(carouselWrapper);
+                responseContainer.appendChild(carouselContainer);
             }
 
             // 4. Add Disclaimer
