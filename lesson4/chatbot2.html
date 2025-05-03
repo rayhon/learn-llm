@@ -209,8 +209,10 @@
 
         /* --- START: Espresso Layout Styles --- */
         #chat-widget-panel.expanded #chat-widget-main-content {
-            padding: 30px 40px; /* Adjust padding for full screen */
-            background-color: #fff; /* Ensure white background */
+            padding: 30px 40px; /* More padding for full screen */
+            /* Background handled by panel */
+            /* Reserve extra bottom space for the fixed search bar */
+            padding-bottom: 140px;
         }
 
         /* Specific styling ONLY when image response is present */
@@ -720,6 +722,8 @@ Breville's flagship pairs a lightning-fast ThermoJet heater with an upgraded bur
          #chat-widget-panel.expanded #chat-widget-main-content {
              padding: 30px 40px; /* More padding for full screen */
              /* Background handled by panel */
+             /* Reserve extra bottom space for the fixed search bar */
+             padding-bottom: 140px;
          }
 
         /* Area for generated article-like content (OLD LAYOUT - kept for reference) */
