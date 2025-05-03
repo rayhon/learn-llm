@@ -383,6 +383,13 @@
             margin-left: 15px; /* Indent description */
             margin-bottom: 0;
          }
+         /* Style reference heading to match Related Products */
+         #chat-widget-panel.expanded .disclaimer-text h4 {
+             font-size: 1.1rem;
+             margin-bottom: 15px;
+             color: #343a40;
+             font-weight: 600;
+         }
          /* --- END: Espresso Layout Styles --- */
 
     </style>
@@ -430,8 +437,15 @@
 
     // --- NEW: Mock Espresso Response Data ---
     const mockEspressoResponse = {
-        userQuery: "What's the best espresso machine under $200 that comes close to the taste of coffee in Italy?",
-        botIntro: "If you're aiming to recreate the ambiance of an Italian café at home without exceeding a $200 budget, there are several espresso machines that can deliver rich, authentic flavors. Below are some top picks that balance quality and affordability:",
+        // Article header and body paragraphs
+        articleTitle: "Your Guide to the Best Espresso Machines Under $200",
+        articleContent: [
+            "We've tested a dozen espresso machines under $200 to bring you the top three that balance flavor, pressure consistency, and ease of use.",
+            "Our evaluation focused on extraction quality, build materials, and frothing performance to replicate an Italian café experience at home.",
+            "Each machine offers unique features—from manual steam wands to high-pressure pumps—ensuring great espresso shots without breaking the bank."
+        ],
+        userQuery: "What's the best espresso machine under $200 for café-quality shots?",
+        botIntro: "Finding a high-quality espresso machine under $200 can be challenging. Below you'll find my top recommendations based on real-world testing.",
         products: [
             {
                 tag: "Versatile Choice",
@@ -479,6 +493,11 @@
                 tag: "Best Budget Choice",
                 description: "The Stilosa is a great entry-point manual machine. It consistently pulls good shots with its 15-bar pump and includes a durable stainless steel boiler and a milk frother for cappuccinos."
              }
+        ],
+        // References for further reading
+        citations: [
+            { title: "Budget Espresso Machine Tests", url: "https://coffee-lab.com/budget-tests", domain: "coffee-lab.com" },
+            { title: "Espresso Under $200 Roundup", url: "https://homebrewpro.com/espresso-roundup", domain: "homebrewpro.com" }
         ]
     };
 
@@ -838,7 +857,12 @@
        const mainContent = document.getElementById('chat-widget-main-content');
        const sidebar = document.getElementById('chat-widget-citations-sidebar'); // Still get ref to hide it
        const body = document.querySelector('#chat-widget-panel .chat-widget-body');
-       const spinnerElement = document.getElementById('chat-widget-spinner');
+       // Recreate spinner if missing (so future calls always have it)
+       let spinnerElement = document.getElementById('chat-widget-spinner');
+       if (!spinnerElement) {
+           spinnerElement = document.createElement('div');
+           spinnerElement.id = 'chat-widget-spinner';
+       }
 
        if (!mainContent || !body || !spinnerElement) return;
 
@@ -877,6 +901,22 @@
                 <p>${responseData.botIntro}</p>
             `;
             responseContainer.appendChild(botIntroBlock);
+
+            // 2a. Article Title and Intro Paragraphs
+            if (responseData.articleTitle) {
+                const articleHeader = document.createElement('h1');
+                articleHeader.textContent = responseData.articleTitle;
+                articleHeader.style.margin = '20px 0';
+                responseContainer.appendChild(articleHeader);
+            }
+            if (Array.isArray(responseData.articleContent)) {
+                responseData.articleContent.forEach(text => {
+                    const p = document.createElement('p');
+                    p.textContent = text;
+                    p.style.margin = '0 0 10px';
+                    responseContainer.appendChild(p);
+                });
+            }
 
             // 3. Add Product Carousel
             if (responseData.products && responseData.products.length > 0) {
@@ -941,6 +981,25 @@
                 responseContainer.appendChild(explanationsSection);
             }
 
+            // 6. Add References section
+            if (responseData.citations && responseData.citations.length > 0) {
+                const refSection = document.createElement('div');
+                refSection.className = 'disclaimer-text';
+                refSection.style.marginTop = '30px';
+                refSection.style.fontSize = '1rem';
+                const refHeader = document.createElement('h4');
+                refHeader.textContent = 'References';
+                refSection.appendChild(refHeader);
+                const refList = document.createElement('ul');
+                responseData.citations.forEach(cit => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<a href="${cit.url}" target="_blank">${cit.title}</a> (${cit.domain})`;
+                    refList.appendChild(li);
+                });
+                refSection.appendChild(refList);
+                responseContainer.appendChild(refSection);
+            }
+
             // --- Insert the whole new container into mainContent ---
             // Clear just the spinner, keep the container structure
             spinnerElement.remove();
@@ -960,6 +1019,8 @@
 
     function expandPanel() {
         const panel = document.getElementById('chat-widget-panel');
+        // Always make panel visible when expanding
+        if (!panel.classList.contains('open')) panel.classList.add('open');
         const body = panel.querySelector('.chat-widget-body');
         const popularQuestionsContainer = panel.querySelector('.chat-widget-popular-questions-container');
         let sidebar = document.getElementById('chat-widget-citations-sidebar'); // Get ref even if not used
