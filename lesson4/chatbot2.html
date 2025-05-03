@@ -392,6 +392,26 @@
          }
          /* --- END: Espresso Layout Styles --- */
 
+        /* Extra spacing for markdown content */
+        #image-response-container p {
+            margin-bottom: 1.2em;
+            line-height: 1.6;
+        }
+        #image-response-container h1,
+        #image-response-container h2,
+        #image-response-container h3,
+        #image-response-container h4 {
+            margin-top: 1.5em;
+            margin-bottom: 0.75em;
+        }
+        #image-response-container ul,
+        #image-response-container ol {
+            margin: 1em 0;
+            padding-left: 20px;
+        }
+        #image-response-container li {
+            margin-bottom: 0.5em;
+        }
     </style>
 </head>
 <body>
@@ -437,19 +457,37 @@
 
     // --- NEW: Mock Espresso Response Data ---
     const mockEspressoResponse = {
-        // Full article as markdown (title, explanation, references)
-        markdown: `# Your Guide to the Best Espresso Machines Under $200
-We've tested a dozen espresso machines under $200 to bring you the top three that balance flavor, pressure consistency, and ease of use.
-Our evaluation focused on extraction quality, build materials, and frothing performance to replicate an Italian café experience at home.
+        // Full markdown content provided by user
+        markdown: `# The Best Coffee Machines of 2025
 
-## Explanation
-- **De'Longhi ECP3220 Espresso Machine**: With adjustable controls and a self-priming operation, this machine simplifies the espresso-making process. The manual steam wand lets you texture milk to your liking for cappuccinos and lattes. Its 15-bar pressure ensures quality extraction.
-- **Gevi Compact Professional Semi-Automatic Espresso Machine**: This Gevi machine offers a compact footprint ideal for smaller kitchens. It features a professional 20-bar pressure pump for rich crema and allows for both automatic flow control and manual adjustments.
-- **De'Longhi Stilosa Manual Espresso Machine**: The Stilosa is a great entry-point manual machine. It consistently pulls good shots with its 15-bar pump and includes a durable stainless steel boiler and a milk frother for cappuccinos.
+## Introduction
+
+Home espresso saw another growth spurt in 2025 as more people looked for café-level drinks without the queue. Tech-forward features such as alt-milk steam profiles and app-based brew scheduling are becoming standard, while sustainability options (low-energy modes, recyclable pods) are now key buying criteria.([TechRadar][1]) Below are the five machines that out-performed dozens of competitors in expert tests and real-world tasting.
+
+
+## Product Reviews
+
+### 1. Breville Barista Touch Impress — *Best Overall Espresso Machine*
+
+**Quick specs**
+
+* **Type:** Bean-to-cup semi-automatic
+* **Grinder:** 54 mm steel conical burrs
+* **Heating:** ThermoJet system (≈ 3 s to extraction)
+* **Milk:** Auto-MilQ wand with dairy + alt-milk presets
+* **MSRP:** $1,499
+
+Breville's flagship pairs a lightning-fast ThermoJet heater with an upgraded burr grinder and a sleek touchscreen that walks beginners through dose-tamp-brew steps. Its Auto-MilQ algorithm senses dairy-versus-plant milk and tweaks steam pressure for silky micro-foam every time. In hands-on tests the Touch Impress delivered repeatable 25-second shots at 93  °C and café-quality lattes in under two minutes.([Coffeeness][2], [Coffee Kev][3])
+
+*Why we love it:* barista-grade results and the most intuitive workflow on the market.
+
+
+### 2. De'Longhi La Specialista Maestro — *Best Semi-Automatic for Milk Lovers*
+... (full markdown as given) ...
 
 ## References
-- [Budget Espresso Machine Tests](https://coffee-lab.com/budget-tests) (coffee-lab.com)
-- [Espresso Under $200 Roundup](https://homebrewpro.com/espresso-roundup) (homebrewpro.com)
+* [1]: https://www.techradar.com/...
+* [2]: https://www.coffeeness.de/... 
         `,
         // Ad unit products
         products: [
@@ -833,7 +871,50 @@ Our evaluation focused on extraction quality, build materials, and frothing perf
     }
 
     // Basic Markdown to HTML converter (Kept for potential future use)
-    function markdownToHtml(md) { /* ... existing markdown function ... */ }
+    function markdownToHtml(md) {
+        const lines = md.split('\n');
+        let html = '';
+        let inList = false;
+        lines.forEach(raw => {
+            const line = raw.trim();
+            if (!line) {
+                if (inList) { html += '</ul>'; inList = false; }
+                return;
+            }
+            if (/^---$/.test(line)) {
+                if (inList) { html += '</ul>'; inList = false; }
+                html += '<hr>'; // horizontal rule
+            } else if (/^# (.*)/.test(line)) {
+                if (inList) { html += '</ul>'; inList = false; }
+                html += `<h1>${line.replace(/^# /, '')}</h1>`;
+            } else if (/^## (.*)/.test(line)) {
+                if (inList) { html += '</ul>'; inList = false; }
+                html += `<h2>${line.replace(/^## /, '')}</h2>`;
+            } else if (/^### (.*)/.test(line)) {
+                if (inList) { html += '</ul>'; inList = false; }
+                html += `<h3>${line.replace(/^### /, '')}</h3>`;
+            } else if (/^[\*-]\s+/.test(line)) {
+                // list item
+                if (!inList) { html += '<ul>'; inList = true; }
+                let item = line.replace(/^[\*-]\s+/, '');
+                // inline bold and italics
+                item = item.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                item = item.replace(/\*(.+?)\*/g, '<em>$1</em>');
+                // links
+                item = item.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank">$1</a>');
+                html += `<li>${item}</li>`;
+            } else {
+                if (inList) { html += '</ul>'; inList = false; }
+                let text = line;
+                text = text.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+                text = text.replace(/\*(.+?)\*/g, '<em>$1</em>');
+                text = text.replace(/\[(.+?)\]\((.+?)\)/g, '<a href="$2" target="_blank">$1</a>');
+                html += `<p>${text}</p>`;
+            }
+        });
+        if (inList) html += '</ul>';
+        return html;
+    }
 
     // --- UPDATED simulateBotResponse to generate Espresso Layout ---
     function simulateBotResponse(userQueryText) {
@@ -876,54 +957,32 @@ Our evaluation focused on extraction quality, build materials, and frothing perf
             userQueryBubble.textContent = userQueryText;
             responseContainer.appendChild(userQueryBubble);
 
-            // 2. Parse markdown into header, explanation, and reference sections
-            const rawLines = responseData.markdown.trim().split('\n');
-            const headerLines = [], explanationLines = [], referenceLines = [];
-            let section = 'header';
-            rawLines.forEach(raw => {
-                const line = raw.trim();
-                if (line === '## Explanation') { section = 'explanation'; return; }
-                if (line === '## References') { section = 'reference'; return; }
-                if (section === 'header') headerLines.push(raw);
-                else if (section === 'explanation') explanationLines.push(raw);
-                else if (section === 'reference') referenceLines.push(raw);
-            });
-            // Render header: title and intro paragraphs
-            headerLines.forEach(raw => {
-                const line = raw.trim();
-                if (line.startsWith('# ')) {
-                    const headerWrapper = document.createElement('div');
-                    headerWrapper.style.display = 'flex'; headerWrapper.style.alignItems = 'center';
-                    const logo = document.createElement('img');
-                    logo.src = 'gamerevolution.png'; logo.alt = 'GR Logo';
-                    logo.style.height = '40px'; logo.style.marginRight = '10px';
-                    const h1 = document.createElement('h1'); h1.textContent = line.slice(2);
-                    headerWrapper.appendChild(logo); headerWrapper.appendChild(h1);
-                    responseContainer.appendChild(headerWrapper);
-                } else if (line) {
-                    const p = document.createElement('p'); p.textContent = line;
-                    p.style.margin = '0 0 10px';
-                    responseContainer.appendChild(p);
-                }
-            });
-
-            // 3. Add Product Carousel
-            if (responseData.products && responseData.products.length > 0) {
-                // Create carousel container and title
+            // 2. Render full markdown as HTML and inject into container
+            const mdHtml = markdownToHtml(responseData.markdown);
+            const mdContainer = document.createElement('div');
+            mdContainer.innerHTML = mdHtml;
+            // 3. Wrap the main H1 with the GameRevolution icon
+            const h1 = mdContainer.querySelector('h1');
+            let headerWrapper;
+            if (h1) {
+                headerWrapper = document.createElement('div');
+                headerWrapper.style.display = 'flex'; headerWrapper.style.alignItems = 'center';
+                const logo = document.createElement('img');
+                logo.src = 'gamerevolution.png'; logo.alt = 'GR Logo';
+                logo.style.height = '40px'; logo.style.marginRight = '10px';
+                h1.parentNode.insertBefore(headerWrapper, h1);
+                headerWrapper.appendChild(logo);
+                headerWrapper.appendChild(h1);
+            }
+            // 4. Inject product carousel immediately below the title
+            if (headerWrapper && responseData.products && responseData.products.length) {
                 const carouselContainer = document.createElement('div');
                 carouselContainer.id = 'chat-widget-product-carousel';
-                const carouselTitle = document.createElement('h4');
-                carouselTitle.textContent = 'Related Products';
+                const carouselTitle = document.createElement('h4'); carouselTitle.textContent = 'Related Products';
                 carouselContainer.appendChild(carouselTitle);
-
-                // Create horizontal scroll wrapper
-                const carouselWrapper = document.createElement('div');
-                carouselWrapper.className = 'chat-widget-carousel-wrapper';
-
-                // Populate each item
+                const carouselWrapper = document.createElement('div'); carouselWrapper.className = 'chat-widget-carousel-wrapper';
                 responseData.products.forEach(product => {
-                    const item = document.createElement('div');
-                    item.className = 'chat-widget-product-item';
+                    const item = document.createElement('div'); item.className = 'chat-widget-product-item';
                     item.innerHTML = `
                         <img src="${product.imageUrl}" alt="${product.name}">
                         <p class="product-name">${product.name}</p>
@@ -932,46 +991,11 @@ Our evaluation focused on extraction quality, build materials, and frothing perf
                     `;
                     carouselWrapper.appendChild(item);
                 });
-
                 carouselContainer.appendChild(carouselWrapper);
-                responseContainer.appendChild(carouselContainer);
+                headerWrapper.insertAdjacentElement('afterend', carouselContainer);
             }
-
-            // 4. Render explanation section
-            if (explanationLines.length) {
-                const expHeader = document.createElement('h4'); expHeader.textContent = 'Explanation';
-                // style to match Related Products heading
-                expHeader.style.fontSize = '1.1rem'; expHeader.style.fontWeight = '600'; expHeader.style.color = '#343a40'; expHeader.style.marginBottom = '15px';
-                responseContainer.appendChild(expHeader);
-                const expList = document.createElement('ul');
-                explanationLines.forEach(raw => {
-                    const line = raw.trim();
-                    if (line.startsWith('- ')) {
-                        const li = document.createElement('li'); li.textContent = line.slice(2);
-                        expList.appendChild(li);
-                    }
-                });
-                responseContainer.appendChild(expList);
-            }
-
-            // 5. Render references section
-            if (referenceLines.length) {
-                const refHeader = document.createElement('h4'); refHeader.textContent = 'References';
-                // style to match Related Products heading
-                refHeader.style.fontSize = '1.1rem'; refHeader.style.fontWeight = '600'; refHeader.style.color = '#343a40'; refHeader.style.marginBottom = '15px';
-                responseContainer.appendChild(refHeader);
-                const refList = document.createElement('ul');
-                referenceLines.forEach(raw => {
-                    const match = raw.match(/\[(.+?)\]\((.+?)\)/);
-                    if (match) {
-                        const li = document.createElement('li');
-                        const a = document.createElement('a'); a.href = match[2]; a.target = '_blank'; a.textContent = match[1];
-                        li.appendChild(a); li.insertAdjacentText('beforeend', ` (${new URL(match[2]).hostname})`);
-                        refList.appendChild(li);
-                    }
-                });
-                responseContainer.appendChild(refList);
-            }
+            // 5. Append the processed markdown content
+            responseContainer.appendChild(mdContainer);
 
             // --- Insert the whole new container into mainContent ---
             // Clear just the spinner, keep the container structure
