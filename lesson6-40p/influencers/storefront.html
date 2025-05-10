@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laura Fuentes - MOMables Storefront</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            margin: 0;
+            background-color: #f8f8f8;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+        }
+
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-right: 20px;
+        }
+
+        .profile-info {
+            flex-grow: 1;
+        }
+
+        .profile-info h1 {
+            font-size: 24px;
+            margin: 0 0 5px 0;
+            font-weight: 600;
+        }
+
+        .profile-info p {
+            font-size: 14px;
+            color: #555;
+            margin: 0 0 5px 0;
+            line-height: 1.4;
+        }
+        .profile-info .commissions-note {
+            font-size: 12px;
+            color: #777;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+        }
+
+        .follow-button {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+        .follow-button:hover {
+            background-color: #f0f0f0;
+        }
+
+        .icon-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            margin-left: 10px;
+        }
+
+        .icon-button svg {
+            width: 20px;
+            height: 20px;
+            fill: #555;
+        }
+
+        .tabs-search-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between; /* Tabs left, Search right */
+            margin-bottom: 20px;
+        }
+
+        .tabs { /* Container for tab buttons */
+            display: flex;
+            align-items: center;
+        }
+
+        .tab-button {
+            padding: 8px 15px; /* Adjusted padding for height consistency */
+            margin-right: 10px;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            background-color: #fff;
+            cursor: pointer;
+            font-size: 14px;
+            white-space: nowrap;
+        }
+
+        .tab-button.active {
+            background-color: #007bff;
+            color: #fff;
+            border-color: #007bff;
+        }
+        .tab-button:hover:not(.active) {
+            background-color: #e9ecef;
+        }
+
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 20px;
+            padding: 0px 15px;
+            /* margin-left: auto; /* Pushes search bar to the right if tabs don't fill space */
+            width: 320px; /* Increased width */
+        }
+
+        .search-bar svg {
+            width: 16px;
+            height: 16px;
+            fill: #777;
+            margin-right: 8px;
+        }
+
+        .search-bar input {
+            border: none;
+            outline: none;
+            padding: 8px 0; /* Adjusted padding */
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-image-container {
+            position: relative;
+        }
+
+        .product-card .main-image {
+            width: 100%;
+            height: 200px; /* Or aspect-ratio if preferred and supported */
+            object-fit: cover;
+            display: block;
+        }
+        .product-card .shuffle-icon { /* This is the icon on top-right of the image */
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            padding: 5px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 26px; /* Explicit size for the circle */
+            height: 26px;
+        }
+        .product-card .shuffle-icon svg {
+            width: 16px; /* Size of the SVG icon itself */
+            height: 16px;
+            fill: #333;
+        }
+
+        .product-info {
+            padding: 15px;
+            flex-grow: 1; /* Allows info to take space if card heights vary */
+        }
+        
+        .product-info-bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center; /* Vertically aligns text block with heart icon */
+        }
+
+        .product-text {
+            flex-grow: 1; /* Allows text to take available width */
+            margin-right: 10px; /* Space between text and heart */
+        }
+
+        .product-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0 0 5px 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-info .item-count {
+            font-size: 12px;
+            color: #007bff;
+            margin-bottom: 0; /* Removed bottom margin as alignment handled by flex parent */
+        }
+
+        .heart-icon-wrapper { /* Wrapper for heart icon to help with flex alignment if needed */
+            position: relative; /* For badge positioning */
+        }
+
+        .heart-icon {
+            /* No longer absolute. Positioned by flex parent .product-info-bottom */
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative; /* For badge positioning */
+        }
+        .heart-icon svg {
+            width: 16px;
+            height: 16px;
+            fill: #777;
+        }
+        .heart-icon:hover svg {
+            fill: red;
+        }
+
+        .badge {
+            position: absolute;
+            top: -5px; 
+            right: -5px; 
+            background-color: #007bff;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border: 1px solid white;
+        }
+
+        .product-thumbnails {
+            display: flex;
+            padding: 0 15px 15px 15px; /* Padding around thumbnails */
+            align-items: center;
+            margin-top: auto; /* Pushes thumbnails to bottom if product-info is short */
+        }
+
+        .thumbnail-item {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #eee;
+            border-radius: 4px;
+            margin-right: 8px;
+            object-fit: cover;
+            cursor: pointer;
+        }
+        .thumbnail-item:last-child {
+            margin-right: 0;
+        }
+        .thumbnail-item.more {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+        }
+        .thumbnail-item.more svg {
+            width: 16px;
+            height: 16px;
+            fill: #555;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <img src="data:image/jpeg;base64,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" alt="Laura Fuentes" class="profile-pic">
+            <div class="profile-info">
+                <h1>Laura Fuentes - MOMables</h1>
+                <p>Everything I recommend & use for packing school lunches, making family meals, kitchen gadgets, snacks I buy in bulk, happy hour, my published cookbooks, and so much more!</p>
+                <p class="commissions-note">Earns commissions</p>
+            </div>
+            <div class="header-actions">
+                <button class="follow-button">Follow</button>
+                <button class="icon-button" aria-label="Share">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 8.39c-.54-.5-1.25-.81-2.04-.81-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"></path>
+                    </svg>
+                </button>
+                <button class="icon-button" aria-label="Instagram">
+                    <svg viewBox="0 0 24 24" >
+                        <path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8C4 18.39 5.61 20 7.6 20h8.8c1.99 0 3.6-1.61 3.6-3.6V7.6C20 5.61 18.39 4 16.4 4H7.6m9.65 1.5a1.25 1.25 0 0 1 1.25 1.25A1.25 1.25 0 0 1 17.25 8 1.25 1.25 0 0 1 16 6.75a1.25 1.25 0 0 1 1.25-1.25M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3z"></path>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <div class="tabs-search-container">
+            <div class="tabs">
+                <button class="tab-button active">All</button>
+                <button class="tab-button">Idea Lists</button>
+                <button class="tab-button">Videos</button>
+            </div>
+            <div class="search-bar">
+                <svg viewBox="0 0 24 24">
+                    <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+                </svg>
+                <input type="text" placeholder="Search all 28 posts">
+            </div>
+        </div>
+
+        <div class="product-grid">
+            <!-- Product Card 1 -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQMAAADCCAMAAAB6zFdcAAAAQlBMVEX////MzMzQ0NDU1NTX19fS0tLj4+Pb29vNzc3W1tbPz8/Hx8fExMTBwcHa2trs7Oza2djf39/d3d3l5eXo6Oj6+vrm5uaAgIAbQs5IAAAEI0lEQVR4nO2c23qqMBBA0SAgiCi+/0svuqmSQMLYjZl6n/P8o0kYdjeb7eYAAAAAAAAAAAAAALxfpI+XSZdp3tK0+0uMvYJt81R5vMPevC3jLw933HwK7f4iE2z9jY3UjP3j7gW+QvP7j0yU7tM03Qx32/wBJZj21O7sPmf3aflV1S/O7f5lY6k6hL/H+X2T99/0v5XfP7z5g2qW3i9wUqY7n0XW/6145x8JqLd5Hq87/0rL3f9e0O3x5YV3d/r9k/dfv6sA59+02P+i2eO7iY+U3/+k2eW5r+V4G/U9P/Y7Mfdz/xOqK9X7n82T3k/kRjH//PZ/rM/+PMPNvgdhfrf8Ptf/E6I2Ua/0eE/qfY//L0ReP3T0gH2/7HY/1H7v9P0ReX3j8j2/g/b/sdj/Ufv/0/RF5fefyTb//5s/4vs/3P7v0n6IvH7Jz2A7X9m+x+L/T9k/ydZ9/e/0xWA7f9j+f+5/P8c3k+M/0+K/x+1/n/V9h8i+3+X7f8g+X+R/d9f/d+9/N8t7/8c2/+L7P8A+T/b/Kfv/kvy/S/a/Mv3/kvy/SPa/Sfb/Sfb/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/SPa/SPa/SPa/SPa/SPa/SPa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/SPa/SPa/SPa/SPa/SPa/SPa/SPa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Rfa/Rfa/Rfa/Sfa/Rfa/Rfa/Rfa/Rfa/Sfa/Sfa/Rfa/Rfa/Sfa/Rfa/Rfa/Sfa/Sfa/Rfa/Rfa/Sfa/SPa/SPa/SPa/SPa/SPa/SPa/SPa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Rfa/SPa/SPa/SPa/SPa/SPa/SPa/SPa/SPa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/SfatY4QAAAABJRU5ErkJggg==" alt="Middle School Lunchbox" class="main-image">
+                    <div class="shuffle-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3h.5a.5.5 0 0 1 0 1H13c-1.798 0-3.173 1.01-4.126 2.082A9.624 9.624 0 0 0 7.556 8a9.624 9.624 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12h.5a.5.5 0 0 1 0 1H13c-2.202 0-3.827-1.24-4.874-2.418A10.595 10.595 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.624 9.624 0 0 0 6.444 8a9.624 9.624 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5z"/>
+                            <path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192zm0 9V9.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <div class="product-info-bottom">
+                        <div class="product-text">
+                            <h3>Middle School...</h3>
+                            <p class="item-count">See all 11 items</p>
+                        </div>
+                         <div class="heart-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-thumbnails">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADsSURBVFhH7dgxDoJQEAXQU0RRRAQEgyDWkOQkjpDoHZyA4AEE3cAFLB7G8XkICoZpGhISifzN5P9h3ttkNnNf8zQNYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBj+6/gB9YgGAAAAAElFTkSuQmCC" alt="Thumbnail 1" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABXSURBVFhH7c4xEQAgCMNAq3+PeiU9fEgrwT1nLgAAAGo3wBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgAAMBfOgJ2AG4x22uBAAAAAElFTkSuQmCC" alt="Thumbnail 2" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACCSURBVFhH7dixCQAgDERR3P+e3gUjCH4aMPfMTgAAAEAUYwyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMQAAAP40ZgH5iJ77i5cAAAAASUVORK5CYII=" alt="Thumbnail 3" class="thumbnail-item">
+                </div>
+            </div>
+
+            <!-- Product Card 2 -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQMAAADCCAMAAAB6zFdcAAAAQlBMVEX////5+fnm5ubz8/Pz9PTp6ene3t7e39/o6Ojj4+Pk5OTe39/l5eXc3NzS0tLQ0NDMzMzNzc3Pz8+AgIBhYWF9hJ0rAAAA+klEQVR4nO3BAQEAAACCIP+vbkhAAQAAAAAAAAAAAAAAAACA/xZgucWcWy3uOAAAAABJRU5ErkJggg==" alt="Toddler Lunchbox" class="main-image">
+                     <div class="shuffle-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3h.5a.5.5 0 0 1 0 1H13c-1.798 0-3.173 1.01-4.126 2.082A9.624 9.624 0 0 0 7.556 8a9.624 9.624 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12h.5a.5.5 0 0 1 0 1H13c-2.202 0-3.827-1.24-4.874-2.418A10.595 10.595 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.624 9.624 0 0 0 6.444 8a9.624 9.624 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5z"/>
+                            <path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192zm0 9V9.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="product-info">
+                     <div class="product-info-bottom">
+                        <div class="product-text">
+                            <h3>Toddler,...</h3>
+                            <p class="item-count">See all 44 items</p>
+                        </div>
+                        <div class="heart-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-thumbnails">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABXSURBVFhH7c4xEQAgCMNAq3+PeiU9fEgrwT1nLgAAAGo3wBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgAAMBfOgJ2AG4x22uBAAAAAElFTkSuQmCC" alt="Thumbnail 1" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACCSURBVFhH7dixCQAgDERR3P+e3gUjCH4aMPfMTgAAAEAUYwyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMQAAAP40ZgH5iJ77i5cAAAAASUVORK5CYII=" alt="Thumbnail 2" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADsSURBVFhH7dgxDoJQEAXQU0RRRAQEgyDWkOQkjpDoHZyA4AEE3cAFLB7G8XkICoZpGhISifzN5P9h3ttkNnNf8zQNYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBj+6/gB9YgGAAAAAElFTkSuQmCC" alt="Thumbnail 3" class="thumbnail-item">
+                    <div class="thumbnail-item more">
+                        <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"></path></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Card 3 -->
+            <div class="product-card">
+                 <div class="product-image-container">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQMAAADCCAMAAAB6zFdcAAAAQlBMVEX////m5uabm5uysrLr6+vPz8/S0tLV1dXh4eHb29vZ2dnX19fOzs7IyMjFxcXf39/i4uLp6enq6uqAgIAEAkZfAAAEM0lEQVR4nO2dzXKrMAyFNyAIKqLu/a+860jSaBDSSQjLzT7vP2gT23szzU2MAQAAAAAAAAAAAAAAgL/O+njyL/Vp72naS6/h9gVsT8b6+L3D3rQt428Pdtx8Cn1X5vQvMsl2f9P0MV9v+B2z3lp84fx+bT+z9z/oPzO3f9NfGknnqP4fx/dN3j+s3xXfP7z9A9Usfl8MTOXy5JbV/1bZ+UciqS/F6+b/r7Tcf+T0O315YN3dfr/n/dfv6sC79+1+H/R5fHeRs/L7f/R5bmp5Xwb+TkP/j81+3P/E5Yn2fufzZveT+RGIf/89n+sz/48w82+B2B/u/4fp/1fxOZOaBf5PhP4n2f7nlyeK3z8pHWD7H4v9H7X/O01eJH7/JHn/z2b/F9n+Z/Z/k+RF4vdPygfY/mfs/2Kx/0P2f5J1f/+7qwDY/sfy/3P5/zm8nxj/T4r/H7X+f9X2HyL7f5ft/yDJf5Hs+7v+b+b5L/f+P8f2f4ns/wL5P9n+J+z/RfL/Jdr/Sv7/JfN/kvy/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/SPa/SPa/SPa/SPa/SPa/SPa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/SPa/SPa/SPa/SPa/SPa/SPa/SPa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/SPa/SPa/SPa/SPa/SPa/SPa/SPa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Sfa/SPa/SPa/SPa/SPa/SPa/SPa/SPa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/SPa/SPa/SPa/SPa/SPa/SPa/SPa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Rfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/Sfa/SgAAAAAAAACAvwBMAAABQ0lEQVR4nO3UuwnCQBgG4McwFw4MA0LgIAx4CGMgxgB5GMNgDAYDeRjA7l04gAM4gAM4gAM4gAd4gAd4gAd4gAd4gAd4gAd4gAd4gAcoYDDcwDCMvA349+KzRz9kP+R/zJ8Z/wWz+m1/Lz89/Q+eP/0PnT79L8z+Fcz+FWz+FeT+DPL/Bvn/Avn/DPm/kPwf5P8j+T/Q/z/Q/z/M/j+C/X8V+3+J/T/T+P+N/b/j9r/j+v+36/8v4v8v4v8v0v8v+f+39f+7/v/u/38H+H8n8H8m8H8i8H8i8X8k8n8l8n+E/H/E/H/E/E/E/E/E/E+0/0na/0TzP9H8zzT/U83/VPt/lf7fpf9vlf9vlf9vkP9vkP9vMP9vkP9vMv9vsv8H+v8g2v+LaP8X0f4v0v4vs/+X7f+XAfwB/gD/gAH8Af4AAAAAAAADAAb4AwZ/wB8w+AP+gQEGfxCDP4ghAAB+Ab3kAV37qFfBAAAAAElFTkSuQmCC" alt="Best Bento Boxes" class="main-image">
+                </div>
+                <div class="product-info">
+                    <div class="product-info-bottom">
+                        <div class="product-text">
+                            <h3>Best Bento Boxes</h3>
+                            <p class="item-count">See all 11 items</p>
+                        </div>
+                        <div class="heart-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-thumbnails">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACCSURBVFhH7dixCQAgDERR3P+e3gUjCH4aMPfMTgAAAEAUYwyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMQAAAP40ZgH5iJ77i5cAAAAASUVORK5CYII=" alt="Thumbnail 1" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADsSURBVFhH7dgxDoJQEAXQU0RRRAQEgyDWkOQkjpDoHZyA4AEE3cAFLB7G8XkICoZpGhISifzN5P9h3ttkNnNf8zQNYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBj+6/gB9YgGAAAAAElFTkSuQmCC" alt="Thumbnail 2" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABXSURBVFhH7c4xEQAgCMNAq3+PeiU9fEgrwT1nLgAAAGo3wBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgAAMBfOgJ2AG4x22uBAAAAAElFTkSuQmCC" alt="Thumbnail 3" class="thumbnail-item">
+                     <div class="thumbnail-item more">
+                        <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"></path></svg>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Product Card 4 -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="data:image/png;base64,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" alt="Teen Lunch" class="main-image">
+                     <div class="shuffle-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M0 3.5A.5.5 0 0 1 .5 3H1c2.202 0 3.827 1.24 4.874 2.418.49.552.865 1.102 1.126 1.532.26-.43.636-.98 1.126-1.532C9.173 4.24 10.798 3 13 3h.5a.5.5 0 0 1 0 1H13c-1.798 0-3.173 1.01-4.126 2.082A9.624 9.624 0 0 0 7.556 8a9.624 9.624 0 0 0 1.317 1.918C9.828 10.99 11.204 12 13 12h.5a.5.5 0 0 1 0 1H13c-2.202 0-3.827-1.24-4.874-2.418A10.595 10.595 0 0 1 7 9.05c-.26.43-.636.98-1.126 1.532C4.827 11.76 3.202 13 1 13H.5a.5.5 0 0 1 0-1H1c1.798 0 3.173-1.01 4.126-2.082A9.624 9.624 0 0 0 6.444 8a9.624 9.624 0 0 0-1.317-1.918C4.172 5.01 2.796 4 1 4H.5a.5.5 0 0 1-.5-.5z"/>
+                            <path d="M13 5.466V1.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192zm0 9V9.534a.25.25 0 0 1 .41-.192l2.36 1.966c.12.1.12.284 0 .384l-2.36 1.966a.25.25 0 0 1-.41-.192z"/>
+                        </svg>
+                    </div>
+                </div>
+                <div class="product-info">
+                     <div class="product-info-bottom">
+                        <div class="product-text">
+                            <h3>Teen Lunch...</h3>
+                            <p class="item-count">See all 29 items</p>
+                        </div>
+                        <div class="heart-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+                            <div class="badge">3</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-thumbnails">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABXSURBVFhH7c4xEQAgCMNAq3+PeiU9fEgrwT1nLgAAAGo3wBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgAAMBfOgJ2AG4x22uBAAAAAElFTkSuQmCC" alt="Thumbnail 1" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACCSURBVFhH7dixCQAgDERR3P+e3gUjCH4aMPfMTgAAAEAUYwyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMQAAAP40ZgH5iJ77i5cAAAAASUVORK5CYII=" alt="Thumbnail 2" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADsSURBVFhH7dgxDoJQEAXQU0RRRAQEgyDWkOQkjpDoHZyA4AEE3cAFLB7G8XkICoZpGhISifzN5P9h3ttkNnNf8zQNYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBj+6/gB9YgGAAAAAElFTkSuQmCC" alt="Thumbnail 3" class="thumbnail-item">
+                     <div class="thumbnail-item more">
+                        <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"></path></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Card 5 -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQMAAADCCAMAAAB6zFdcAAAAQlBMVEX////S0tLa2trV1dXU1NTNzc3g4ODPz8/i4uLc3Nzk5OTX19ft7e36+vrv7+/y8vL09PTW1tbMzMybm5uAgIDBwcHHyMi4V7NnAAACRklEQVR4nO3Z246CMBRF0QIiCCKq4P53XNsORhNKAwFn6T/Xf5I01+T2NgEAAAAAAAAAAAAAAACAOyt1d33s/dK2fTzUaWkfxevWvS/S9uvr7w8s9h4v7/4iV6F41495GvftdL8d7nvu73ue2X909/+o7X/2Pdr/I9q/yPa393/+bhbzv5rv22z/0/4uvf96//9jtv/b+b/x/W/7P1r1f2nzk2z/s/I+yPo/S/pfNv9Plf2vrP1/+v2naP8jwP8L8H4n8X8l/r+I/H8B+b8E8n8j/n8j8n8l/r8E9v+csP/Zr//L+H8O2P8VJ/u/rv9L9H9s2f8s8n8p7P9azf97xv9H5N8F/b8k+/80+f989f952f8N7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/kfW9997ewYAAAAAAAAAAAAAAADgL3cBAAD//0D/A/gAAAAASUVORK5CYII=" alt="Tequila O'Clock" class="main-image">
+                </div>
+                <div class="product-info">
+                    <div class="product-info-bottom">
+                        <div class="product-text">
+                            <h3>Tequila O'Clock</h3>
+                            <p class="item-count">See all 47 items</p>
+                        </div>
+                        <div class="heart-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-thumbnails">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADsSURBVFhH7dgxDoJQEAXQU0RRRAQEgyDWkOQkjpDoHZyA4AEE3cAFLB7G8XkICoZpGhISifzN5P9h3ttkNnNf8zQNYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBj+6/gB9YgGAAAAAElFTkSuQmCC" alt="Thumbnail 1" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABXSURBVFhH7c4xEQAgCMNAq3+PeiU9fEgrwT1nLgAAAGo3wBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgAAMBfOgJ2AG4x22uBAAAAAElFTkSuQmCC" alt="Thumbnail 2" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACCSURBVFhH7dixCQAgDERR3P+e3gUjCH4aMPfMTgAAAEAUYwyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMQAAAP40ZgH5iJ77i5cAAAAASUVORK5CYII=" alt="Thumbnail 3" class="thumbnail-item">
+                     <div class="thumbnail-item more">
+                        <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"></path></svg>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Product Card 6 -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQMAAADCCAMAAAB6zFdcAAAAQlBMVEX////b29vz8/Pj4+Pb29vZ2dnW1tbf39/a2tnh4eHe3t7m5ubS0tLV1dXNzc3Pz8/Hx8cwMDAxMTFAQECt3G7cAAACZElEQVR4nO3czXKCMBRF0SASFFFx/yuv2k02oTQQkPZf6j/XSc0N2dsEAAAAAAAAAAAAAADgVyvtrv5d2vbp+KxDS/sqPVet+p8k7U+uvz+w2Du8vPsruArFu37M07hv5/l7uO+5v+95Zv/R3f+jtv/Z92j/j2j/I9vf3v/5u1nI/2q+b7P9T/u79P7r/f+P2f5v5//G97/t/2jV/6XNT7L9z8r7IGv/LOn/svmfqey/svafpv1Pkf4vQPufiP2fiP+PiPwfQP5PQP4v4v8XIf+XiP8XQf6fkP3PvP4v4/8xYP9XnOz/uv4v0f+xZf+zyP+lsP9rNf/vGf8fkX8X9P+S7P/T5P/z1f/nZf83tP+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/kfW99+qngUAAAAAAAAAAAAAAADwF4MBAP//QAcD/gAAAABJRU5ErkJggg==" alt="Cooking Tools" class="main-image">
+                </div>
+                <div class="product-info">
+                     <div class="product-info-bottom">
+                        <div class="product-text">
+                            <h3>Cooking Tools</h3>
+                            <p class="item-count">See all 18 items</p>
+                        </div>
+                        <div class="heart-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+                             <div class="badge">5</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-thumbnails">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADsSURBVFhH7dgxDoJQEAXQU0RRRAQEgyDWkOQkjpDoHZyA4AEE3cAFLB7G8XkICoZpGhISifzN5P9h3ttkNnNf8zQNYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBj+6/gB9YgGAAAAAElFTkSuQmCC" alt="Thumbnail 1" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABXSURBVFhH7c4xEQAgCMNAq3+PeiU9fEgrwT1nLgAAAGo3wBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgAAMBfOgJ2AG4x22uBAAAAAElFTkSuQmCC" alt="Thumbnail 2" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACCSURBVFhH7dixCQAgDERR3P+e3gUjCH4aMPfMTgAAAEAUYwyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMQAAAP40ZgH5iJ77i5cAAAAASUVORK5CYII=" alt="Thumbnail 3" class="thumbnail-item">
+                     <div class="thumbnail-item more">
+                        <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"></path></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Card 7 -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQMAAADCCAMAAAB6zFdcAAAAKlBMVEX////S0tLV1dXNzc3W1tbPz8/X19eAgIDa2trs7Ozc3Nzi4uLbN7yXAAACPklEQVR4nO3cy3KCMBQGUGhAFATx/ve8tpu0SUJC6Jz0/+i/yU0Os9uLBAAAAAAAAAAAAAAAAOC/KneXJ/k0vj/Xk+T0S+U+H2rY7mP9yXv7v/X1twd28R4vb7/KXTnSd+yfedr3d8/v4b7n/r7nmf1Hdf+P2v5n36P9P6L9j2x/e//nb2Yh/6v5vs32P+3v0vuv9/8/Zvu/nf8b3/+2/6NV/5c2P8n2PytfBln7Z0n/l83/U2X/laX/adp/hOh/AfS/ifQ/ifQ/ifQ/gfwfQP4v4v8XIf+XiP8XQf6fkP3PvP4v4/8xYP9XnOz/uv4v0f+xZf+zyP+lsP9rNf/vGf8fkX8X9P+S7P/T5P/z1f/nZf83tP+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/kfW998qbgUAAAAAAAAAAAAAAADwlwMBAAD//0DPBEr/wYyEAAAAAElFTkSuQmCC" alt="Kitchen Utensils" class="main-image">
+                </div>
+                <div class="product-info">
+                     <div class="product-info-bottom">
+                        <div class="product-text">
+                            <h3>Kitchen Utensils...</h3>
+                            <p class="item-count">See all 64 items</p>
+                        </div>
+                        <div class="heart-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+                            <div class="badge">9</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-thumbnails">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABXSURBVFhH7c4xEQAgCMNAq3+PeiU9fEgrwT1nLgAAAGo3wBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgAAMBfOgJ2AG4x22uBAAAAAElFTkSuQmCC" alt="Thumbnail 1" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACCSURBVFhH7dixCQAgDERR3P+e3gUjCH4aMPfMTgAAAEAUYwyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMQAAAP40ZgH5iJ77i5cAAAAASUVORK5CYII=" alt="Thumbnail 2" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADsSURBVFhH7dgxDoJQEAXQU0RRRAQEgyDWkOQkjpDoHZyA4AEE3cAFLB7G8XkICoZpGhISifzN5P9h3ttkNnNf8zQNYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBj+6/gB9YgGAAAAAElFTkSuQmCC" alt="Thumbnail 3" class="thumbnail-item">
+                     <div class="thumbnail-item more">
+                        <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"></path></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Card 8 -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQMAAADCCAMAAAB6zFdcAAAAKlBMVEX////S0tLV1dXNzc3W1tbPz8/X19eAgIDa2trs7Ozc3Nzi4uLbN7yXAAACPklEQVR4nO3cy3KCMBQGUGhAFATx/ve8tpu0SUJC6Jz0/+i/yU0Os9uLBAAAAAAAAAAAAAAAAOC/KneXJ/k0vj/Xk+T0S+U+H2rY7mP9yXv7v/X1twd28R4vb7/KXTnSd+yfedr3d8/v4b7n/r7nmf1Hdf+P2v5n36P9P6L9j2x/e//nb2Yh/6v5vs32P+3v0vuv9/8/Zvu/nf8b3/+2/6NV/5c2P8n2PytfBln7Z0n/l83/U2X/laX/adp/hOh/AfS/ifQ/ifQ/ifQ/gfwfQP4v4v8XIf+XiP8XQf6fkP3PvP4v4/8xYP9XnOz/uv4v0f+xZf+zyP+lsP9rNf/vGf8fkX8X9P+S7P/T5P/z1f/nZf83tP+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/kfW998qbgUAAAAAAAAAAAAAAADwlwMBAAD//0DPBEr/wYyEAAAAAElFTkSuQmCC" alt="Weekend Pancakes" class="main-image">
+                </div>
+                <div class="product-info">
+                     <div class="product-info-bottom">
+                        <div class="product-text">
+                            <h3>Weekend Panca...</h3>
+                            <p class="item-count">See all 12 items</p>
+                        </div>
+                        <div class="heart-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-thumbnails">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACCSURBVFhH7dixCQAgDERR3P+e3gUjCH4aMPfMTgAAAEAUYwyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMQAAAP40ZgH5iJ77i5cAAAAASUVORK5CYII=" alt="Thumbnail 1" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADsSURBVFhH7dgxDoJQEAXQU0RRRAQEgyDWkOQkjpDoHZyA4AEE3cAFLB7G8XkICoZpGhISifzN5P9h3ttkNnNf8zQNYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBj+6/gB9YgGAAAAAElFTkSuQmCC" alt="Thumbnail 2" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABXSURBVFhH7c4xEQAgCMNAq3+PeiU9fEgrwT1nLgAAAGo3wBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgAAMBfOgJ2AG4x22uBAAAAAElFTkSuQmCC" alt="Thumbnail 3" class="thumbnail-item">
+                     <div class="thumbnail-item more">
+                        <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"></path></svg>
+                    </div>
+                </div>
+            </div>
+
+             <!-- Product Card 9 -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQMAAADCCAMAAAB6zFdcAAAAKlBMVEX////S0tLV1dXNzc3W1tbPz8/X19eAgIDa2trs7Ozc3Nzi4uLbN7yXAAACPklEQVR4nO3cy3KCMBQGUGhAFATx/ve8tpu0SUJC6Jz0/+i/yU0Os9uLBAAAAAAAAAAAAAAAAOC/KneXJ/k0vj/Xk+T0S+U+H2rY7mP9yXv7v/X1twd28R4vb7/KXTnSd+yfedr3d8/v4b7n/r7nmf1Hdf+P2v5n36P9P6L9j2x/e//nb2Yh/6v5vs32P+3v0vuv9/8/Zvu/nf8b3/+2/6NV/5c2P8n2PytfBln7Z0n/l83/U2X/laX/adp/hOh/AfS/ifQ/ifQ/ifQ/gfwfQP4v4v8XIf+XiP8XQf6fkP3PvP4v4/8xYP9XnOz/uv4v0f+xZf+zyP+lsP9rNf/vGf8fkX8X9P+S7P/T5P/z1f/nZf83tP+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/kfW998qbgUAAAAAAAAAAAAAAADwlwMBAAD//0DPBEr/wYyEAAAAAElFTkSuQmCC" alt="Gifts for In-Laws" class="main-image">
+                </div>
+                <div class="product-info">
+                     <div class="product-info-bottom">
+                        <div class="product-text">
+                            <h3>Gifts for In-Laws</h3>
+                            <p class="item-count">See all 22 items</p>
+                        </div>
+                        <div class="heart-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+                            <div class="badge">1</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-thumbnails">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADsSURBVFhH7dgxDoJQEAXQU0RRRAQEgyDWkOQkjpDoHZyA4AEE3cAFLB7G8XkICoZpGhISifzN5P9h3ttkNnNf8zQNYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBj+6/gB9YgGAAAAAElFTkSuQmCC" alt="Thumbnail 1" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABXSURBVFhH7c4xEQAgCMNAq3+PeiU9fEgrwT1nLgAAAGo3wBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgAAMBfOgJ2AG4x22uBAAAAAElFTkSuQmCC" alt="Thumbnail 2" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACCSURBVFhH7dixCQAgDERR3P+e3gUjCH4aMPfMTgAAAEAUYwyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMQAAAP40ZgH5iJ77i5cAAAAASUVORK5CYII=" alt="Thumbnail 3" class="thumbnail-item">
+                     <div class="thumbnail-item more">
+                        <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"></path></svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Product Card 10 -->
+            <div class="product-card">
+                <div class="product-image-container">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQMAAADCCAMAAAB6zFdcAAAAQlBMVEX////S0tLW1tbV1dXNzc3g4ODPz8/b29vf39/Z2dnj4+Pa2trMzMzBwcHu7u7X19fi4uLY2NiAgICkM82PAAADSElEQVR4nO3czXKiMBRAYSAIKgii+99yz8jSSAxJYGFm8z/nPyXGzE46m1gDAAAAAAAAAAAAAAD+T6Xu0qZPm8vHy51Wp7dU/LzPtnV7t+n2dG7ftp3HyTVPbP+FuyD0/i6Nnef8XqZ776H7nvuHnnP6H939P2r7n32P9v+I9j+y/e39n7+bhfxfzffNtn/p/195/vV+/8ds/7fz/+L73/b/tOr/0uYn2f5n5X2Q9X+W9H/Z/D9V9r+y9p+m/U+R/i9A+5+I/Z+I/x+R/w+Q/wPI/xH/vxH5vxL/XwT5f0L2P/P6v4z/x4D9X3Gy/+v6v0T/x5b9zyL/l8L+r9X8v2f8f0T+XdD/S7L/T5P/z1f/n5f939D+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/ke2/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x/Z/key/5Htf2T7H9n+R7b/ke1/ZPsf2f5Htv+R7X9k+x9Z33/t7BkAAAAAAAAAAAAAAACA/90FAQD//0ArBN7lW8sNAAAAAElFTkSuQmCC" alt="Best Thermos" class="main-image">
+                </div>
+                <div class="product-info">
+                     <div class="product-info-bottom">
+                        <div class="product-text">
+                            <h3>Best Thermos...</h3>
+                            <p class="item-count">See all 12 items</p>
+                        </div>
+                        <div class="heart-icon">
+                            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"></path></svg>
+                            <div class="badge">2</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-thumbnails">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAADsSURBVFhH7dgxDoJQEAXQU0RRRAQEgyDWkOQkjpDoHZyA4AEE3cAFLB7G8XkICoZpGhISifzN5P9h3ttkNnNf8zQNYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBgFYhSIUSDGgBj+6/gB9YgGAAAAAElFTkSuQmCC" alt="Thumbnail 1" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAABXSURBVFhH7c4xEQAgCMNAq3+PeiU9fEgrwT1nLgAAAGo3wBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgQY0CMATEGxBgAAMBfOgJ2AG4x22uBAAAAAElFTkSuQmCC" alt="Thumbnail 2" class="thumbnail-item">
+                    <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAACCSURBVFhH7dixCQAgDERR3P+e3gUjCH4aMPfMTgAAAEAUYwyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMSBGgBgDYgyIMQAAAP40ZgH5iJ77i5cAAAAASUVORK5CYII=" alt="Thumbnail 3" class="thumbnail-item">
+                     <div class="thumbnail-item more">
+                        <svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"></path></svg>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <script>
+        // Simple script to handle tab switching if needed, for now, it's static.
+        const tabs = document.querySelectorAll('.tab-button');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent page jump if buttons are links
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                // Add logic here to filter content if this was a dynamic page
+            });
+        });
+    </script>
+</body>
+</html>

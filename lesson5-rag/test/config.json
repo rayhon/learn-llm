@@ -1,0 +1,26 @@
+{
+  "content": "postgresql+psycopg2://postgres:mysecretpassword@localhost/postgres",
+  "backend": "pgvector",
+  "pgvector": {
+    "url": "postgresql+psycopg2://postgres:mysecretpassword@localhost/postgres"
+  },
+  "graph": {
+    "backend": "rdbms",
+    "url": "postgresql+psycopg2://postgres:mysecretpassword@localhost/postgres",
+    "approximate": false
+  },
+  "path": "sentence-transformers/all-MiniLM-L6-v2",
+  "dimensions": 384,
+  "offset": 100000,
+  "build": {
+    "create": "2025-05-07T09:57:39Z",
+    "python": "3.12.7",
+    "settings": {
+      "m": 16,
+      "ef_construction": 200
+    },
+    "system": "Darwin (arm64)",
+    "txtai": "8.5.0"
+  },
+  "update": "2025-05-07T09:57:39Z"
+}

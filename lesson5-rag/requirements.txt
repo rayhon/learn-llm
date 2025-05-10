@@ -1,0 +1,6 @@
+txtai[graph,pipeline,similarity,ann,database]
+sentence-transformers
+datasets 
+matplotlib 
+torch
+psycopg2

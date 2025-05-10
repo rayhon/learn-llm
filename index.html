@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mindmap Webapp</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .top-bar {
+            background-color: #ffffff;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            z-index: 100; /* Ensure top bar is above content */
+        }
+
+        .top-bar .menu-icon {
+            font-size: 24px;
+            cursor: pointer;
+            margin-right: 15px;
+        }
+
+        .top-bar .title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-right: auto;
+        }
+
+        .top-bar .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #ffbf00;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .top-bar .share-btn {
+            background-color: #4A4AFF;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        .top-bar .share-btn:hover {
+            background-color: #3a3acc;
+        }
+
+        .top-bar .action-icons {
+            margin-left: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .top-bar .action-icons span {
+            font-size: 20px;
+            cursor: pointer;
+            color: #555;
+        }
+         .top-bar .action-icons span:hover {
+            color: #000;
+        }
+
+
+        .main-content {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden; /* Changed to hidden for custom panning/zooming */
+            background-color: #E9EBF8;
+            cursor: grab; /* For panning */
+        }
+        .main-content.panning {
+            cursor: grabbing;
+        }
+
+
+        #mindmap-container {
+            position: absolute; /* For positioning within main-content */
+            width: 2000px;
+            height: 1500px;
+            transform-origin: 0 0; /* For zoom */
+            /* left and top will be set by JS for panning */
+        }
+
+        .node {
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 13px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: grab;
+            min-width: 100px;
+            max-width: 250px;
+            text-align: center;
+            /* display: flex; flex-direction: column; align-items: center; justify-content: center; */
+            line-height: 1.4;
+            user-select: none; /* Prevent text selection during drag */
+        }
+        .node .node-content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .node .node-text { /* This is the Node Name */
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .node .magic-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #FFD700; /* Gold */
+            background-color: rgba(255, 255, 255, 0.7); /* Slight bg for visibility */
+            border-radius: 50%;
+            padding: 2px;
+            z-index: 1;
+        }
+        .node .magic-icon:hover {
+            color: #FFA500; /* Orange */
+        }
+        .node .expand-collapse-btn {
+            position: absolute;
+            bottom: -22px; /* Position below the node */
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #7f8c8d;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 11px;
+            cursor: pointer;
+            z-index: 1;
+            white-space: nowrap;
+        }
+        .node .expand-collapse-btn:hover {
+            background-color: #95a5a6;
+        }
+
+
+        #mindmap-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1; /* Behind nodes but on top of container bg */
+        }
+
+        #mindmap-svg line, #mindmap-svg path {
+            stroke-width: 2px;
+        }
+
+        .bottom-toolbar {
+            background-color: #ffffff;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            border-top: 1px solid #e0e0e0;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
+            z-index: 100; /* Ensure bottom bar is above content */
+        }
+
+        .bottom-toolbar .dropdown, .bottom-toolbar .zoom-level-display {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 15px;
+            font-size: 14px;
+            background-color: #f9f9f9;
+        }
+        .bottom-toolbar .zoom-level-display {
+            width: 60px;
+            text-align: center;
+        }
+
+        .bottom-toolbar .tools {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        .bottom-toolbar .tool-btn {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            color: #333;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .bottom-toolbar .tool-btn:hover {
+            background-color: #e0e0e0;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 30px;
+            border: 1px solid #888;
+            width: 60%;
+            max-width: 700px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            position: relative;
+        }
+        .modal-content h2 {
+            margin-top: 0;
+            color: #333;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .modal-content label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+        .modal-content input[type="text"],
+        .modal-content textarea {
+            width: 95%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        .modal-content textarea {
+            height: 150px;
+            resize: vertical;
+        }
+        
+        .modal-content .chat-area {
+            width: 95%;
+            height: 200px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+            background-color: #f9f9f9;
+        }
+        .modal-content .chat-area p {
+            margin: 5px 0;
+        }
+
+        .modal-content .modal-buttons {
+            text-align: right;
+            margin-top: 10px;
+        }
+        .modal-content button {
+            background-color: #4A4AFF;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        .modal-content button.cancel-btn {
+            background-color: #ccc;
+            color: #333;
+        }
+        .modal-content button:hover {
+            opacity: 0.9;
+        }
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .close-btn:hover,
+        .close-btn:focus {
+            color: black;
+            text-decoration: none;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <span class="menu-icon">☰</span>
+        <span class="title">Learning about Large Language...</span>
+        <div class="user-avatar">R</div>
+        <button class="share-btn">Share</button>
+        <div class="action-icons">
+            <span>▶️</span>
+            <span>💬</span>
+            <span>🙂</span>
+            <span>💾</span>
+        </div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div id="mindmap-container">
+            <svg id="mindmap-svg"></svg>
+        </div>
+    </div>
+
+    <div class="bottom-toolbar">
+        <div class="dropdown">Learning abou... ▼</div>
+        <div class="zoom-level-display" id="zoomLevelDisplay">100%</div>
+        <button class="tool-btn" id="exportMarkdownBtn" title="Export Markdown">📤</button>
+        <button class="tool-btn" id="importMarkdownBtn" title="Import Markdown">📥</button>
+        <div class="tools">
+            <button class="tool-btn" id="addNodeBtn" title="Add Node">➕</button>
+            <button class="tool-btn" title="Link">🔗</button>
+            <button class="tool-btn" title="Shape">▭</button>
+            <button class="tool-btn" title="Image">🖼️</button>
+            <button class="tool-btn" title="Text Style">Aa</button>
+            <button class="tool-btn" title="Magic Wand">✨</button>
+        </div>
+    </div>
+
+    <div id="notesModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeNotesModal()">×</span>
+            <h2>Edit Node Details</h2>
+            <input type="hidden" id="notesNodeId">
+            <label for="nodeNameInput">Name:</label>
+            <input type="text" id="nodeNameInput" placeholder="Enter node name...">
+            <label for="nodeDescriptionTextarea">Description:</label>
+            <textarea id="nodeDescriptionTextarea" placeholder="Enter description (notes) here..."></textarea>
+            <div class="modal-buttons">
+                <button onclick="closeNotesModal()" class="cancel-btn">Cancel</button>
+                <button onclick="saveNodeDetails()">Save Details</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="llmChatModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeLlmChatModal()">×</span>
+            <h2>Chat with LLM for Subtopics</h2>
+            <div class="chat-area">
+                <p><strong>LLM:</strong> Hello! What topic would you like to explore subtopics for?</p>
+                <p><strong>You:</strong> (This is a mock chat interface)</p>
+            </div>
+            <div class="modal-buttons">
+                <button onclick="closeLlmChatModal()" class="cancel-btn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="markdownModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeMarkdownModal()">×</span>
+            <h2 id="markdownModalTitle">Markdown</h2>
+            <textarea id="markdownTextarea" placeholder="Paste Markdown here for import, or view exported Markdown."></textarea>
+            <div class="modal-buttons">
+                <button onclick="closeMarkdownModal()" class="cancel-btn">Cancel</button>
+                <button id="markdownActionBtn" onclick="processMarkdown()">Process</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        const mainContent = document.getElementById('mainContent');
+        const mindmapContainer = document.getElementById('mindmap-container');
+        const mindmapSvg = document.getElementById('mindmap-svg');
+        
+        const notesModal = document.getElementById('notesModal');
+        const notesNodeIdInput = document.getElementById('notesNodeId');
+        const nodeNameInput = document.getElementById('nodeNameInput');
+        const nodeDescriptionTextarea = document.getElementById('nodeDescriptionTextarea');
+
+        const llmChatModal = document.getElementById('llmChatModal');
+        
+        const markdownModal = document.getElementById('markdownModal');
+        const markdownModalTitle = document.getElementById('markdownModalTitle');
+        const markdownTextarea = document.getElementById('markdownTextarea');
+        const markdownActionBtn = document.getElementById('markdownActionBtn');
+        let isImportMode = false;
+
+        let nodes = [];
+        let nodeIdCounter = 0;
+        let currentZoom = 1;
+        let panX = 0;
+        let panY = 0;
+
+        const defaultNodes = [
+            // ... (Original defaultNodes data structure with isCollapsed added)
+            // Example: { id: 'llm_main', text: 'Learning about Large Language Models (LLMs)', ..., isCollapsed: false },
+             { id: 'llm_main', text: 'Learning about Large Language Models (LLMs)', x: 750, y: 500, color: '#2c3e50', textColor: '#fff', width: 220, height: 70, parentId: null, notes: 'Central topic about LLMs.', isCollapsed: false },
+            
+            { id: 'conclusion', text: 'Conclusion', x: 450, y: 200, color: '#8e44ad', textColor: '#fff', width: 150, parentId: 'llm_main', notes: '', isCollapsed: false },
+            { id: 'conc_overview', text: 'Overview', x: 200, y: 150, color: '#9b59b6', textColor: '#fff', width: 220, parentId: 'conclusion', notes: 'Understanding LLMs requires a deep dive...\nFamiliarity with specific models...', isCollapsed: false },
+            
+            { id: 'ethical', text: 'Ethical Considerations', x: 450, y: 500, color: '#16a085', textColor: '#fff', width: 180, parentId: 'llm_main', notes: '', isCollapsed: false },
+            { id: 'eth_overview', text: 'Overview', x: 200, y: 400, color: '#1abc9c', textColor: '#fff', width: 220, parentId: 'ethical', notes: 'The deployment of LLMs raises several ethical concerns.', isCollapsed: false },
+            { id: 'eth_bias', text: 'Bias', x: 200, y: 500, color: '#1abc9c', textColor: '#fff', width: 220, parentId: 'ethical', notes: 'LLMs can inadvertently perpetuate biases...\nA study found that GPT-3 may exhibit gender bias...', isCollapsed: false },
+            { id: 'eth_misinfo', text: 'Misinformation', x: 200, y: 600, color: '#1abc9c', textColor: '#fff', width: 220, parentId: 'ethical', notes: 'LLMs can generate human-like text...\nPotential misuse of GPT-3 for creating misleading articles...', isCollapsed: false },
+
+            { id: 'apps', text: 'Applications of LLMs', x: 450, y: 800, color: '#27ae60', textColor: '#fff', width: 180, parentId: 'llm_main', notes: '', isCollapsed: false },
+            { id: 'apps_overview', text: 'Overview', x: 200, y: 700, color: '#2ecc71', textColor: '#fff', width: 220, parentId: 'apps', notes: 'LLMs have found applications across various industries and tasks.', isCollapsed: false },
+            { id: 'apps_content', text: 'Content Creation', x: 200, y: 800, color: '#2ecc71', textColor: '#fff', width: 220, parentId: 'apps', notes: 'Tools like Jasper use GPT-3 to help marketers...', isCollapsed: false },
+            { id: 'apps_support', text: 'Customer Support', x: 200, y: 900, color: '#2ecc71', textColor: '#fff', width: 220, parentId: 'apps', notes: 'Companies like Drift employ LLMs to power chatbots...\nChatbots handle customer inquiries...', isCollapsed: false },
+            { id: 'apps_translate', text: 'Language Translation', x: 200, y: 1000, color: '#2ecc71', textColor: '#fff', width: 220, parentId: 'apps', notes: 'Google Translate utilizes transformer models...\nMakes translation more accurate...', isCollapsed: false },
+
+            { id: 'architecture', text: 'Architecture of LLMs', x: 1050, y: 350, color: '#d35400', textColor: '#fff', width: 180, parentId: 'llm_main', notes: '', isCollapsed: false },
+            { id: 'arch_overview', text: 'LLMs Overview', x: 1300, y: 250, color: '#e67e22', textColor: '#fff', width: 220, parentId: 'architecture', notes: 'LLMs are built on transformer architecture...\nThey rely on self-attention mechanisms...', isCollapsed: false },
+            { id: 'arch_gpt3', text: 'GPT-3', x: 1300, y: 350, color: '#e67e22', textColor: '#fff', width: 220, parentId: 'architecture', notes: 'Comprises 175 billion parameters...\nUtilizes a decoder-only transformer architecture...\nGenerates coherent and contextually relevant text...', isCollapsed: false },
+            { id: 'arch_bert', text: 'BERT', x: 1300, y: 450, color: '#e67e22', textColor: '#fff', width: 220, parentId: 'architecture', notes: 'Employs a bidirectional transformer architecture...\nUnderstands the context of words in relation to all other words...\nUseful for tasks like question answering...', isCollapsed: false },
+            
+            { id: 'training', text: 'Training Processes', x: 1050, y: 650, color: '#f39c12', textColor: '#fff', width: 180, parentId: 'llm_main', notes: '', isCollapsed: false },
+            { id: 'train_overview', text: 'Overview', x: 1300, y: 550, color: '#f1c40f', textColor: '#000', width: 220, parentId: 'training', notes: 'LLMs undergo extensive training on diverse datasets...', isCollapsed: false },
+            { id: 'train_pre', text: 'Pre-training', x: 1300, y: 650, color: '#f1c40f', textColor: '#000', width: 220, parentId: 'training', notes: 'Involves unsupervised learning...\nThe model predicts the next word in a sentence...\nGPT-3 was trained on a dataset...', isCollapsed: false },
+            { id: 'train_fine', text: 'Fine-tuning', x: 1300, y: 750, color: '#f1c40f', textColor: '#000', width: 220, parentId: 'training', notes: 'Models can be fine-tuned on specific tasks...\nBERT can be fine-tuned on SQuAD...', isCollapsed: false },
+        ];
+
+
+        function initMindmap() {
+            nodes = defaultNodes.map(n => ({
+                ...n, 
+                height: n.height || (n.text.split('\n').length * 20 + 40),
+                isCollapsed: n.isCollapsed === undefined ? false : n.isCollapsed 
+            }));
+            nodeIdCounter = nodes.length;
+            // Initial pan to center the main node roughly
+            const mainNode = findNodeById('llm_main');
+            if (mainNode) {
+                panX = (mainContent.clientWidth / 2) - (mainNode.x * currentZoom + (mainNode.width * currentZoom)/2) ;
+                panY = (mainContent.clientHeight / 2) - (mainNode.y * currentZoom + (mainNode.height* currentZoom)/2);
+            } else {
+                 panX = 50; panY = 50; // Default pan
+            }
+            applyTransform();
+            renderMindmap();
+        }
+        
+        function findNodeById(id) {
+            return nodes.find(node => node.id === id);
+        }
+
+        function getChildren(parentId) {
+            return nodes.filter(node => node.parentId === parentId);
+        }
+        
+        function getVisibleNodes() {
+            const visible = [];
+            function recurse(parentId) {
+                const children = getChildren(parentId);
+                children.forEach(child => {
+                    visible.push(child);
+                    const parentNode = findNodeById(parentId); // Parent must exist to check collapsed state
+                    if (parentNode && !parentNode.isCollapsed) {
+                        recurse(child.id);
+                    } else if (!parentNode && parentId === null) { // Root nodes case
+                         recurse(child.id);
+                    }
+                });
+            }
+            // Add root nodes
+            nodes.filter(n => !n.parentId).forEach(rootNode => {
+                visible.push(rootNode);
+                if (!rootNode.isCollapsed) {
+                     recurse(rootNode.id);
+                }
+            });
+            return visible;
+        }
+
+
+        function renderMindmap() {
+            mindmapContainer.innerHTML = '<svg id="mindmap-svg"></svg>'; // Clear existing nodes, keep SVG
+            const newMindmapSvg = document.getElementById('mindmap-svg');
+            const nodesToRender = getVisibleNodes();
+
+            nodesToRender.forEach(node => {
+                const nodeEl = document.createElement('div');
+                nodeEl.classList.add('node');
+                nodeEl.id = `node-${node.id}`;
+                nodeEl.style.left = `${node.x}px`;
+                nodeEl.style.top = `${node.y}px`;
+                nodeEl.style.backgroundColor = node.color;
+                nodeEl.style.color = node.textColor || '#000';
+                if(node.width) nodeEl.style.width = `${node.width}px`;
+                if(node.height) nodeEl.style.height = `${node.height}px`;
+
+                const contentWrapper = document.createElement('div');
+                contentWrapper.classList.add('node-content-wrapper');
+
+                const textEl = document.createElement('div');
+                textEl.classList.add('node-text');
+                textEl.innerHTML = node.text.replace(/\n/g, '<br>');
+                contentWrapper.appendChild(textEl);
+                nodeEl.appendChild(contentWrapper);
+
+                const magicIconEl = document.createElement('span');
+                magicIconEl.classList.add('magic-icon');
+                magicIconEl.textContent = '✨';
+                magicIconEl.title = "Explore subtopics with LLM";
+                magicIconEl.onclick = (e) => {
+                    e.stopPropagation();
+                    openLlmChatModal(node.id);
+                };
+                nodeEl.appendChild(magicIconEl);
+
+                const children = getChildren(node.id);
+                if (children.length > 0) {
+                    const expandCollapseBtn = document.createElement('span');
+                    expandCollapseBtn.classList.add('expand-collapse-btn');
+                    expandCollapseBtn.innerHTML = `[${node.isCollapsed ? '+' : '-'}] ${children.length}`;
+                    expandCollapseBtn.title = node.isCollapsed ? "Expand" : "Collapse";
+                    expandCollapseBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        toggleCollapse(node.id);
+                    };
+                    nodeEl.appendChild(expandCollapseBtn);
+                }
+
+
+                nodeEl.ondblclick = () => openNotesModal(node.id);
+                
+                mindmapContainer.appendChild(nodeEl);
+
+                // Draw line to parent, if parent is visible
+                if (node.parentId) {
+                    const parentNode = findNodeById(node.parentId);
+                    if (parentNode && nodesToRender.includes(parentNode)) { // Only draw if parent is also rendered
+                        drawConnection(parentNode, node, newMindmapSvg);
+                    }
+                }
+            });
+        }
+
+        function toggleCollapse(nodeId) {
+            const node = findNodeById(nodeId);
+            if (node) {
+                node.isCollapsed = !node.isCollapsed;
+                renderMindmap(); // Re-render to show/hide children and update button
+            }
+        }
+
+        function drawConnection(parentNode, childNode, svgEl) {
+            // ... (drawConnection logic remains largely the same, but ensure it uses node properties)
+            const pCenterX = parentNode.x + (parentNode.width / 2);
+            const pCenterY = parentNode.y + (parentNode.height / 2);
+            const cCenterX = childNode.x + (childNode.width / 2);
+            const cCenterY = childNode.y + (childNode.height / 2);
+
+            let pExitX, pExitY, cEntryX, cEntryY;
+
+            if (cCenterX > pCenterX + parentNode.width / 2) { 
+                pExitX = parentNode.x + parentNode.width; pExitY = pCenterY;
+            } else if (cCenterX < pCenterX - parentNode.width / 2) {
+                pExitX = parentNode.x; pExitY = pCenterY;
+            } else if (cCenterY > pCenterY) {
+                pExitX = pCenterX; pExitY = parentNode.y + parentNode.height;
+            } else { 
+                pExitX = pCenterX; pExitY = parentNode.y;
+            }
+
+            if (pCenterX > cCenterX + childNode.width / 2) {
+                cEntryX = childNode.x + childNode.width; cEntryY = cCenterY;
+            } else if (pCenterX < cCenterX - childNode.width / 2) {
+                cEntryX = childNode.x; cEntryY = cCenterY;
+            } else if (pCenterY > cCenterY) {
+                cEntryX = cCenterX; cEntryY = childNode.y + childNode.height;
+            } else {
+                cEntryX = cCenterX; cEntryY = childNode.y;
+            }
+            
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            const curveFactor = 50;
+            let cp1x = pExitX, cp1y = pExitY, cp2x = cEntryX, cp2y = cEntryY;
+
+            if (Math.abs(pExitX - cEntryX) > Math.abs(pExitY - cEntryY)) { 
+                cp1x = pExitX + (pExitX < cEntryX ? curveFactor : -curveFactor);
+                cp2x = cEntryX - (pExitX < cEntryX ? curveFactor : -curveFactor);
+            } else { 
+                cp1y = pExitY + (pExitY < cEntryY ? curveFactor : -curveFactor);
+                cp2y = cEntryY - (pExitY < cEntryY ? curveFactor : -curveFactor);
+            }
+            
+            path.setAttribute('d', `M ${pExitX} ${pExitY} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${cEntryX} ${cEntryY}`);
+            path.setAttribute('stroke', parentNode.color || '#555');
+            path.setAttribute('fill', 'none');
+            svgEl.appendChild(path);
+        }
+
+        document.getElementById('addNodeBtn').addEventListener('click', () => {
+            nodeIdCounter++;
+            const newNodeId = `custom-${nodeIdCounter}`;
+            
+            const mainContentRect = mainContent.getBoundingClientRect();
+            // Center in current view, considering pan and zoom
+            const viewCenterX = (mainContentRect.width / 2 - panX) / currentZoom;
+            const viewCenterY = (mainContentRect.height / 2 - panY) / currentZoom;
+
+            const newNode = {
+                id: newNodeId,
+                text: 'New Node',
+                notes: '',
+                x: Math.max(0, viewCenterX - 75),
+                y: Math.max(0, viewCenterY - 25),
+                color: '#3498db',
+                textColor: '#fff',
+                width: 150,
+                height: 50,
+                parentId: null,
+                isCollapsed: false
+            };
+            nodes.push(newNode);
+            renderMindmap();
+        });
+
+        function openNotesModal(nodeId) {
+            const node = findNodeById(nodeId);
+            if (node) {
+                notesNodeIdInput.value = nodeId;
+                nodeNameInput.value = node.text;
+                nodeDescriptionTextarea.value = node.notes || '';
+                notesModal.style.display = 'flex';
+            }
+        }
+        function closeNotesModal() {
+            notesModal.style.display = 'none';
+        }
+        function saveNodeDetails() {
+            const nodeId = notesNodeIdInput.value;
+            const node = findNodeById(nodeId);
+            if (node) {
+                node.text = nodeNameInput.value;
+                node.notes = nodeDescriptionTextarea.value;
+                renderMindmap(); // Re-render to show updated name
+            }
+            closeNotesModal();
+        }
+
+        function openLlmChatModal(nodeId) {
+            llmChatModal.style.display = 'flex';
+        }
+        function closeLlmChatModal() {
+            llmChatModal.style.display = 'none';
+        }
+
+        document.getElementById('exportMarkdownBtn').addEventListener('click', () => { /* ... */ });
+        document.getElementById('importMarkdownBtn').addEventListener('click', () => { /* ... */ });
+        function closeMarkdownModal() { /* ... */ }
+        function processMarkdown() { /* ... */ }
+        function exportToMarkdown() { /* ... Markdown export/import functions remain the same ... */ 
+            let markdown = "";
+            const rootNodes = nodes.filter(n => !n.parentId);
+            
+            function recurseExport(node, level) {
+                markdown += `${'#'.repeat(level)} ${node.text}\n`; // Node name
+                if (node.notes && node.notes.trim() !== "") {
+                    markdown += `- Description: ${node.notes.replace(/\n/g, '\\n')}\n`;
+                }
+                // Could add isCollapsed state here if desired, e.g. "- Collapsed: true\n"
+                markdown += "\n";
+
+                const children = getChildren(node.id);
+                children.forEach(child => recurseExport(child, level + 1));
+            }
+
+            rootNodes.forEach(rootNode => recurseExport(rootNode, 1));
+            return markdown.trim();
+        }
+
+        function importFromMarkdown(markdown) {
+            // ... (Import logic might need adjustments if new properties are in markdown)
+            // For now, it primarily uses 'text' for name and 'notes' for description.
+            // 'isCollapsed' will default to false on import unless explicitly parsed.
+             const lines = markdown.split('\n');
+            const newNodes = [];
+            let currentParentStack = [];
+            let currentDescription = "";
+            let lastNode = null;
+            nodeIdCounter = 0; 
+
+            lines.forEach(line => {
+                line = line.trimRight(); 
+                if (line.startsWith('#')) {
+                    if (lastNode && currentDescription) {
+                        lastNode.notes = currentDescription.trim().replace(/\\n/g, '\n');
+                        currentDescription = "";
+                    }
+                    
+                    let level = 0;
+                    while (line[level] === '#') level++;
+                    const text = line.substring(level).trim();
+                    nodeIdCounter++;
+                    const newNode = {
+                        id: `imported-${nodeIdCounter}`,
+                        text: text,
+                        notes: '',
+                        x: 50 + (level-1) * 200 + Math.random()*50, 
+                        y: 50 + newNodes.length * 60 + Math.random()*20,
+                        color: defaultNodes[0].color, 
+                        textColor: defaultNodes[0].textColor,
+                        width: 150 + text.length*2,
+                        height: 50,
+                        parentId: null,
+                        isCollapsed: false // Default for imported nodes
+                    };
+
+                    if (level > currentParentStack.length) { 
+                        if (lastNode) currentParentStack.push(lastNode.id);
+                    } else if (level < currentParentStack.length) {
+                        currentParentStack.splice(level -1);
+                    }
+                    
+                    if (currentParentStack.length > 0) {
+                        newNode.parentId = currentParentStack[currentParentStack.length - 1];
+                    }
+                    
+                    newNodes.push(newNode);
+                    lastNode = newNode;
+
+                } else if (line.startsWith('- Description: ')) {
+                    if (lastNode) {
+                        currentDescription += line.substring('- Description: '.length).trim() + "\n";
+                    }
+                } else if (line.trim() === "" && lastNode && currentDescription) {
+                    lastNode.notes = currentDescription.trim().replace(/\\n/g, '\n');
+                    currentDescription = "";
+                }
+            });
+            
+            if (lastNode && currentDescription) { 
+                lastNode.notes = currentDescription.trim().replace(/\\n/g, '\n');
+            }
+
+            if (newNodes.length > 0) {
+                nodes = newNodes.map(n => ({
+                    ...n, 
+                    height: n.height || (n.text.split('\n').length * 20 + 40 + (n.notes.split('\n').length * 15))
+                }));
+                // Simplified layout as before
+                let yOffset = 50;
+                const levelXOffsets = [50, 250, 450, 650, 850]; 
+                const nodesByLevel = {};
+                nodes.forEach(n => {
+                    let level = 0;
+                    let tempParentId = n.parentId;
+                    while(tempParentId) {
+                        level++;
+                        const parent = nodes.find(p => p.id === tempParentId);
+                        tempParentId = parent ? parent.parentId : null;
+                    }
+                    n.x = levelXOffsets[Math.min(level, levelXOffsets.length - 1)];
+                    if (!nodesByLevel[level]) nodesByLevel[level] = 0;
+                    n.y = 50 + nodesByLevel[level] * 100; 
+                    nodesByLevel[level]++;
+
+                    const colors = ['#2c3e50', '#8e44ad', '#16a085', '#d35400', '#f39c12'];
+                    const textColors = ['#fff', '#fff', '#fff', '#fff', '#000'];
+                    n.color = colors[level % colors.length];
+                    n.textColor = textColors[level % colors.length];
+                });
+                renderMindmap();
+            } else {
+                alert("No valid mindmap data found in Markdown.");
+            }
+        }
+
+        // Panning
+        let isPanning = false;
+        let lastPanX, lastPanY;
+
+        mainContent.addEventListener('mousedown', (e) => {
+            // Only pan if not clicking on a node or interactive element within a node
+            if (e.target === mainContent || e.target === mindmapContainer || e.target === mindmapSvg) {
+                isPanning = true;
+                mainContent.classList.add('panning');
+                lastPanX = e.clientX;
+                lastPanY = e.clientY;
+            }
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (!isPanning) return;
+            const dx = e.clientX - lastPanX;
+            const dy = e.clientY - lastPanY;
+            panX += dx;
+            panY += dy;
+            lastPanX = e.clientX;
+            lastPanY = e.clientY;
+            applyTransform();
+        });
+        document.addEventListener('mouseup', () => {
+            if (isPanning) {
+                isPanning = false;
+                mainContent.classList.remove('panning');
+            }
+        });
+
+        // Zooming
+        mainContent.addEventListener('wheel', (e) => {
+            e.preventDefault();
+            const zoomSpeed = 0.1;
+            const oldZoom = currentZoom;
+
+            if (e.deltaY < 0) { // Zoom in
+                currentZoom = Math.min(3, currentZoom + zoomSpeed); // Max zoom 300%
+            } else { // Zoom out
+                currentZoom = Math.max(0.2, currentZoom - zoomSpeed); // Min zoom 20%
+            }
+
+            // Zoom towards mouse pointer
+            const rect = mainContent.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left; // Mouse X relative to mainContent
+            const mouseY = e.clientY - rect.top; // Mouse Y relative to mainContent
+
+            // Calculate map coordinates under mouse before zoom
+            const mapXBeforeZoom = (mouseX - panX) / oldZoom;
+            const mapYBeforeZoom = (mouseY - panY) / oldZoom;
+
+            // Adjust panX and panY to keep mapX/mapY under mouse after zoom
+            panX = mouseX - (mapXBeforeZoom * currentZoom);
+            panY = mouseY - (mapYBeforeZoom * currentZoom);
+
+            applyTransform();
+            updateZoomDisplay();
+        });
+
+        function applyTransform() {
+            mindmapContainer.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`;
+        }
+
+        function updateZoomDisplay() {
+            document.getElementById('zoomLevelDisplay').textContent = `${Math.round(currentZoom * 100)}%`;
+        }
+
+        makeModalDraggable(notesModal);
+        makeModalDraggable(llmChatModal);
+        makeModalDraggable(markdownModal);
+        
+        function makeModalDraggable(modalElement) {
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            const header = modalElement.querySelector("h2");
+            if (header) {
+                header.onmousedown = dragMouseDown;
+                header.style.cursor = 'move';
+            }
+            function dragMouseDown(e) {
+                e = e || window.event; e.preventDefault();
+                pos3 = e.clientX; pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
+            function elementDrag(e) {
+                e = e || window.event; e.preventDefault();
+                pos1 = pos3 - e.clientX; pos2 = pos4 - e.clientY;
+                pos3 = e.clientX; pos4 = e.clientY;
+                modalElement.style.top = (modalElement.offsetTop - pos2) + "px";
+                modalElement.style.left = (modalElement.offsetLeft - pos1) + "px";
+            }
+            function closeDragElement() {
+                document.onmouseup = null; document.onmousemove = null;
+            }
+        }
+
+        // Node dragging (basic - needs transform compensation)
+        mindmapContainer.addEventListener('mousedown', function(e) {
+            let targetElement = e.target;
+            // Traverse up to find the .node element if a child was clicked (but not magic/expand icons)
+            while(targetElement && !targetElement.classList.contains('node') && targetElement !== mindmapContainer) {
+                if (targetElement.classList.contains('magic-icon') || targetElement.classList.contains('expand-collapse-btn')) {
+                    return; // Don't drag if clicking on these icons
+                }
+                targetElement = targetElement.parentElement;
+            }
+
+            if (targetElement && targetElement.classList.contains('node')) {
+                const nodeEl = targetElement;
+                if (isPanning) return; // Don't drag node if already panning canvas
+                e.stopPropagation(); // Prevent canvas panning
+
+                const nodeId = nodeEl.id.replace('node-', '');
+                const node = findNodeById(nodeId);
+                if (!node) return;
+
+                // Mouse position relative to the un-transformed top-left of the node element
+                // Account for current pan and zoom of the container
+                const containerRect = mindmapContainer.getBoundingClientRect(); // This gives screen coords
+                let startDragX = (e.clientX - containerRect.left) / currentZoom;
+                let startDragY = (e.clientY - containerRect.top) / currentZoom;
+                
+                let nodeStartX = node.x;
+                let nodeStartY = node.y;
+
+
+                function onMouseMove(moveEvent) {
+                    moveEvent.preventDefault();
+                    // Current mouse in screen coordinates
+                    let currentMouseScreenX = moveEvent.clientX;
+                    let currentMouseScreenY = moveEvent.clientY;
+
+                    // Convert current mouse to map coordinates
+                    let currentMouseMapX = (currentMouseScreenX - containerRect.left) / currentZoom;
+                    let currentMouseMapY = (currentMouseScreenY - containerRect.top) / currentZoom;
+                    
+                    let deltaX = currentMouseMapX - startDragX;
+                    let deltaY = currentMouseMapY - startDragY;
+
+                    node.x = nodeStartX + deltaX;
+                    node.y = nodeStartY + deltaY;
+                    
+                    nodeEl.style.left = node.x + 'px';
+                    nodeEl.style.top = node.y + 'px';
+                    
+                    // Quick re-render of lines
+                    const svg = document.getElementById('mindmap-svg');
+                    svg.innerHTML = ''; 
+                    const visibleNodes = getVisibleNodes();
+                    visibleNodes.forEach(n => {
+                        if (n.parentId) {
+                            const parent = findNodeById(n.parentId);
+                            if (parent && visibleNodes.includes(parent)) drawConnection(parent, n, svg);
+                        }
+                    });
+                }
+
+                function onMouseUp() {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                }
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
+            }
+        });
+
+
+        initMindmap();
+    </script>
+</body>
+</html>

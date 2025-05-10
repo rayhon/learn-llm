@@ -1,0 +1,17 @@
+{
+  "path": "sentence-transformers/nli-mpnet-base-v2",
+  "autoid": 6,
+  "dimensions": 768,
+  "backend": "faiss",
+  "offset": 6,
+  "build": {
+    "create": "2025-05-05T02:51:28Z",
+    "python": "3.12.7",
+    "settings": {
+      "components": "IDMap,Flat"
+    },
+    "system": "Darwin (arm64)",
+    "txtai": "8.5.0"
+  },
+  "update": "2025-05-05T02:51:28Z"
+}

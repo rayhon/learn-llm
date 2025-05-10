@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mindmap Webapp</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .top-bar {
+            background-color: #ffffff;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 1px solid #e0e0e0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+
+        .top-bar .menu-icon { font-size: 24px; cursor: pointer; margin-right: 15px; }
+        .top-bar .title { font-size: 18px; font-weight: 600; color: #333; margin-right: auto; }
+        .top-bar .user-avatar { width: 32px; height: 32px; border-radius: 50%; background-color: #ffbf00; color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; margin-right: 10px; }
+        .top-bar .share-btn { background-color: #4A4AFF; color: white; padding: 8px 15px; border: none; border-radius: 5px; cursor: pointer; font-weight: 500; display: flex; align-items: center; }
+        .top-bar .share-btn:hover { background-color: #3a3acc; }
+        .top-bar .action-icons { margin-left: 20px; display: flex; gap: 15px; }
+        .top-bar .action-icons span { font-size: 20px; cursor: pointer; color: #555; }
+        .top-bar .action-icons span:hover { color: #000; }
+
+        .main-content {
+            flex-grow: 1;
+            position: relative;
+            overflow: hidden;
+            background-color: #E9EBF8;
+            cursor: grab;
+        }
+        .main-content.panning { cursor: grabbing; }
+
+        #mindmap-container {
+            position: absolute;
+            width: 4000px; 
+            height: 3000px; 
+            transform-origin: 0 0;
+        }
+
+        .node {
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 10px 15px;
+            font-size: 13px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            cursor: grab;
+            min-width: 100px;
+            max-width: 250px;
+            text-align: center;
+            line-height: 1.4;
+            user-select: none;
+            z-index: 1; 
+            transition: box-shadow 0.2s ease-in-out;
+        }
+        .node.node-highlighted {
+            box-shadow: 0 0 12px 4px #4A4AFF; 
+        }
+        .node .node-content-wrapper { display: flex; flex-direction: column; align-items: center; }
+        .node .node-text { margin-bottom: 5px; font-weight: bold; }
+        .node .magic-icon {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            color: #FFD700;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            padding: 2px;
+            z-index: 1; 
+        }
+        .node .magic-icon:hover { color: #FFA500; }
+
+        .node-toggle {
+            position: absolute;
+            right: -10px; 
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background-color: #fff;
+            border: 1.5px solid #7f8c8d;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px; 
+            font-weight: bold;
+            color: #555;
+            cursor: pointer;
+            z-index: 5; 
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .node-toggle:hover {
+            background-color: #f0f0f0;
+            border-color: #333;
+        }
+
+        #mindmap-svg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%; 
+            height: 100%; 
+            pointer-events: none;
+            z-index: 0; 
+        }
+        #mindmap-svg path {
+            stroke-width: 1.5px;
+            fill: none;
+            transition: stroke-width 0.2s ease-in-out, stroke 0.2s ease-in-out; 
+        }
+        #mindmap-svg path.path-highlighted {
+            stroke-width: 2.5px;
+            stroke: #4A4AFF !important; 
+        }
+
+
+        .bottom-toolbar {
+            background-color: #ffffff;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            border-top: 1px solid #e0e0e0;
+            box-shadow: 0 -2px 4px rgba(0,0,0,0.05);
+            z-index: 100;
+        }
+        .bottom-toolbar .dropdown, .bottom-toolbar .zoom-level-display { padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px; margin-right: 15px; font-size: 14px; background-color: #f9f9f9; }
+        .bottom-toolbar .zoom-level-display { width: 60px; text-align: center; }
+        .bottom-toolbar .tools { display: flex; gap: 10px; margin-left: auto; }
+        .bottom-toolbar .tool-btn { background-color: #f0f0f0; border: 1px solid #ccc; color: #333; padding: 8px; border-radius: 5px; cursor: pointer; font-size: 18px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; }
+        .bottom-toolbar .tool-btn:hover { background-color: #e0e0e0; }
+
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        .modal-content { background-color: #fefefe; margin: auto; padding: 30px; border: 1px solid #888; width: 60%; max-width: 700px; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; }
+        .modal-content h2 { margin-top: 0; color: #333; border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+        .modal-content label { display: block; margin-bottom: 5px; font-weight: bold; color: #555; }
+        .modal-content input[type="text"], .modal-content textarea { width: 95%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px; margin-bottom: 15px; }
+        .modal-content textarea { resize: vertical; }
+        .modal-content .chat-area { width: 95%; border: 1px solid #ccc; border-radius: 5px; padding: 10px; margin-bottom: 10px; overflow-y: auto; background-color: #f9f9f9; font-size:14px; line-height: 1.5;}
+        .modal-content .chat-area p { margin: 5px 0; }
+        .modal-content .modal-buttons { text-align: right; margin-top: 10px; }
+        .modal-content button { background-color: #4A4AFF; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-left: 10px; }
+        .modal-content button.cancel-btn { background-color: #ccc; color: #333; }
+        .modal-content button:hover { opacity: 0.9; }
+        .close-btn { position: absolute; top: 15px; right: 20px; color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close-btn:hover, .close-btn:focus { color: black; text-decoration: none; }
+
+        .node.level-0 {
+            width: 320px !important;
+            height: 90px !important;
+            font-size: 1.5em;
+            background: #1a237e;
+            color: #fff;
+            font-weight: bold;
+            box-shadow: 0 4px 16px rgba(26,35,126,0.15);
+            border: none;
+        }
+        .node.level-1 {
+            width: 200px !important;
+            height: 60px !important;
+            font-size: 1.1em;
+            background: #ff9800;
+            color: #fff;
+            font-weight: 600;
+            border-radius: 16px;
+            border: none;
+            box-shadow: 0 2px 8px rgba(255,152,0,0.10);
+        }
+        .node.level-2 {
+            width: 180px !important;
+            height: 45px !important;
+            font-size: 1em;
+            background: #fffde7;
+            color: #333;
+            border-radius: 20px;
+            border: 2px solid #ffe082;
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(255,235,59,0.10);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <span class="menu-icon">☰</span>
+        <span class="title">Learning about Large Language...</span>
+        <div class="user-avatar">R</div>
+        <button class="share-btn">Share</button>
+        <div class="action-icons"><span>▶️</span><span>💬</span><span>🙂</span><span>💾</span></div>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <div id="mindmap-container">
+            <svg id="mindmap-svg"></svg>
+        </div>
+    </div>
+
+    <div class="bottom-toolbar">
+        <div class="dropdown">Learning abou... ▼</div>
+        <div class="zoom-level-display" id="zoomLevelDisplay">100%</div>
+        <button class="tool-btn" id="exportMarkdownBtn" title="Export Markdown">📤</button>
+        <button class="tool-btn" id="importMarkdownBtn" title="Import Markdown">📥</button>
+        <button class="tool-btn" id="rearrangeNodesBtn" title="Rearrange Nodes">🔃</button>
+        <div class="tools">
+            <button class="tool-btn" id="addNodeBtn" title="Add Node">➕</button>
+            <button class="tool-btn" title="Link">🔗</button>
+            <button class="tool-btn" title="Shape">▭</button>
+            <button class="tool-btn" title="Image">🖼️</button>
+            <button class="tool-btn" title="Text Style">Aa</button>
+            <button class="tool-btn" title="Magic Wand">✨</button> <!-- This one calls openLlmChatModal -->
+        </div>
+    </div>
+
+    <div id="notesModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeNotesModal()">×</span>
+            <h2>Edit Node Details</h2>
+            <input type="hidden" id="notesNodeId">
+            <label for="nodeNameInput">Name:</label>
+            <input type="text" id="nodeNameInput" placeholder="Enter node name...">
+            <label for="nodeDescriptionTextarea">Description:</label>
+            <textarea id="nodeDescriptionTextarea" placeholder="Enter description (notes) here..." style="height: 150px;"></textarea>
+            <div class="modal-buttons">
+                <button onclick="closeNotesModal()" class="cancel-btn">Cancel</button>
+                <button onclick="saveNodeDetails()">Save Details</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="llmChatModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeLlmChatModal()">×</span>
+            <h2>LLM Chat (Node: <span id="llmChatNodeName"></span>)</h2>
+            <input type="hidden" id="llmChatNodeId">
+            <div id="llmChatArea" class="chat-area" style="height: 250px;">
+                <!-- Chat messages will appear here -->
+            </div>
+            <textarea id="llmChatInput" placeholder="Ask something about this node..." style="width: 95%; height: 80px; margin-top:10px; margin-bottom: 10px;"></textarea>
+            <div class="modal-buttons">
+                <button onclick="closeLlmChatModal()" class="cancel-btn">Close</button>
+                <button onclick="sendLlmChatMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="markdownModal" class="modal"> <div class="modal-content"> <span class="close-btn" onclick="this.parentElement.parentElement.style.display='none'">×</span><h2>Markdown Import/Export</h2> <!-- ... Markdown Modal ... --> <button onclick="this.parentElement.parentElement.style.display='none'">Close</button></div></div>
+
+    <script>
+        const mainContent = document.getElementById('mainContent');
+        const mindmapContainer = document.getElementById('mindmap-container');
+        // mindmapSvgElement will be fetched dynamically in renderMindmap
+        
+        const notesModal = document.getElementById('notesModal');
+        const notesNodeIdInput = document.getElementById('notesNodeId');
+        const nodeNameInput = document.getElementById('nodeNameInput');
+        const nodeDescriptionTextarea = document.getElementById('nodeDescriptionTextarea');
+
+        const llmChatModal = document.getElementById('llmChatModal');
+        const llmChatNodeIdInput = document.getElementById('llmChatNodeId');
+        const llmChatNodeNameDisplay = document.getElementById('llmChatNodeName');
+        const llmChatArea = document.getElementById('llmChatArea');
+        const llmChatInput = document.getElementById('llmChatInput');
+
+        const markdownModal = document.getElementById('markdownModal');
+
+        let nodes = [];
+        let nodeIdCounter = 0;
+        let currentZoom = 1;
+        let panX = 0;
+        let panY = 0;
+        const DRAG_THRESHOLD = 5; // Pixels mouse must move before drag starts
+
+        const defaultNodes = [ 
+            { id: 'llm_main', text: 'Learning about Large Language Models (LLMs)', x: 750, y: 500, color: '#2c3e50', textColor: '#fff', width: 220, height: 70, parentId: null, notes: 'Central topic about LLMs.', isCollapsed: false },
+            { id: 'conclusion', text: 'Conclusion', x: 450, y: 200, color: '#8e44ad', textColor: '#fff', width: 150, parentId: 'llm_main', notes: '', isCollapsed: false },
+            { id: 'conc_overview', text: 'Overview', x: 200, y: 150, color: '#9b59b6', textColor: '#fff', width: 220, parentId: 'conclusion', notes: 'Understanding LLMs requires a deep dive...\nFamiliarity with specific models...', isCollapsed: false },
+            { id: 'ethical', text: 'Ethical Considerations', x: 450, y: 500, color: '#16a085', textColor: '#fff', width: 180, parentId: 'llm_main', notes: '', isCollapsed: false },
+            { id: 'eth_overview', text: 'Overview', x: 200, y: 400, color: '#1abc9c', textColor: '#fff', width: 220, parentId: 'ethical', notes: 'The deployment of LLMs raises several ethical concerns.', isCollapsed: false },
+            { id: 'eth_bias', text: 'Bias', x: 200, y: 500, color: '#1abc9c', textColor: '#fff', width: 220, parentId: 'ethical', notes: 'LLMs can inadvertently perpetuate biases...\nA study found that GPT-3 may exhibit gender bias...', isCollapsed: false },
+            { id: 'eth_misinfo', text: 'Misinformation', x: 200, y: 600, color: '#1abc9c', textColor: '#fff', width: 220, parentId: 'ethical', notes: 'LLMs can generate human-like text...\nPotential misuse of GPT-3 for creating misleading articles...', isCollapsed: false },
+            { id: 'apps', text: 'Applications of LLMs', x: 450, y: 800, color: '#27ae60', textColor: '#fff', width: 180, parentId: 'llm_main', notes: '', isCollapsed: false },
+            { id: 'apps_overview', text: 'Overview', x: 200, y: 700, color: '#2ecc71', textColor: '#fff', width: 220, parentId: 'apps', notes: 'LLMs have found applications across various industries and tasks.', isCollapsed: false },
+            { id: 'apps_content', text: 'Content Creation', x: 200, y: 800, color: '#2ecc71', textColor: '#fff', width: 220, parentId: 'apps', notes: 'Tools like Jasper use GPT-3 to help marketers...', isCollapsed: false },
+            { id: 'apps_support', text: 'Customer Support', x: 200, y: 900, color: '#2ecc71', textColor: '#fff', width: 220, parentId: 'apps', notes: 'Companies like Drift employ LLMs to power chatbots...\nChatbots handle customer inquiries...', isCollapsed: false },
+            { id: 'apps_translate', text: 'Language Translation', x: 200, y: 1000, color: '#2ecc71', textColor: '#fff', width: 220, parentId: 'apps', notes: 'Google Translate utilizes transformer models...\nMakes translation more accurate...', isCollapsed: false },
+            { id: 'architecture', text: 'Architecture of LLMs', x: 1050, y: 350, color: '#d35400', textColor: '#fff', width: 180, parentId: 'llm_main', notes: '', isCollapsed: false },
+            { id: 'arch_overview', text: 'LLMs Overview', x: 1300, y: 250, color: '#e67e22', textColor: '#fff', width: 220, parentId: 'architecture', notes: 'LLMs are built on transformer architecture...\nThey rely on self-attention mechanisms...', isCollapsed: false },
+            { id: 'arch_gpt3', text: 'GPT-3', x: 1300, y: 350, color: '#e67e22', textColor: '#fff', width: 220, parentId: 'architecture', notes: 'Comprises 175 billion parameters...\nUtilizes a decoder-only transformer architecture...\nGenerates coherent and contextually relevant text...', isCollapsed: false },
+            { id: 'arch_bert', text: 'BERT', x: 1300, y: 450, color: '#e67e22', textColor: '#fff', width: 220, parentId: 'architecture', notes: 'Employs a bidirectional transformer architecture...\nUnderstands the context of words in relation to all other words...\nUseful for tasks like question answering...', isCollapsed: false },
+            { id: 'training', text: 'Training Processes', x: 1050, y: 650, color: '#f39c12', textColor: '#fff', width: 180, parentId: 'llm_main', notes: '', isCollapsed: false },
+            { id: 'train_overview', text: 'Overview', x: 1300, y: 550, color: '#f1c40f', textColor: '#000', width: 220, parentId: 'training', notes: 'LLMs undergo extensive training on diverse datasets...', isCollapsed: false },
+            { id: 'train_pre', text: 'Pre-training', x: 1300, y: 650, color: '#f1c40f', textColor: '#000', width: 220, parentId: 'training', notes: 'Involves unsupervised learning...\nThe model predicts the next word in a sentence...\nGPT-3 was trained on a dataset...', isCollapsed: false },
+            { id: 'train_fine', text: 'Fine-tuning', x: 1300, y: 750, color: '#f1c40f', textColor: '#000', width: 220, parentId: 'training', notes: 'Models can be fine-tuned on specific tasks...\nBERT can be fine-tuned on SQuAD...', isCollapsed: false },
+        ];
+
+        const LEVEL_COLORS = [ // For newly added nodes
+            { bg: '#2c3e50', text: '#fff' },    // Level 0 (Root) - though new roots typically take L1 style
+            { bg: '#4A90E2', text: '#fff' },    // Level 1
+            { bg: '#7ED321', text: '#000' },    // Level 2
+            { bg: '#F5A623', text: '#000' },    // Level 3
+            { bg: '#BD10E0', text: '#fff' },    // Level 4
+            { bg: '#D0021B', text: '#fff' },    // Level 5
+            { bg: '#417505', text: '#fff' }     // Level 6+
+        ];
+
+        function initMindmap() {
+            nodes = defaultNodes.map(n => ({
+                ...n, 
+                width: n.width || 150,
+                height: n.height || (n.text.split('\n').length * 20 + 40),
+                isCollapsed: n.isCollapsed === undefined ? false : n.isCollapsed 
+            }));
+            nodeIdCounter = nodes.reduce((maxId, node) => {
+                const numericId = parseInt(String(node.id).split('-').pop());
+                return isNaN(numericId) ? maxId : Math.max(maxId, numericId);
+            }, nodes.length);
+
+            const mainNode = findNodeById('llm_main') || (nodes.length > 0 ? nodes.find(n => !n.parentId) || nodes[0] : null);
+            if (mainNode) {
+                panX = (mainContent.clientWidth / 2) - (mainNode.x * currentZoom + (mainNode.width * currentZoom)/2) ;
+                panY = (mainContent.clientHeight / 2) - (mainNode.y * currentZoom + (mainNode.height* currentZoom)/2);
+            } else {
+                 panX = 50; panY = 50;
+            }
+            applyTransform();
+            renderMindmap(); 
+            resolveNodeOverlaps(); 
+        }
+        
+        function findNodeById(id) { return nodes.find(node => node.id === id); }
+        function getChildren(parentId) { return nodes.filter(node => node.parentId === parentId); }
+        
+        function getNodeLevel(nodeId) {
+            let level = 0;
+            let currentNode = findNodeById(nodeId);
+            while (currentNode && currentNode.parentId) {
+                level++;
+                currentNode = findNodeById(currentNode.parentId);
+                if (!currentNode) break; 
+            }
+            return level;
+        }
+
+        function assignNodeStyleByLevel(node, level) {
+            const styleIndex = node.parentId ? level : Math.max(0, level -1); // Treat new root as level 1 for color
+            const style = LEVEL_COLORS[Math.min(styleIndex, LEVEL_COLORS.length - 1)];
+            node.color = style.bg;
+            node.textColor = style.text;
+        }
+        
+        function getVisibleNodes() {
+            const visible = [];
+            function recurse(nodeId) { 
+                const node = findNodeById(nodeId);
+                if (!node) return;
+                visible.push(node);
+                if (!node.isCollapsed) {
+                    getChildren(nodeId).forEach(child => recurse(child.id));
+                }
+            }
+            nodes.filter(n => !n.parentId).forEach(rootNode => recurse(rootNode.id));
+            return visible;
+        }
+
+        function renderMindmap() {
+            mindmapContainer.innerHTML = '<svg id="mindmap-svg"></svg>'; 
+            const mindmapSvgElement = document.getElementById('mindmap-svg'); 
+
+            const nodesToRender = getVisibleNodes();
+
+            nodesToRender.forEach(node => {
+                const nodeEl = document.createElement('div');
+                nodeEl.classList.add('node');
+                nodeEl.id = `node-${node.id}`;
+                nodeEl.style.left = `${node.x}px`;
+                nodeEl.style.top = `${node.y}px`;
+                nodeEl.style.backgroundColor = node.color;
+                nodeEl.style.color = node.textColor || '#000';
+                nodeEl.style.width = `${node.width}px`;
+                nodeEl.style.height = `${node.height}px`;
+
+                const contentWrapper = document.createElement('div');
+                contentWrapper.classList.add('node-content-wrapper');
+                const textEl = document.createElement('div');
+                textEl.classList.add('node-text');
+                textEl.innerHTML = node.text.replace(/\n/g, '<br>');
+                contentWrapper.appendChild(textEl);
+                nodeEl.appendChild(contentWrapper);
+
+                const magicIconEl = document.createElement('span');
+                magicIconEl.classList.add('magic-icon'); magicIconEl.textContent = '✨';
+                magicIconEl.onclick = (e) => { e.stopPropagation(); openLlmChatModal(node.id); };
+                nodeEl.appendChild(magicIconEl);
+
+                const children = getChildren(node.id);
+                if (children.length > 0) {
+                    const toggleBtn = document.createElement('div');
+                    toggleBtn.classList.add('node-toggle');
+                    toggleBtn.innerHTML = node.isCollapsed ? children.length : '–';
+                    toggleBtn.title = node.isCollapsed ? "Expand ("+children.length+")" : "Collapse";
+                    toggleBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        toggleCollapse(node.id);
+                    };
+                    nodeEl.appendChild(toggleBtn);
+                }
+                
+                nodeEl.addEventListener('dblclick', () => { openNotesModal(node.id); });
+                
+                nodeEl.addEventListener('mouseenter', () => {
+                    nodeEl.classList.add('node-highlighted');
+                    if (node.parentId) {
+                        const incomingPath = document.getElementById(`path-${node.parentId}-${node.id}`);
+                        if (incomingPath) incomingPath.classList.add('path-highlighted');
+                    }
+                    getChildren(node.id).forEach(child => {
+                        if (nodesToRender.includes(child)) { 
+                            const outgoingPath = document.getElementById(`path-${node.id}-${child.id}`);
+                            if (outgoingPath) outgoingPath.classList.add('path-highlighted');
+                        }
+                    });
+                });
+
+                nodeEl.addEventListener('mouseleave', () => {
+                    nodeEl.classList.remove('node-highlighted');
+                     if (node.parentId) {
+                        const incomingPath = document.getElementById(`path-${node.parentId}-${node.id}`);
+                        if (incomingPath) incomingPath.classList.remove('path-highlighted');
+                    }
+                    getChildren(node.id).forEach(child => {
+                         if (nodesToRender.includes(child)) {
+                            const outgoingPath = document.getElementById(`path-${node.id}-${child.id}`);
+                            if (outgoingPath) outgoingPath.classList.remove('path-highlighted');
+                        }
+                    });
+                });
+
+                const level = getNodeLevel(node.id);
+                nodeEl.classList.add(`level-${level}`);
+
+                mindmapContainer.appendChild(nodeEl);
+
+                if (node.parentId) {
+                    const parentNode = findNodeById(node.parentId);
+                    if (parentNode && nodesToRender.includes(parentNode)) {
+                        drawConnection(parentNode, node, mindmapSvgElement);
+                    }
+                }
+            });
+        }
+
+        function toggleCollapse(nodeId) {
+            const node = findNodeById(nodeId);
+            if (node) {
+                node.isCollapsed = !node.isCollapsed;
+                if (document.getElementById('rearrangeNodesBtn').classList.contains('active-layout')) {
+                    applyTreeLayout(); // Re-layout if tree layout is active
+                } else {
+                    renderMindmap();
+                    resolveNodeOverlaps(); 
+                }
+            }
+        }
+        
+        function drawConnection(parentNode, childNode, svgEl) {
+            const pX = parentNode.x + parentNode.width / 2;
+            const pY = parentNode.y + parentNode.height / 2;
+            const cX = childNode.x + childNode.width / 2;
+            const cY = childNode.y + childNode.height / 2;
+            const deltaX = (cX - pX) * 0.5;
+            const d = `M ${pX} ${pY} C ${pX + deltaX} ${pY}, ${cX - deltaX} ${cY}, ${cX} ${cY}`;
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('d', d);
+            path.setAttribute('stroke', parentNode.color || '#7f8c8d');
+            path.setAttribute('stroke-width', '3');
+            path.setAttribute('fill', 'none');
+            path.setAttribute('opacity', '0.85');
+            path.id = `path-${parentNode.id}-${childNode.id}`;
+            svgEl.appendChild(path);
+        }
+
+        document.getElementById('addNodeBtn').addEventListener('click', () => {
+            nodeIdCounter++;
+            const newNodeId = `custom-${nodeIdCounter}`;
+            const mainContentRect = mainContent.getBoundingClientRect();
+            const viewCenterX = (mainContentRect.width / 2 - panX) / currentZoom;
+            const viewCenterY = (mainContentRect.height / 2 - panY) / currentZoom;
+
+            const newNode = {
+                id: newNodeId, text: 'New Node', notes: '',
+                x: Math.max(0, viewCenterX - 75), y: Math.max(0, viewCenterY - 25),
+                width: 150, height: 50,
+                parentId: null, isCollapsed: false // parentId can be set if a node is selected
+            };
+            const level = getNodeLevel(newNode.id); // Will be 0 if parentId is null
+            assignNodeStyleByLevel(newNode, level); // Assigns default color/textColor
+
+            nodes.push(newNode);
+            renderMindmap();
+            resolveNodeOverlaps();
+        });
+        
+        function openNotesModal(nodeId) { 
+            const node = findNodeById(nodeId);
+            if (!node) return;
+            notesNodeIdInput.value = nodeId;
+            nodeNameInput.value = node.text;
+            nodeDescriptionTextarea.value = node.notes;
+            notesModal.style.display = 'flex';
+        }
+        function closeNotesModal() { notesModal.style.display = 'none'; }
+        function saveNodeDetails() { 
+            const nodeId = notesNodeIdInput.value;
+            const node = findNodeById(nodeId);
+            if (node) {
+                node.text = nodeNameInput.value;
+                node.notes = nodeDescriptionTextarea.value;
+                const nameLines = node.text.split('\n').length;
+                const newHeight = Math.max(50, nameLines * 20 + 30 + (node.notes ? 10 : 0) ); 
+                const heightChanged = node.height !== newHeight;
+                node.height = newHeight;
+                renderMindmap();
+                if (heightChanged) resolveNodeOverlaps(); 
+            }
+            closeNotesModal();
+        }
+        
+        function openLlmChatModal(nodeId) {
+            const node = findNodeById(nodeId);
+            if (!node) return;
+            llmChatNodeIdInput.value = nodeId;
+            llmChatNodeNameDisplay.textContent = node.text.length > 20 ? node.text.substring(0, 17) + "..." : node.text;
+            llmChatArea.innerHTML = `<p><em>Chatting about: ${node.text}</em></p>`; // Initial message
+            llmChatInput.value = '';
+            llmChatModal.style.display = 'flex';
+        }
+        function closeLlmChatModal() { llmChatModal.style.display = 'none'; }
+        function sendLlmChatMessage() {
+            const nodeId = llmChatNodeIdInput.value;
+            const node = findNodeById(nodeId);
+            const messageText = llmChatInput.value.trim();
+            if (!node || !messageText) return;
+
+            const userMsgEl = document.createElement('p');
+            userMsgEl.innerHTML = `<strong>You:</strong> ${messageText}`;
+            llmChatArea.appendChild(userMsgEl);
+            
+            // Placeholder for actual LLM call
+            setTimeout(() => {
+                const llmResponseEl = document.createElement('p');
+                llmResponseEl.innerHTML = `<strong>LLM:</strong> Thanks for asking about "${messageText}" related to "${node.text}". I'm still learning!`;
+                llmChatArea.appendChild(llmResponseEl);
+                llmChatArea.scrollTop = llmChatArea.scrollHeight; // Scroll to bottom
+            }, 500);
+
+            llmChatInput.value = '';
+            llmChatArea.scrollTop = llmChatArea.scrollHeight;
+        }
+        
+        function openMarkdownModal() { markdownModal.style.display = 'flex'; }
+        function exportToMarkdown() { console.log("Exporting to Markdown - Placeholder"); }
+        function importFromMarkdown(markdown) { console.log("Importing from Markdown - Placeholder"); }
+
+
+        let isPanning = false; let panStartPointerX, panStartPointerY;
+        mainContent.addEventListener('mousedown', (e) => {
+            if (e.target === mainContent || e.target.id === 'mindmap-container' || e.target.closest('#mindmap-svg')) {
+                isPanning = true; mainContent.classList.add('panning');
+                panStartPointerX = e.clientX; panStartPointerY = e.clientY;
+            }
+        });
+        document.addEventListener('mousemove', (e) => {
+            if (!isPanning) return;
+            const dx = e.clientX - panStartPointerX; const dy = e.clientY - panStartPointerY;
+            panX += dx; panY += dy;
+            panStartPointerX = e.clientX; panStartPointerY = e.clientY;
+            applyTransform();
+        });
+        document.addEventListener('mouseup', () => {
+            if (isPanning) { isPanning = false; mainContent.classList.remove('panning');}
+        });
+
+        mainContent.addEventListener('wheel', (e) => { /* ... same as before (zoom sensitivity) ... */
+            e.preventDefault(); const zoomSpeed = 0.05; 
+            const oldZoom = currentZoom;
+            if (e.deltaY < 0) { currentZoom = Math.min(3, currentZoom + zoomSpeed); } 
+            else { currentZoom = Math.max(0.2, currentZoom - zoomSpeed); }
+            const rect = mainContent.getBoundingClientRect();
+            const mouseX = e.clientX - rect.left; const mouseY = e.clientY - rect.top;
+            const mapXBeforeZoom = (mouseX - panX) / oldZoom; const mapYBeforeZoom = (mouseY - panY) / oldZoom;
+            panX = mouseX - (mapXBeforeZoom * currentZoom); panY = mouseY - (mapYBeforeZoom * currentZoom);
+            applyTransform(); updateZoomDisplay();
+        });
+
+        function applyTransform() { mindmapContainer.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`; }
+        function updateZoomDisplay() { document.getElementById('zoomLevelDisplay').textContent = `${Math.round(currentZoom * 100)}%`; }
+        
+        function makeModalDraggable(modalElement) { /* ... same as before ... */ }
+        makeModalDraggable(notesModal); 
+        makeModalDraggable(llmChatModal);
+        makeModalDraggable(markdownModal);
+
+
+        // Node Dragging Logic - Revised for dblclick compatibility
+        let draggingNodeInfo = null; // { node, nodeEl, startMapX, startMapY, nodeStartX, nodeStartY, didActuallyDrag }
+
+        mindmapContainer.addEventListener('mousedown', function(e) {
+            if (isPanning) return; // Don't start node drag if panning the canvas
+
+            let targetElement = e.target;
+            while (targetElement && targetElement !== mindmapContainer && !targetElement.classList.contains('node')) {
+                if (targetElement.classList.contains('magic-icon') || targetElement.classList.contains('node-toggle')) return; // These have their own clicks
+                targetElement = targetElement.parentElement;
+            }
+
+            if (targetElement && targetElement.classList.contains('node')) {
+                const nodeEl = targetElement;
+                const nodeId = nodeEl.id.replace('node-', '');
+                const node = findNodeById(nodeId);
+                if (!node) return;
+
+                // Don't prevent default or stop propagation immediately, to allow dblclick
+                // e.preventDefault(); // Do this on mousemove if drag starts
+                // e.stopPropagation(); // Do this on mousemove if drag starts
+
+                const mainRect = mainContent.getBoundingClientRect();
+                const pointerScreenX = e.clientX;
+                const pointerScreenY = e.clientY;
+
+                draggingNodeInfo = {
+                    node: node,
+                    nodeEl: nodeEl,
+                    // Store initial pointer relative to map for delta calculation
+                    startPointerMapX: (pointerScreenX - mainRect.left - panX) / currentZoom,
+                    startPointerMapY: (pointerScreenY - mainRect.top - panY) / currentZoom,
+                    nodeStartX: node.x,
+                    nodeStartY: node.y,
+                    initialPointerScreenX: pointerScreenX, // For threshold check
+                    initialPointerScreenY: pointerScreenY, // For threshold check
+                    didActuallyDrag: false
+                };
+
+                document.addEventListener('mousemove', handleNodeDragMove);
+                document.addEventListener('mouseup', handleNodeDragUp);
+            }
+        });
+
+        function handleNodeDragMove(moveEvent) {
+            if (!draggingNodeInfo) return;
+
+            if (!draggingNodeInfo.didActuallyDrag) {
+                const dxScreen = Math.abs(moveEvent.clientX - draggingNodeInfo.initialPointerScreenX);
+                const dyScreen = Math.abs(moveEvent.clientY - draggingNodeInfo.initialPointerScreenY);
+                if (dxScreen > DRAG_THRESHOLD || dyScreen > DRAG_THRESHOLD) {
+                    draggingNodeInfo.didActuallyDrag = true;
+                    // Now that we know it's a drag, prevent text selection etc.
+                    moveEvent.preventDefault(); 
+                    // And stop propagation to prevent canvas panning during node drag
+                    // This might be tricky if the original mousedown was on container due to event order
+                    // It's generally safer to ensure the mousedown for node drag takes precedence.
+                } else {
+                    return; // Not enough movement to start drag
+                }
+            }
+             // If we are here, it's a drag
+            moveEvent.preventDefault();
+
+
+            const mainRect = mainContent.getBoundingClientRect();
+            const currentPointerScreenX = moveEvent.clientX;
+            const currentPointerScreenY = moveEvent.clientY;
+
+            const currentPointerMapX = (currentPointerScreenX - mainRect.left - panX) / currentZoom;
+            const currentPointerMapY = (currentPointerScreenY - mainRect.top - panY) / currentZoom;
+
+            const deltaMapX = currentPointerMapX - draggingNodeInfo.startPointerMapX;
+            const deltaMapY = currentPointerMapY - draggingNodeInfo.startPointerMapY;
+
+            draggingNodeInfo.node.x = draggingNodeInfo.nodeStartX + deltaMapX;
+            draggingNodeInfo.node.y = draggingNodeInfo.nodeStartY + deltaMapY;
+
+            draggingNodeInfo.nodeEl.style.left = draggingNodeInfo.node.x + 'px';
+            draggingNodeInfo.nodeEl.style.top = draggingNodeInfo.node.y + 'px';
+
+            const tempSvgElement = document.getElementById('mindmap-svg');
+            if (tempSvgElement) {
+                tempSvgElement.innerHTML = '';
+                const visibleNodes = getVisibleNodes();
+                visibleNodes.forEach(n => {
+                    if (n.parentId) {
+                        const parent = findNodeById(n.parentId);
+                        if (parent && visibleNodes.includes(parent)) drawConnection(parent, n, tempSvgElement);
+                    }
+                });
+            }
+        }
+
+        function handleNodeDragUp(upEvent) {
+            if (!draggingNodeInfo) return;
+            
+            document.removeEventListener('mousemove', handleNodeDragMove);
+            document.removeEventListener('mouseup', handleNodeDragUp);
+
+            if (draggingNodeInfo.didActuallyDrag) {
+                // If a drag occurred, re-render and resolve overlaps.
+                // upEvent.stopPropagation(); // To prevent canvas pan if mouseup is on canvas
+                renderMindmap(); 
+                resolveNodeOverlaps();
+            }
+            // If no drag, dblclick or simple click will be handled by their own listeners.
+            draggingNodeInfo = null;
+        }
+
+
+        function resolveNodeOverlaps() { /* ... same improved version as before ... */
+            const visibleNodes = getVisibleNodes();
+            if (visibleNodes.length < 2) return;
+
+            const spacing = 50; 
+            let iterations = 0;
+            const maxIterations = 30 * visibleNodes.length; 
+            let collisionsFoundThisIteration;
+            let nodesMoved = false;
+
+            do {
+                collisionsFoundThisIteration = false;
+                for (let i = 0; i < visibleNodes.length; i++) {
+                    for (let j = i + 1; j < visibleNodes.length; j++) {
+                        const nodeA = visibleNodes[i];
+                        const nodeB = visibleNodes[j];
+
+                        const A_left = nodeA.x; const A_right = nodeA.x + nodeA.width;
+                        const A_top = nodeA.y; const A_bottom = nodeA.y + nodeA.height;
+                        const B_left = nodeB.x; const B_right = nodeB.x + nodeB.width;
+                        const B_top = nodeB.y; const B_bottom = nodeB.y + nodeB.height;
+
+                        const overlapX = Math.max(0, Math.min(A_right + spacing, B_right + spacing) - Math.max(A_left, B_left));
+                        const overlapY = Math.max(0, Math.min(A_bottom + spacing, B_bottom + spacing) - Math.max(A_top, B_top));
+
+                        if (overlapX > 0 && overlapY > 0) {
+                            collisionsFoundThisIteration = true; nodesMoved = true;
+                            
+                            const centerAx = nodeA.x + nodeA.width / 2; const centerAy = nodeA.y + nodeA.height / 2;
+                            const centerBx = nodeB.x + nodeB.width / 2; const centerBy = nodeB.y + nodeB.height / 2;
+                            const pushFactor = 0.5; // How much each node moves
+
+                            if (overlapX < overlapY) { // Resolve X overlap
+                                const move = (centerAx < centerBx ? -overlapX : overlapX) * pushFactor;
+                                if (!isAncestor(nodeA, nodeB) && !isAncestor(nodeB, nodeA)) {
+                                    nodeA.x += move; nodeB.x -= move;
+                                } else if (isAncestor(nodeA, nodeB)) { nodeB.x -= move * 2; } 
+                                else { nodeA.x += move * 2; }
+                            } else { // Resolve Y overlap
+                                const move = (centerAy < centerBy ? -overlapY : overlapY) * pushFactor;
+                                 if (!isAncestor(nodeA, nodeB) && !isAncestor(nodeB, nodeA)) {
+                                    nodeA.y += move; nodeB.y -= move;
+                                } else if (isAncestor(nodeA, nodeB)) { nodeB.y -= move * 2; } 
+                                else { nodeA.y += move * 2; }
+                            }
+                        }
+                    }
+                }
+                iterations++;
+            } while (collisionsFoundThisIteration && iterations < maxIterations);
+            
+            if (nodesMoved) { renderMindmap(); }
+        }
+
+        function isAncestor(potentialAncestorNode, node) { /* ... same as before ... */
+            let current = node;
+            while (current && current.parentId) { 
+                if (current.parentId === potentialAncestorNode.id) return true;
+                current = findNodeById(current.parentId);
+            }
+            return false;
+        }
+
+        // --- Tree Layout Function ---
+        document.getElementById('rearrangeNodesBtn').addEventListener('click', () => {
+            applyTreeLayout();
+            document.getElementById('rearrangeNodesBtn').classList.add('active-layout'); // Mark active
+        });
+        
+        function applyTreeLayout() {
+            const HORIZONTAL_SPACING = 200; 
+            const VERTICAL_SPACING = 20;   
+            let initialX = 50;
+            let yPos = 50; // Current Y position for the next root/subtree block
+
+            function layoutSubtree(nodeId, currentX, parentCenterY, level) {
+                const node = findNodeById(nodeId);
+                if (!node) return { height: 0, y: parentCenterY };
+
+                node.x = currentX;
+                // assignNodeStyleByLevel(node, level); // Optionally re-style all nodes
+
+                const children = getChildren(nodeId).filter(c => getVisibleNodes().includes(c)); // Layout only visible children
+                
+                if (!children.length || node.isCollapsed) {
+                    node.y = parentCenterY - node.height / 2; // Center node itself if no children shown
+                    return { height: node.height, y: node.y };
+                }
+
+                let childrenTotalHeight = 0;
+                children.forEach(child => childrenTotalHeight += child.height); // Sum direct heights
+                childrenTotalHeight += (children.length - 1) * VERTICAL_SPACING;
+
+                let childStartY = parentCenterY - childrenTotalHeight / 2;
+                let maxSubtreeHeightForParent = 0;
+
+                children.forEach(child => {
+                    const childLayoutInfo = layoutSubtree(child.id, currentX + HORIZONTAL_SPACING, childStartY + child.height / 2, level + 1);
+                    child.y = childStartY; // Set y based on stacking
+                    childStartY += child.height + VERTICAL_SPACING;
+                    maxSubtreeHeightForParent = Math.max(maxSubtreeHeightForParent, childLayoutInfo.height);
+                });
+                
+                // Adjust parent Y to be centered among its actual children block
+                if (children.length > 0) {
+                    const firstChild = children[0];
+                    const lastChild = children[children.length - 1];
+                    const childrenBlockMidY = firstChild.y + ((lastChild.y + lastChild.height) - firstChild.y) / 2;
+                    node.y = childrenBlockMidY - node.height / 2;
+                } else {
+                     node.y = parentCenterY - node.height / 2;
+                }
+
+
+                return { height: Math.max(node.height, childrenTotalHeight), y: node.y };
+            }
+
+            const rootNodes = nodes.filter(n => !n.parentId);
+            rootNodes.forEach(root => {
+                const subtreeInfo = layoutSubtree(root.id, initialX, yPos + root.height / 2, 0); // Pass initial Y estimate
+                // Re-adjust root's Y based on its actual children's layout if needed (already done inside)
+                yPos += subtreeInfo.height + VERTICAL_SPACING * 3; // Increment Y for the next root node's block
+            });
+            
+            // Pan to view the start of the map after layout
+            if (rootNodes.length > 0) {
+                 const firstRoot = rootNodes[0];
+                 panX = (mainContent.clientWidth / 2) - (firstRoot.x * currentZoom + (firstRoot.width * currentZoom)/2) - 100*currentZoom; // Center a bit left of first root
+                 panY = (mainContent.clientHeight / 2) - (firstRoot.y * currentZoom + (firstRoot.height* currentZoom)/2);
+                 applyTransform();
+            }
+
+            renderMindmap();
+            // resolveNodeOverlaps(); // The layout should ideally prevent most, but a pass can be useful
+            console.log("Tree layout applied.");
+        }
+
+
+        initMindmap();
+    </script>
+</body>
+</html>
