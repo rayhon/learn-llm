@@ -53,24 +53,43 @@
         .node {
             position: absolute;
             background-color: #fff;
-            border: 1px solid #ccc;
             border-radius: 8px;
             padding: 10px 15px;
             font-size: 13px;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            cursor: grab;
+            cursor: pointer;
             min-width: 100px;
             max-width: 250px;
             text-align: center;
             line-height: 1.4;
             user-select: none;
             z-index: 1; 
-            transition: box-shadow 0.2s ease-in-out;
+            /* Modified transition: be more specific or use the dragging class to override */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, border 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            border: 2px solid transparent;
         }
         .node.node-highlighted {
-            box-shadow: 0 0 12px 4px #4A4AFF; 
+            border: 4px solid #4A4AFF;
+            box-shadow: 0 0 0 2px rgba(74, 74, 255, 0.3);
+            z-index: 5;
         }
-        .node .node-content-wrapper { display: flex; flex-direction: column; align-items: center; }
+        .node.node-selected {
+            border: 4px solid #4A4AFF;
+            box-shadow: 0 0 0 4px rgba(74, 74, 255, 0.3);
+            z-index: 10;
+        }
+        /* NEW CLASS TO HANDLE DRAGGING STATE */
+        .node.node-dragging-active {
+            transition: none !important; /* Crucial: disable transition for left/top during drag */
+            z-index: 1000 !important; /* Optional: ensure dragged node is visually on top */
+             box-shadow: 0 8px 20px rgba(0,0,0,0.25); /* Optional: visual feedback for dragging */
+        }
+
+        .node .node-content-wrapper { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+        }
         .node .node-text { margin-bottom: 5px; font-weight: bold; }
         .node .magic-icon {
             position: absolute;
@@ -123,11 +142,19 @@
         #mindmap-svg path {
             stroke-width: 1.5px;
             fill: none;
-            transition: stroke-width 0.2s ease-in-out, stroke 0.2s ease-in-out; 
+            transition: stroke-width 0.2s ease-in-out, stroke 0.2s ease-in-out, filter 0.2s ease-in-out; 
+            pointer-events: stroke;
+            cursor: pointer;
         }
         #mindmap-svg path.path-highlighted {
-            stroke-width: 2.5px;
-            stroke: #4A4AFF !important; 
+            stroke-width: 3px;
+            stroke: #4A4AFF !important;
+            filter: drop-shadow(0 0 5px rgba(74, 74, 255, 0.6));
+        }
+        #mindmap-svg path.path-selected {
+            stroke-width: 3px;
+            stroke: #FF4A4A !important;
+            filter: drop-shadow(0 0 5px rgba(255, 74, 74, 0.6));
         }
 
 
@@ -169,7 +196,6 @@
             color: #fff;
             font-weight: bold;
             box-shadow: 0 4px 16px rgba(26,35,126,0.15);
-            border: none;
         }
         .node.level-1 {
             width: 200px !important;
@@ -179,7 +205,6 @@
             color: #fff;
             font-weight: 600;
             border-radius: 16px;
-            border: none;
             box-shadow: 0 2px 8px rgba(255,152,0,0.10);
         }
         .node.level-2 {
@@ -189,7 +214,6 @@
             background: #fffde7;
             color: #333;
             border-radius: 20px;
-            border: 2px solid #ffe082;
             font-weight: 500;
             box-shadow: 0 2px 8px rgba(255,235,59,0.10);
         }
@@ -264,7 +288,6 @@
     <script>
         const mainContent = document.getElementById('mainContent');
         const mindmapContainer = document.getElementById('mindmap-container');
-        // mindmapSvgElement will be fetched dynamically in renderMindmap
         
         const notesModal = document.getElementById('notesModal');
         const notesNodeIdInput = document.getElementById('notesNodeId');
@@ -284,7 +307,7 @@
         let currentZoom = 1;
         let panX = 0;
         let panY = 0;
-        const DRAG_THRESHOLD = 5; // Pixels mouse must move before drag starts
+        const DRAG_THRESHOLD = 5; 
 
         const defaultNodes = [ 
             { id: 'llm_main', text: 'Learning about Large Language Models (LLMs)', x: 750, y: 500, color: '#2c3e50', textColor: '#fff', width: 220, height: 70, parentId: null, notes: 'Central topic about LLMs.', isCollapsed: false },
@@ -309,14 +332,14 @@
             { id: 'train_fine', text: 'Fine-tuning', x: 1300, y: 750, color: '#f1c40f', textColor: '#000', width: 220, parentId: 'training', notes: 'Models can be fine-tuned on specific tasks...\nBERT can be fine-tuned on SQuAD...', isCollapsed: false },
         ];
 
-        const LEVEL_COLORS = [ // For newly added nodes
-            { bg: '#2c3e50', text: '#fff' },    // Level 0 (Root) - though new roots typically take L1 style
-            { bg: '#4A90E2', text: '#fff' },    // Level 1
-            { bg: '#7ED321', text: '#000' },    // Level 2
-            { bg: '#F5A623', text: '#000' },    // Level 3
-            { bg: '#BD10E0', text: '#fff' },    // Level 4
-            { bg: '#D0021B', text: '#fff' },    // Level 5
-            { bg: '#417505', text: '#fff' }     // Level 6+
+        const LEVEL_COLORS = [ 
+            { bg: '#2c3e50', text: '#fff' },    
+            { bg: '#4A90E2', text: '#fff' },    
+            { bg: '#7ED321', text: '#000' },    
+            { bg: '#F5A623', text: '#000' },    
+            { bg: '#BD10E0', text: '#fff' },    
+            { bg: '#D0021B', text: '#fff' },    
+            { bg: '#417505', text: '#fff' }     
         ];
 
         function initMindmap() {
@@ -358,7 +381,7 @@
         }
 
         function assignNodeStyleByLevel(node, level) {
-            const styleIndex = node.parentId ? level : Math.max(0, level -1); // Treat new root as level 1 for color
+            const styleIndex = node.parentId ? level : Math.max(0, level -1); 
             const style = LEVEL_COLORS[Math.min(styleIndex, LEVEL_COLORS.length - 1)];
             node.color = style.bg;
             node.textColor = style.text;
@@ -379,11 +402,12 @@
         }
 
         function renderMindmap() {
-            mindmapContainer.innerHTML = '<svg id="mindmap-svg"></svg>'; 
-            const mindmapSvgElement = document.getElementById('mindmap-svg'); 
+            const existingSvg = document.getElementById('mindmap-svg');
+            mindmapContainer.innerHTML = '';
+            mindmapContainer.appendChild(existingSvg); 
 
             const nodesToRender = getVisibleNodes();
-
+            
             nodesToRender.forEach(node => {
                 const nodeEl = document.createElement('div');
                 nodeEl.classList.add('node');
@@ -395,6 +419,12 @@
                 nodeEl.style.width = `${node.width}px`;
                 nodeEl.style.height = `${node.height}px`;
 
+                if (window.selectedElement && 
+                    window.selectedElement.type === 'node' && 
+                    window.selectedElement.id === node.id) {
+                    nodeEl.classList.add('node-selected');
+                }
+
                 const contentWrapper = document.createElement('div');
                 contentWrapper.classList.add('node-content-wrapper');
                 const textEl = document.createElement('div');
@@ -403,9 +433,45 @@
                 contentWrapper.appendChild(textEl);
                 nodeEl.appendChild(contentWrapper);
 
+                nodeEl.addEventListener('mouseenter', () => {
+                    if (!window.selectedElement && !nodeEl.classList.contains('node-dragging-active')) {
+                        nodeEl.classList.add('node-highlighted');
+                    }
+                });
+
+                nodeEl.addEventListener('mouseleave', () => {
+                    if (!window.selectedElement) {
+                        nodeEl.classList.remove('node-highlighted');
+                    }
+                });
+
+                nodeEl.addEventListener('click', (e) => {
+                    if (e.target === nodeEl || e.target.closest('.node-content-wrapper')) {
+                         if (e.target.classList.contains('magic-icon') || e.target.classList.contains('node-toggle')) {
+                            return; 
+                        }
+                        selectElement('node', node.id);
+                        e.stopPropagation();
+                    }
+                });
+
+                nodeEl.addEventListener('dblclick', (e) => {
+                     if (e.target === nodeEl || e.target.closest('.node-content-wrapper')) {
+                        if (e.target.classList.contains('magic-icon') || e.target.classList.contains('node-toggle')) {
+                            return; 
+                        }
+                        openNotesModal(node.id);
+                        e.stopPropagation();
+                    }
+                });
+
                 const magicIconEl = document.createElement('span');
-                magicIconEl.classList.add('magic-icon'); magicIconEl.textContent = '✨';
-                magicIconEl.onclick = (e) => { e.stopPropagation(); openLlmChatModal(node.id); };
+                magicIconEl.classList.add('magic-icon');
+                magicIconEl.textContent = '✨';
+                magicIconEl.onclick = (e) => {
+                    e.stopPropagation();
+                    openLlmChatModal(node.id);
+                };
                 nodeEl.appendChild(magicIconEl);
 
                 const children = getChildren(node.id);
@@ -420,46 +486,25 @@
                     };
                     nodeEl.appendChild(toggleBtn);
                 }
-                
-                nodeEl.addEventListener('dblclick', () => { openNotesModal(node.id); });
-                
-                nodeEl.addEventListener('mouseenter', () => {
-                    nodeEl.classList.add('node-highlighted');
-                    if (node.parentId) {
-                        const incomingPath = document.getElementById(`path-${node.parentId}-${node.id}`);
-                        if (incomingPath) incomingPath.classList.add('path-highlighted');
-                    }
-                    getChildren(node.id).forEach(child => {
-                        if (nodesToRender.includes(child)) { 
-                            const outgoingPath = document.getElementById(`path-${node.id}-${child.id}`);
-                            if (outgoingPath) outgoingPath.classList.add('path-highlighted');
-                        }
-                    });
-                });
-
-                nodeEl.addEventListener('mouseleave', () => {
-                    nodeEl.classList.remove('node-highlighted');
-                     if (node.parentId) {
-                        const incomingPath = document.getElementById(`path-${node.parentId}-${node.id}`);
-                        if (incomingPath) incomingPath.classList.remove('path-highlighted');
-                    }
-                    getChildren(node.id).forEach(child => {
-                         if (nodesToRender.includes(child)) {
-                            const outgoingPath = document.getElementById(`path-${node.id}-${child.id}`);
-                            if (outgoingPath) outgoingPath.classList.remove('path-highlighted');
-                        }
-                    });
-                });
 
                 const level = getNodeLevel(node.id);
                 nodeEl.classList.add(`level-${level}`);
 
                 mindmapContainer.appendChild(nodeEl);
+            });
+            renderConnections();
+        }
 
+        function renderConnections() {
+            const mindmapSvg = document.getElementById('mindmap-svg');
+            mindmapSvg.innerHTML = ''; 
+
+            const nodesToRender = getVisibleNodes();
+            nodesToRender.forEach(node => {
                 if (node.parentId) {
                     const parentNode = findNodeById(node.parentId);
-                    if (parentNode && nodesToRender.includes(parentNode)) {
-                        drawConnection(parentNode, node, mindmapSvgElement);
+                    if (parentNode && nodesToRender.includes(parentNode)) { 
+                        drawConnection(parentNode, node, mindmapSvg);
                     }
                 }
             });
@@ -470,10 +515,9 @@
             if (node) {
                 node.isCollapsed = !node.isCollapsed;
                 if (document.getElementById('rearrangeNodesBtn').classList.contains('active-layout')) {
-                    applyTreeLayout(); // Re-layout if tree layout is active
+                    applyTreeLayout(); 
                 } else {
-                    renderMindmap();
-                    resolveNodeOverlaps(); 
+                    renderMindmap(); 
                 }
             }
         }
@@ -492,6 +536,40 @@
             path.setAttribute('fill', 'none');
             path.setAttribute('opacity', '0.85');
             path.id = `path-${parentNode.id}-${childNode.id}`;
+            
+            if (window.selectedElement && 
+                window.selectedElement.type === 'connection' && 
+                window.selectedElement.parentId === parentNode.id &&
+                window.selectedElement.childId === childNode.id) {
+                path.classList.add('path-selected');
+            }
+            
+            path.addEventListener('click', (e) => {
+                selectElement('connection', null, parentNode.id, childNode.id);
+                e.stopPropagation();
+            });
+            
+            path.addEventListener('mouseenter', () => {
+                if (window.selectedElement) return;
+                
+                document.querySelectorAll('.node-highlighted').forEach(el => el.classList.remove('node-highlighted'));
+                document.querySelectorAll('.path-highlighted').forEach(el => {
+                    if (el !== path) el.classList.remove('path-highlighted');
+                });
+                
+                path.classList.add('path-highlighted');
+                window.highlightedElement = { type: 'connection', parentId: parentNode.id, childId: childNode.id };
+            });
+            
+            path.addEventListener('mouseleave', () => {
+                if (window.selectedElement) return;
+                
+                if (!document.querySelector('.node:hover')) {
+                    path.classList.remove('path-highlighted');
+                    window.highlightedElement = null;
+                }
+            });
+            
             svgEl.appendChild(path);
         }
 
@@ -502,14 +580,27 @@
             const viewCenterX = (mainContentRect.width / 2 - panX) / currentZoom;
             const viewCenterY = (mainContentRect.height / 2 - panY) / currentZoom;
 
+            let parentIdForNewNode = null;
+            let newX = Math.max(0, viewCenterX - 75);
+            let newY = Math.max(0, viewCenterY - 25);
+
+            if(window.selectedElement && window.selectedElement.type === 'node'){
+                const selectedNode = findNodeById(window.selectedElement.id);
+                if(selectedNode){
+                    parentIdForNewNode = selectedNode.id;
+                    newX = selectedNode.x + selectedNode.width + 50; 
+                    newY = selectedNode.y + selectedNode.height / 2 - 25; 
+                }
+            }
+
             const newNode = {
                 id: newNodeId, text: 'New Node', notes: '',
-                x: Math.max(0, viewCenterX - 75), y: Math.max(0, viewCenterY - 25),
+                x: newX, y: newY,
                 width: 150, height: 50,
-                parentId: null, isCollapsed: false // parentId can be set if a node is selected
+                parentId: parentIdForNewNode, isCollapsed: false
             };
-            const level = getNodeLevel(newNode.id); // Will be 0 if parentId is null
-            assignNodeStyleByLevel(newNode, level); // Assigns default color/textColor
+            const level = getNodeLevel(newNode.id); 
+            assignNodeStyleByLevel(newNode, level); 
 
             nodes.push(newNode);
             renderMindmap();
@@ -546,7 +637,7 @@
             if (!node) return;
             llmChatNodeIdInput.value = nodeId;
             llmChatNodeNameDisplay.textContent = node.text.length > 20 ? node.text.substring(0, 17) + "..." : node.text;
-            llmChatArea.innerHTML = `<p><em>Chatting about: ${node.text}</em></p>`; // Initial message
+            llmChatArea.innerHTML = `<p><em>Chatting about: ${node.text}</em></p>`; 
             llmChatInput.value = '';
             llmChatModal.style.display = 'flex';
         }
@@ -561,12 +652,11 @@
             userMsgEl.innerHTML = `<strong>You:</strong> ${messageText}`;
             llmChatArea.appendChild(userMsgEl);
             
-            // Placeholder for actual LLM call
             setTimeout(() => {
                 const llmResponseEl = document.createElement('p');
                 llmResponseEl.innerHTML = `<strong>LLM:</strong> Thanks for asking about "${messageText}" related to "${node.text}". I'm still learning!`;
                 llmChatArea.appendChild(llmResponseEl);
-                llmChatArea.scrollTop = llmChatArea.scrollHeight; // Scroll to bottom
+                llmChatArea.scrollTop = llmChatArea.scrollHeight; 
             }, 500);
 
             llmChatInput.value = '';
@@ -596,7 +686,7 @@
             if (isPanning) { isPanning = false; mainContent.classList.remove('panning');}
         });
 
-        mainContent.addEventListener('wheel', (e) => { /* ... same as before (zoom sensitivity) ... */
+        mainContent.addEventListener('wheel', (e) => { 
             e.preventDefault(); const zoomSpeed = 0.05; 
             const oldZoom = currentZoom;
             if (e.deltaY < 0) { currentZoom = Math.min(3, currentZoom + zoomSpeed); } 
@@ -611,124 +701,172 @@
         function applyTransform() { mindmapContainer.style.transform = `translate(${panX}px, ${panY}px) scale(${currentZoom})`; }
         function updateZoomDisplay() { document.getElementById('zoomLevelDisplay').textContent = `${Math.round(currentZoom * 100)}%`; }
         
-        function makeModalDraggable(modalElement) { /* ... same as before ... */ }
-        makeModalDraggable(notesModal); 
-        makeModalDraggable(llmChatModal);
-        makeModalDraggable(markdownModal);
+        function makeModalDraggable(modalElement) { 
+            let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+            const header = modalElement.querySelector("h2") || modalElement.firstElementChild;
 
+            if (header) {
+                header.style.cursor = 'move';
+                header.onmousedown = dragMouseDown;
+            } else {
+                modalElement.style.cursor = 'move';
+                modalElement.onmousedown = dragMouseDown;
+            }
 
-        // Node Dragging Logic - Revised for dblclick compatibility
-        let draggingNodeInfo = null; // { node, nodeEl, startMapX, startMapY, nodeStartX, nodeStartY, didActuallyDrag }
+            function dragMouseDown(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                document.onmouseup = closeDragElement;
+                document.onmousemove = elementDrag;
+            }
 
+            function elementDrag(e) {
+                e = e || window.event;
+                e.preventDefault();
+                pos1 = pos3 - e.clientX;
+                pos2 = pos4 - e.clientY;
+                pos3 = e.clientX;
+                pos4 = e.clientY;
+                modalElement.style.top = (modalElement.offsetTop - pos2) + "px";
+                modalElement.style.left = (modalElement.offsetLeft - pos1) + "px";
+                const rect = modalElement.getBoundingClientRect();
+                if (rect.left < 0) modalElement.style.left = "0px";
+                if (rect.top < 0) modalElement.style.top = "0px";
+                if (rect.right > window.innerWidth) modalElement.style.left = (window.innerWidth - rect.width) + "px";
+                if (rect.bottom > window.innerHeight) modalElement.style.top = (window.innerHeight - rect.height) + "px";
+            }
+
+            function closeDragElement() {
+                document.onmouseup = null;
+                document.onmousemove = null;
+            }
+        }
+        makeModalDraggable(notesModal.querySelector('.modal-content')); 
+        makeModalDraggable(llmChatModal.querySelector('.modal-content'));
+        makeModalDraggable(markdownModal.querySelector('.modal-content'));
+
+        // --- MODIFIED Node Dragging Logic ---
         mindmapContainer.addEventListener('mousedown', function(e) {
-            if (isPanning) return; // Don't start node drag if panning the canvas
-
             let targetElement = e.target;
-            while (targetElement && targetElement !== mindmapContainer && !targetElement.classList.contains('node')) {
-                if (targetElement.classList.contains('magic-icon') || targetElement.classList.contains('node-toggle')) return; // These have their own clicks
+            while(targetElement && targetElement !== mindmapContainer) {
+                if (targetElement.classList.contains('magic-icon') || targetElement.classList.contains('node-toggle')) {
+                    return; 
+                }
+                if (targetElement.classList.contains('node')) {
+                    break; 
+                }
                 targetElement = targetElement.parentElement;
             }
 
             if (targetElement && targetElement.classList.contains('node')) {
                 const nodeEl = targetElement;
                 const nodeId = nodeEl.id.replace('node-', '');
-                const node = findNodeById(nodeId);
-                if (!node) return;
+                const nodeData = findNodeById(nodeId);
+                if (!nodeData) return;
 
-                // Don't prevent default or stop propagation immediately, to allow dblclick
-                // e.preventDefault(); // Do this on mousemove if drag starts
-                // e.stopPropagation(); // Do this on mousemove if drag starts
+                e.preventDefault(); 
+                e.stopPropagation(); 
 
                 const mainRect = mainContent.getBoundingClientRect();
-                const pointerScreenX = e.clientX;
-                const pointerScreenY = e.clientY;
+                const startPointerScreenX = e.clientX;
+                const startPointerScreenY = e.clientY;
+                const startPointerMapX = (startPointerScreenX - mainRect.left - panX) / currentZoom;
+                const startPointerMapY = (startPointerScreenY - mainRect.top - panY) / currentZoom;
+                const initialNodeMapX = nodeData.x;
+                const initialNodeMapY = nodeData.y;
 
-                draggingNodeInfo = {
-                    node: node,
-                    nodeEl: nodeEl,
-                    // Store initial pointer relative to map for delta calculation
-                    startPointerMapX: (pointerScreenX - mainRect.left - panX) / currentZoom,
-                    startPointerMapY: (pointerScreenY - mainRect.top - panY) / currentZoom,
-                    nodeStartX: node.x,
-                    nodeStartY: node.y,
-                    initialPointerScreenX: pointerScreenX, // For threshold check
-                    initialPointerScreenY: pointerScreenY, // For threshold check
-                    didActuallyDrag: false
-                };
+                let isDragging = false;
+                const DRAG_THRESHOLD_SQUARED = DRAG_THRESHOLD * DRAG_THRESHOLD;
 
-                document.addEventListener('mousemove', handleNodeDragMove);
-                document.addEventListener('mouseup', handleNodeDragUp);
+                function onMouseMove(moveEvent) {
+                    moveEvent.preventDefault(); 
+
+                    const currentPointerScreenX = moveEvent.clientX;
+                    const currentPointerScreenY = moveEvent.clientY;
+
+                    if (!isDragging) {
+                        const dxScreen = currentPointerScreenX - startPointerScreenX;
+                        const dyScreen = currentPointerScreenY - startPointerScreenY;
+                        if ((dxScreen * dxScreen + dyScreen * dyScreen) > DRAG_THRESHOLD_SQUARED) {
+                            isDragging = true;
+                            nodeEl.classList.add('node-dragging-active'); // *** ADD CLASS ***
+                        } else {
+                            return; 
+                        }
+                    }
+                    
+                    const currentPointerMapX = (currentPointerScreenX - mainRect.left - panX) / currentZoom;
+                    const currentPointerMapY = (currentPointerScreenY - mainRect.top - panY) / currentZoom;
+                    const deltaMapX = currentPointerMapX - startPointerMapX;
+                    const deltaMapY = currentPointerMapY - startPointerMapY;
+                    const newMapX = initialNodeMapX + deltaMapX;
+                    const newMapY = initialNodeMapY + deltaMapY;
+
+                    // *** CORRECTED ORDER OF UPDATES ***
+                    // 1. Update the node's data in the `nodes` array FIRST
+                    nodeData.x = newMapX;
+                    nodeData.y = newMapY;
+
+                    // 2. Update the node's visual style (DOM element)
+                    nodeEl.style.left = `${newMapX}px`;
+                    nodeEl.style.top = `${newMapY}px`;
+
+                    // 3. Update connected SVG paths
+                    const mindmapSvg = document.getElementById('mindmap-svg');
+                    if (nodeData.parentId) {
+                        const parentNode = findNodeById(nodeData.parentId);
+                        const parentNodeEl = parentNode ? document.getElementById(`node-${parentNode.id}`) : null;
+                        if (parentNode && parentNodeEl) { 
+                            const pathId = `path-${parentNode.id}-${nodeData.id}`;
+                            const pathElement = mindmapSvg.querySelector(`#${CSS.escape(pathId)}`);
+                            if (pathElement) {
+                                const pX = parentNode.x + parentNode.width / 2;
+                                const pY = parentNode.y + parentNode.height / 2;
+                                const cX = nodeData.x + nodeData.width / 2; 
+                                const cY = nodeData.y + nodeData.height / 2; 
+                                const dPathX = (cX - pX) * 0.5;
+                                const d = `M ${pX} ${pY} C ${pX + dPathX} ${pY}, ${cX - dPathX} ${cY}, ${cX} ${cY}`;
+                                pathElement.setAttribute('d', d);
+                            }
+                        }
+                    }
+
+                    const children = getChildren(nodeData.id);
+                    children.forEach(childNode => {
+                        const childNodeEl = document.getElementById(`node-${childNode.id}`);
+                        if (childNodeEl) {
+                            const pathId = `path-${nodeData.id}-${childNode.id}`;
+                            const pathElement = mindmapSvg.querySelector(`#${CSS.escape(pathId)}`);
+                            if (pathElement) {
+                                const pX = nodeData.x + nodeData.width / 2; 
+                                const pY = nodeData.y + nodeData.height / 2; 
+                                const cX = childNode.x + childNode.width / 2;
+                                const cY = childNode.y + childNode.height / 2;
+                                const dPathX = (cX - pX) * 0.5;
+                                const d = `M ${pX} ${pY} C ${pX + dPathX} ${pY}, ${cX - dPathX} ${cY}, ${cX} ${cY}`;
+                                pathElement.setAttribute('d', d);
+                            }
+                        }
+                    });
+                }
+
+                function onMouseUp(upEvent) {
+                    document.removeEventListener('mousemove', onMouseMove);
+                    document.removeEventListener('mouseup', onMouseUp);
+                    if (isDragging) {
+                       nodeEl.classList.remove('node-dragging-active'); // *** REMOVE CLASS ***
+                    }
+                }
+
+                document.addEventListener('mousemove', onMouseMove);
+                document.addEventListener('mouseup', onMouseUp);
             }
         });
+        // --- END OF MODIFIED Node Dragging Logic ---
 
-        function handleNodeDragMove(moveEvent) {
-            if (!draggingNodeInfo) return;
-
-            if (!draggingNodeInfo.didActuallyDrag) {
-                const dxScreen = Math.abs(moveEvent.clientX - draggingNodeInfo.initialPointerScreenX);
-                const dyScreen = Math.abs(moveEvent.clientY - draggingNodeInfo.initialPointerScreenY);
-                if (dxScreen > DRAG_THRESHOLD || dyScreen > DRAG_THRESHOLD) {
-                    draggingNodeInfo.didActuallyDrag = true;
-                    // Now that we know it's a drag, prevent text selection etc.
-                    moveEvent.preventDefault(); 
-                    // And stop propagation to prevent canvas panning during node drag
-                    // This might be tricky if the original mousedown was on container due to event order
-                    // It's generally safer to ensure the mousedown for node drag takes precedence.
-                } else {
-                    return; // Not enough movement to start drag
-                }
-            }
-             // If we are here, it's a drag
-            moveEvent.preventDefault();
-
-
-            const mainRect = mainContent.getBoundingClientRect();
-            const currentPointerScreenX = moveEvent.clientX;
-            const currentPointerScreenY = moveEvent.clientY;
-
-            const currentPointerMapX = (currentPointerScreenX - mainRect.left - panX) / currentZoom;
-            const currentPointerMapY = (currentPointerScreenY - mainRect.top - panY) / currentZoom;
-
-            const deltaMapX = currentPointerMapX - draggingNodeInfo.startPointerMapX;
-            const deltaMapY = currentPointerMapY - draggingNodeInfo.startPointerMapY;
-
-            draggingNodeInfo.node.x = draggingNodeInfo.nodeStartX + deltaMapX;
-            draggingNodeInfo.node.y = draggingNodeInfo.nodeStartY + deltaMapY;
-
-            draggingNodeInfo.nodeEl.style.left = draggingNodeInfo.node.x + 'px';
-            draggingNodeInfo.nodeEl.style.top = draggingNodeInfo.node.y + 'px';
-
-            const tempSvgElement = document.getElementById('mindmap-svg');
-            if (tempSvgElement) {
-                tempSvgElement.innerHTML = '';
-                const visibleNodes = getVisibleNodes();
-                visibleNodes.forEach(n => {
-                    if (n.parentId) {
-                        const parent = findNodeById(n.parentId);
-                        if (parent && visibleNodes.includes(parent)) drawConnection(parent, n, tempSvgElement);
-                    }
-                });
-            }
-        }
-
-        function handleNodeDragUp(upEvent) {
-            if (!draggingNodeInfo) return;
-            
-            document.removeEventListener('mousemove', handleNodeDragMove);
-            document.removeEventListener('mouseup', handleNodeDragUp);
-
-            if (draggingNodeInfo.didActuallyDrag) {
-                // If a drag occurred, re-render and resolve overlaps.
-                // upEvent.stopPropagation(); // To prevent canvas pan if mouseup is on canvas
-                renderMindmap(); 
-                resolveNodeOverlaps();
-            }
-            // If no drag, dblclick or simple click will be handled by their own listeners.
-            draggingNodeInfo = null;
-        }
-
-
-        function resolveNodeOverlaps() { /* ... same improved version as before ... */
+        function resolveNodeOverlaps() { 
             const visibleNodes = getVisibleNodes();
             if (visibleNodes.length < 2) return;
 
@@ -758,15 +896,15 @@
                             
                             const centerAx = nodeA.x + nodeA.width / 2; const centerAy = nodeA.y + nodeA.height / 2;
                             const centerBx = nodeB.x + nodeB.width / 2; const centerBy = nodeB.y + nodeB.height / 2;
-                            const pushFactor = 0.5; // How much each node moves
+                            const pushFactor = 0.5; 
 
-                            if (overlapX < overlapY) { // Resolve X overlap
+                            if (overlapX < overlapY) { 
                                 const move = (centerAx < centerBx ? -overlapX : overlapX) * pushFactor;
                                 if (!isAncestor(nodeA, nodeB) && !isAncestor(nodeB, nodeA)) {
                                     nodeA.x += move; nodeB.x -= move;
                                 } else if (isAncestor(nodeA, nodeB)) { nodeB.x -= move * 2; } 
                                 else { nodeA.x += move * 2; }
-                            } else { // Resolve Y overlap
+                            } else { 
                                 const move = (centerAy < centerBy ? -overlapY : overlapY) * pushFactor;
                                  if (!isAncestor(nodeA, nodeB) && !isAncestor(nodeB, nodeA)) {
                                     nodeA.y += move; nodeB.y -= move;
@@ -782,7 +920,7 @@
             if (nodesMoved) { renderMindmap(); }
         }
 
-        function isAncestor(potentialAncestorNode, node) { /* ... same as before ... */
+        function isAncestor(potentialAncestorNode, node) { 
             let current = node;
             while (current && current.parentId) { 
                 if (current.parentId === potentialAncestorNode.id) return true;
@@ -791,34 +929,32 @@
             return false;
         }
 
-        // --- Tree Layout Function ---
         document.getElementById('rearrangeNodesBtn').addEventListener('click', () => {
             applyTreeLayout();
-            document.getElementById('rearrangeNodesBtn').classList.add('active-layout'); // Mark active
+            document.getElementById('rearrangeNodesBtn').classList.add('active-layout'); 
         });
         
         function applyTreeLayout() {
             const HORIZONTAL_SPACING = 200; 
             const VERTICAL_SPACING = 20;   
             let initialX = 50;
-            let yPos = 50; // Current Y position for the next root/subtree block
+            let yPos = 50; 
 
             function layoutSubtree(nodeId, currentX, parentCenterY, level) {
                 const node = findNodeById(nodeId);
                 if (!node) return { height: 0, y: parentCenterY };
 
                 node.x = currentX;
-                // assignNodeStyleByLevel(node, level); // Optionally re-style all nodes
 
-                const children = getChildren(nodeId).filter(c => getVisibleNodes().includes(c)); // Layout only visible children
+                const children = getChildren(nodeId).filter(c => getVisibleNodes().includes(c)); 
                 
                 if (!children.length || node.isCollapsed) {
-                    node.y = parentCenterY - node.height / 2; // Center node itself if no children shown
+                    node.y = parentCenterY - node.height / 2; 
                     return { height: node.height, y: node.y };
                 }
 
                 let childrenTotalHeight = 0;
-                children.forEach(child => childrenTotalHeight += child.height); // Sum direct heights
+                children.forEach(child => childrenTotalHeight += child.height); 
                 childrenTotalHeight += (children.length - 1) * VERTICAL_SPACING;
 
                 let childStartY = parentCenterY - childrenTotalHeight / 2;
@@ -826,12 +962,11 @@
 
                 children.forEach(child => {
                     const childLayoutInfo = layoutSubtree(child.id, currentX + HORIZONTAL_SPACING, childStartY + child.height / 2, level + 1);
-                    child.y = childStartY; // Set y based on stacking
+                    child.y = childStartY; 
                     childStartY += child.height + VERTICAL_SPACING;
                     maxSubtreeHeightForParent = Math.max(maxSubtreeHeightForParent, childLayoutInfo.height);
                 });
                 
-                // Adjust parent Y to be centered among its actual children block
                 if (children.length > 0) {
                     const firstChild = children[0];
                     const lastChild = children[children.length - 1];
@@ -840,31 +975,106 @@
                 } else {
                      node.y = parentCenterY - node.height / 2;
                 }
-
-
                 return { height: Math.max(node.height, childrenTotalHeight), y: node.y };
             }
 
             const rootNodes = nodes.filter(n => !n.parentId);
             rootNodes.forEach(root => {
-                const subtreeInfo = layoutSubtree(root.id, initialX, yPos + root.height / 2, 0); // Pass initial Y estimate
-                // Re-adjust root's Y based on its actual children's layout if needed (already done inside)
-                yPos += subtreeInfo.height + VERTICAL_SPACING * 3; // Increment Y for the next root node's block
+                const subtreeInfo = layoutSubtree(root.id, initialX, yPos + root.height / 2, 0); 
+                yPos += subtreeInfo.height + VERTICAL_SPACING * 3; 
             });
             
-            // Pan to view the start of the map after layout
             if (rootNodes.length > 0) {
                  const firstRoot = rootNodes[0];
-                 panX = (mainContent.clientWidth / 2) - (firstRoot.x * currentZoom + (firstRoot.width * currentZoom)/2) - 100*currentZoom; // Center a bit left of first root
+                 panX = (mainContent.clientWidth / 2) - (firstRoot.x * currentZoom + (firstRoot.width * currentZoom)/2) - 100*currentZoom; 
                  panY = (mainContent.clientHeight / 2) - (firstRoot.y * currentZoom + (firstRoot.height* currentZoom)/2);
                  applyTransform();
             }
 
             renderMindmap();
-            // resolveNodeOverlaps(); // The layout should ideally prevent most, but a pass can be useful
             console.log("Tree layout applied.");
         }
 
+        function selectElement(type, nodeId, parentId, childId) {
+            clearSelection();
+            
+            if (type === 'node') {
+                window.selectedElement = { type: 'node', id: nodeId };
+                const nodeEl = document.getElementById(`node-${nodeId}`);
+                if (nodeEl) {
+                    nodeEl.classList.add('node-selected');
+                }
+            } else if (type === 'connection') {
+                window.selectedElement = { type: 'connection', parentId: parentId, childId: childId };
+                const pathEl = document.getElementById(`path-${parentId}-${childId}`);
+                if (pathEl) {
+                    pathEl.classList.add('path-selected');
+                }
+            }
+            document.getElementById('rearrangeNodesBtn').classList.remove('active-layout');
+        }
+        
+        function clearSelection() {
+            document.querySelectorAll('.node-selected').forEach(el => el.classList.remove('node-selected'));
+            document.querySelectorAll('.path-selected').forEach(el => el.classList.remove('path-selected'));
+            window.selectedElement = null;
+        }
+        
+        mindmapContainer.addEventListener('click', (e) => {
+            if (e.target === mindmapContainer || e.target.id === 'mindmap-svg') {
+                clearSelection();
+                 document.getElementById('rearrangeNodesBtn').classList.remove('active-layout');
+            }
+        });
+        
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Delete' || e.key === 'Backspace') {
+                const activeModal = document.querySelector('.modal[style*="display: flex"]');
+                if (activeModal && (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA')) {
+                    return; 
+                }
+
+                const elementToDelete = window.selectedElement || window.highlightedElement;
+                
+                if (elementToDelete) {
+                    if (elementToDelete.type === 'node') {
+                        if (confirm(`Delete node "${findNodeById(elementToDelete.id)?.text}" and its children?`)) {
+                            deleteNode(elementToDelete.id);
+                            window.selectedElement = null;
+                            window.highlightedElement = null;
+                        }
+                    } else if (elementToDelete.type === 'connection') {
+                        if (confirm('Delete this connection?')) {
+                            deleteConnection(elementToDelete.parentId, elementToDelete.childId);
+                            window.selectedElement = null;
+                            window.highlightedElement = null;
+                        }
+                    }
+                }
+            }
+        });
+
+        function deleteNode(nodeId) {
+            function getAllChildIds(parentId) {
+                const childIds = [];
+                nodes.filter(n => n.parentId === parentId).forEach(child => {
+                    childIds.push(child.id);
+                    childIds.push(...getAllChildIds(child.id));
+                });
+                return childIds;
+            }
+            const childIdsToDelete = getAllChildIds(nodeId);
+            nodes = nodes.filter(node => node.id !== nodeId && !childIdsToDelete.includes(node.id));
+            renderMindmap();
+        }
+        
+        function deleteConnection(parentId, childId) {
+            const childNode = findNodeById(childId);
+            if (childNode && childNode.parentId === parentId) {
+                childNode.parentId = null;
+                renderMindmap();
+            }
+        }
 
         initMindmap();
     </script>
