@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board Detail - Project Alpha</title>
+    <style>
+        :root {
+            --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            --background-color: #FFFFFF;
+            --sidebar-background: #f0f2f5; /* For left and right sidebars */
+            --text-color: #333333;
+            --heading-color: #1F2937;
+            /* ... other variables from previous board_detail_page ... */
+            --card-border-radius: 16px;
+            --card-padding: 20px;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --card-item-bg: #FFFFFF;
+            --card-item-border: 1px solid #E5E7EB;
+            --right-sidebar-width: 280px; /* Width for the new recommendations sidebar */
+        }
+
+        *, *::before, *::after { box-sizing: border-box; }
+        body { margin: 0; font-family: var(--font-family-sans-serif); background-color: var(--background-color); color: var(--text-color); line-height: 1.6; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+
+        /* --- Top Navigation (Same as before) --- */
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; border-bottom: 1px solid #E5E7EB; background-color: #fff; height: 60px; position: sticky; top: 0; z-index: 100; }
+        .logo-area { display: flex; align-items: center; }
+        .logo-area .logo { width: 28px; height: 28px; background-color: #FFDE03; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-family: 'Arial Black', sans-serif; font-size: 18px; color: #E53935; line-height: 1; }
+        .logo-area .brand-name { font-weight: 600; font-size: 18px; color: #111827; margin-right: 24px; }
+        .nav-link { color: #6B7280; text-decoration: none; margin-right: 16px; font-size: 14px; font-weight: 500; }
+        .nav-link.available { color: #10B981; }
+        .nav-link.follow { color: #111827; }
+        .actions-area { display: flex; align-items: center; }
+        .top-nav-icon-btn { background: none; border: none; padding: 8px; cursor: pointer; color: var(--top-nav-icon-color); margin-left: 8px; }
+        .top-nav-icon-btn svg { width: 20px; height: 20px; display: block; stroke-width: 2; }
+        .get-in-touch-btn { background-color: #1F2937; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; cursor: pointer; margin-left: 16px; transition: background-color 0.2s ease; }
+        .get-in-touch-btn:hover { background-color: #374151; }
+
+
+        /* --- App Container: NOW WITH THREE COLUMNS --- */
+        .app-container {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* --- Left Sidebar (Same as before) --- */
+        .left-sidebar { /* Renamed from .sidebar for clarity */
+            width: 80px;
+            background-color: var(--sidebar-background);
+            padding-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+            border-right: 1px solid var(--card-item-border);
+            position: sticky; /* Make it sticky */
+            top: 60px; /* Height of the top-nav */
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+        }
+        .add-note-btn { width: 48px; height: 48px; background-color: var(--plus-btn-bg); border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 35px; transition: background-color 0.2s ease; }
+        .add-note-btn:hover { background-color: #374151; }
+        .add-note-btn svg { fill: var(--plus-btn-icon); width: 24px; height: 24px; }
+        .color-palette { list-style: none; padding: 0; margin: 0; }
+        .color-palette li { width: 24px; height: 24px; border-radius: 50%; margin-bottom: 18px; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); transition: transform 0.2s ease; }
+        .color-palette li:hover { transform: scale(1.1); }
+        .color-palette li:nth-child(1) { background-color: #FDBA74; }
+        .color-palette li:nth-child(2) { background-color: #FDA4AF; }
+        .color-palette li:nth-child(3) { background-color: #BFDBFE; }
+        .color-palette li:nth-child(4) { background-color: #67E8F9; }
+        .color-palette li:nth-child(5) { background-color: #A7F3D0; }
+
+
+        /* --- Main Content Area --- */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px 40px;
+            background-color: var(--background-color);
+            /* Max-width can be useful if the right sidebar is very wide, to prevent main content from becoming too narrow */
+            /* max-width: calc(100% - 80px - var(--right-sidebar-width) - 80px); Adjust 80px for paddings if needed */
+        }
+        .main-content > h1 { font-size: 32px; color: var(--heading-color); margin-top: 0; margin-bottom: 30px; font-weight: 700; }
+
+        /* --- Content Sections & Item Cards (Same styles as previous board_detail_page) --- */
+        .content-section { margin-bottom: 40px; }
+        .section-title { font-size: 22px; color: var(--heading-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #E5E7EB; font-weight: 600; }
+        .item-card { background-color: var(--card-item-bg); border: var(--card-item-border); border-radius: var(--card-border-radius); padding: var(--card-padding); box-shadow: var(--card-shadow); display: flex; flex-direction: column; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .item-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); }
+        .item-card-header { display: flex; align-items: center; margin-bottom: 12px; }
+        .item-card-icon { margin-right: 12px; color: #6B7280; width: 24px; height: 24px; }
+        .item-card-title { font-size: 16px; font-weight: 600; color: var(--heading-color); word-break: break-word; flex-grow: 1; }
+        .item-card-content { font-size: 14px; color: var(--text-color); margin-bottom: 15px; flex-grow: 1; }
+        .item-card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; font-size: 13px; color: #6B7280; }
+        .item-card-actions button { background: none; border: none; color: var(--icon-action-btn-bg); cursor: pointer; padding: 6px; margin-left: 8px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
+        .item-card-actions button:hover { background-color: #f0f0f0; }
+        .item-card-actions svg { width: 18px; height: 18px; fill: currentColor; }
+        .item-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .photo-card img, .video-card .video-thumbnail { width: 100%; height: 150px; object-fit: cover; border-radius: calc(var(--card-border-radius) - 8px); margin-bottom: 12px; background-color: #e0e0e0; }
+        .video-card .video-thumbnail { position: relative; display: flex; align-items: center; justify-content: center; }
+        .video-card .play-icon { position: absolute; width: 48px; height: 48px; fill: rgba(255,255,255,0.8); }
+        .item-list .item-card { margin-bottom: 15px; flex-direction: row; align-items: center; }
+        .item-list .item-card-content-wrapper { flex-grow: 1; padding-right: 15px; }
+        .item-list .item-card-header { margin-bottom: 4px; }
+        .item-list .item-card-icon { width: 20px; height: 20px;}
+        .item-list .item-card-title { font-size: 15px; }
+        .item-list .item-card-description { font-size: 13px; color: #6B7280; word-break: break-all; max-height: 40px; overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+        .item-list .item-card-actions { margin-left: auto; flex-shrink: 0; }
+        .notes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 25px; }
+        .note-card { padding: var(--card-padding); border-radius: var(--card-border-radius); box-shadow: var(--card-shadow); min-height: 150px; display: flex; flex-direction: column; justify-content: space-between; color: #1F2937; font-size: 15px; line-height: 1.5; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .note-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); }
+        .note-card p { margin-top: 0; margin-bottom: 15px; flex-grow: 1; word-break: break-word; font-weight: 500; }
+        .note-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .note-footer .date { font-size: 13px; color: #6B7280; }
+        .note-action-btn { background-color: var(--icon-action-btn-bg); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; transition: background-color 0.2s ease; }
+        .note-action-btn:hover { background-color: #4B5563; }
+        .note-action-btn svg { fill: var(--icon-action-btn-icon); width: 18px; height: 18px; }
+        .star-btn svg { fill: #FBBF24; }
+        .note-color-1 { background-color: #FFDAB9; } .note-color-2 { background-color: #FFFACD; }
+
+
+        /* --- Right Sidebar for Recommendations --- */
+        .recommendations-sidebar {
+            width: var(--right-sidebar-width);
+            background-color: var(--sidebar-background); /* Same as left sidebar */
+            padding: 25px 20px;
+            flex-shrink: 0;
+            border-left: 1px solid var(--card-item-border);
+            position: sticky; /* Make it sticky */
+            top: 60px; /* Height of the top-nav */
+            height: calc(100vh - 60px); /* Full viewport height minus top-nav */
+            overflow-y: auto; /* Allow scrolling if content exceeds height */
+        }
+        .recommendations-sidebar h2 {
+            font-size: 18px;
+            color: var(--heading-color);
+            margin-top: 0;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        .recommendation-item {
+            background-color: #fff;
+            border: 1px solid var(--card-item-border);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+            cursor: pointer;
+            transition: box-shadow 0.2s ease;
+        }
+        .recommendation-item:hover {
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+        }
+        .recommendation-item-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--heading-color);
+            margin-bottom: 5px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-height: 2.4em; /* approx 2 lines */
+        }
+        .recommendation-item-source {
+            font-size: 12px;
+            color: #6B7280;
+        }
+        .recommendation-item-source svg { /* Optional icon next to source */
+            width: 12px; height: 12px; fill: currentColor; vertical-align: middle; margin-right: 4px;
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Top Navigation (Same as before) -->
+    <header class="top-nav">
+        <!-- ... (content from previous board_detail_page) ... -->
+        <div class="logo-area">
+            <div class="logo">A</div>
+            <span class="brand-name">Awsmd</span>
+            <a href="#" class="nav-link available">Available for work</a>
+            <a href="#" class="nav-link follow">Follow</a>
+        </div>
+        <div class="actions-area">
+            <button class="top-nav-icon-btn" aria-label="Like"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg></button>
+            <button class="top-nav-icon-btn" aria-label="Bookmark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"></path></svg></button>
+            <button class="get-in-touch-btn">Get in touch</button>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- Left Sidebar -->
+        <aside class="left-sidebar">
+            <!-- ... (content from previous board_detail_page .sidebar) ... -->
+            <button class="add-note-btn" aria-label="Add new item"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg></button>
+            <ul class="color-palette">
+                <li aria-label="Color filter 1"></li><li aria-label="Color filter 2"></li><li aria-label="Color filter 3"></li><li aria-label="Color filter 4"></li><li aria-label="Color filter 5"></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <h1>Board: Project Alpha Launch Plan</h1>
+            <!-- ... (All the .content-section for Photos, Links, Files, Notes, Videos from previous board_detail_page) ... -->
+            <!-- Photos Section -->
+            <section class="content-section">
+                <h2 class="section-title">Photos</h2>
+                <div class="item-grid photo-grid">
+                    <div class="item-card photo-card">
+                        <img src="https://via.placeholder.com/300x200/FFA07A/FFFFFF?text=Moodboard+1" alt="Moodboard Image 1">
+                        <div class="item-card-footer"><span>moodboard_final.jpg</span><div class="item-card-actions"><button aria-label="View Photo"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg></button><button aria-label="Delete Photo"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg></button></div></div>
+                    </div>
+                     <div class="item-card photo-card">
+                        <img src="https://via.placeholder.com/300x200/ADD8E6/FFFFFF?text=User+Persona" alt="User Persona Image">
+                         <div class="item-card-footer"><span>persona_jane.png</span><div class="item-card-actions"><button aria-label="View Photo"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg></button><button aria-label="Delete Photo"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg></button></div></div>
+                    </div>
+                </div>
+            </section>
+            <!-- Links, Files, Notes, Videos sections here -->
+        </main>
+
+        <!-- Right Sidebar for Recommendations -->
+        <aside class="recommendations-sidebar">
+            <h2>Recommendations</h2>
+            <div class="recommendation-item">
+                <h3 class="recommendation-item-title">10 Tips for Effective Project Management Dashboards</h3>
+                <p class="recommendation-item-source">
+                    <svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path></svg>
+                    UX Collective - Medium
+                </p>
+            </div>
+            <div class="recommendation-item">
+                <h3 class="recommendation-item-title">Similar Board: "Marketing Campaign Q4"</h3>
+                <p class="recommendation-item-source">
+                    <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm4 9H7v-2h10v2zm0-4H7v-2h10v2zm-2-4H7V8h8v2z"></path></svg>
+                    Your Boards
+                </p>
+            </div>
+            <div class="recommendation-item">
+                <h3 class="recommendation-item-title">Add "Budget Tracking" Section</h3>
+                <p class="recommendation-item-source">
+                     <svg viewBox="0 0 24 24"><path d="M11.8 10.9c-2.27-.59-3-1.2-3-2.15 0-1.09 1.01-1.85 2.7-1.85 1.78 0 2.44.85 2.5 2.1h2.21c-.07-1.72-1.12-3.3-3.21-3.81V3h-3v2.16c-1.94.42-3.5 1.68-3.5 3.61 0 2.31 1.91 3.46 4.7 4.13 2.5.6 3 1.48 3 2.41 0 .69-.49 1.75-2.7 1.75-2.27 0-3.01-.88-3.08-2.05h-2.21c.08 2.12 1.49 3.63 3.79 4.1V21h3v-2.14c1.89-.43 3.3-1.74 3.3-3.71-.01-2.84-2.43-3.81-4.7-4.4z"></path></svg>
+                    Feature Suggestion
+                </p>
+            </div>
+            <!-- Add more recommendation items -->
+        </aside>
+    </div>
+
+    <script>
+        // ... (JS from previous board_detail_page) ...
+        document.querySelectorAll('.item-card-actions button, .note-action-btn, .recommendation-item').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault();
+                const action = button.getAttribute('aria-label') || button.querySelector('.recommendation-item-title')?.textContent || 'Recommendation clicked';
+                alert(`Action: ${action}`);
+            });
+        });
+    </script>
+</body>
+</html>
