@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lodom Library UI Replica</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --primary-orange: #FF7F00; /* Closer to the image's orange */
+            --primary-orange-light: #FFF3E0; /* Light orange for card icon backgrounds */
+            --text-dark: #212529;
+            --text-medium: #495057;
+            --text-light: #6C757D;
+            --text-extra-light: #ADB5BD;
+            --border-color: #DEE2E6;
+            --background-light-gray: #F8F9FA;
+            --background-white: #FFFFFF;
+            --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            --sidebar-width: 250px;
+            --right-sidebar-width: 340px;
+            --app-top-bar-height: 50px;
+            --video-header-height: 60px;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--font-family-sans-serif);
+            background-color: #E9ECEF; /* Overall page background, seen if app doesn't fill viewport */
+            color: var(--text-dark);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        /* Browser Chrome Mock */
+        .browser-chrome {
+            background-color: #F1F3F5;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            color: var(--text-medium);
+            border-bottom: 1px solid var(--border-color);
+        }
+        .browser-controls { display: flex; }
+        .browser-dot { height: 12px; width: 12px; border-radius: 50%; margin-right: 6px; }
+        .browser-dot.red { background-color: #FF5F57; }
+        .browser-dot.yellow { background-color: #FEBC2E; }
+        .browser-dot.green { background-color: #28C840; }
+        .browser-nav { margin-left: 20px; }
+        .browser-nav i { margin-right: 15px; color: var(--text-light); }
+        .address-bar {
+            background-color: var(--background-white);
+            border-radius: 6px;
+            padding: 6px 12px;
+            flex-grow: 1;
+            margin: 0 15px;
+            color: var(--text-dark);
+            border: 1px solid #CED4DA;
+        }
+        .browser-actions i { margin-left: 15px; color: var(--text-light); }
+
+        /* Main App Container */
+        .app-container {
+            display: flex;
+            height: calc(100vh - 45px); /* Adjust if browser chrome height changes */
+            background-color: var(--background-white);
+        }
+
+        /* Left Sidebar */
+        .left-sidebar {
+            width: var(--sidebar-width);
+            background-color: var(--background-white);
+            border-right: 1px solid var(--border-color);
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            color: var(--text-medium);
+        }
+        .sidebar-header {
+            padding: 0 20px 20px 20px;
+            display: flex;
+            align-items: center;
+        }
+        .logo-img-placeholder { /* Placeholder for Lodom logo image */
+            width: 32px;
+            height: 32px;
+            background-color: var(--primary-orange);
+            border-radius: 6px;
+            margin-right: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+        .logo-text { font-size: 22px; font-weight: bold; color: var(--text-dark); }
+
+        .sidebar-search {
+            margin: 0 20px 20px 20px;
+            position: relative;
+        }
+        .sidebar-search input {
+            width: 100%;
+            padding: 8px 10px 8px 35px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+            background-color: var(--background-light-gray);
+            font-size: 13px;
+        }
+        .sidebar-search .search-icon-sidebar {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-light);
+        }
+
+        .sidebar-nav ul { list-style: none; padding: 0; margin: 0; }
+        .sidebar-nav li a {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            color: var(--text-medium);
+            text-decoration: none;
+            font-size: 14px;
+            border-radius: 0 6px 6px 0; /* Match image style */
+            margin-right: 15px; /* Make space for rounded corner */
+        }
+        .sidebar-nav li a:hover { background-color: var(--background-light-gray); color: var(--text-dark); }
+        .sidebar-nav li.active a {
+            background-color: var(--primary-orange-light);
+            color: var(--primary-orange);
+            font-weight: 500;
+        }
+        .sidebar-nav li a i { margin-right: 12px; width: 18px; text-align: center; }
+        .sidebar-nav li.nav-section-title {
+            padding: 15px 20px 5px 20px;
+            font-size: 11px;
+            color: var(--text-extra-light);
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .workspace-switcher {
+            margin: auto 20px 20px 20px; /* Pushes to bottom if sidebar has space */
+            padding: 10px;
+            background-color: var(--background-light-gray);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .workspace-switcher i:first-child { margin-right: 8px; color: var(--primary-orange); }
+        .workspace-switcher span { flex-grow: 1; }
+        .workspace-switcher i:last-child { color: var(--text-light); }
+
+        .upgrade-pro-section {
+            padding: 15px 20px;
+            margin: 0 20px;
+            border-top: 1px solid var(--border-color);
+        }
+        .upgrade-pro-section p { margin: 5px 0 10px 0; }
+        .upgrade-pro-section .small-text { font-size: 12px; color: var(--text-light); line-height: 1.4; }
+        .progress-bar-container {
+            height: 6px;
+            background-color: #E9ECEF;
+            border-radius: 3px;
+            margin-bottom: 5px;
+            overflow: hidden;
+        }
+        .progress-bar { height: 100%; background-color: var(--primary-orange); border-radius: 3px; }
+        .progress-text { font-size: 11px; color: var(--text-light); display: block; margin-bottom: 10px; }
+        .upgrade-button-sidebar {
+            width: 100%;
+            padding: 8px;
+            background-color: #212529; /* Dark button */
+            color: var(--background-white);
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+        .upgrade-button-sidebar:hover { background-color: #343A40; }
+
+        /* Main View Wrapper (contains app top bar, main content, and right sidebar) */
+        .main-view-wrapper {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden; /* Important for internal scrolling */
+        }
+
+        .app-main-header {
+            height: var(--app-top-bar-height);
+            display: flex;
+            justify-content: flex-end; /* Align items to the right */
+            align-items: center;
+            padding: 0 24px;
+            border-bottom: 1px solid var(--border-color);
+            background-color: var(--background-white);
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+        .top-bar-actions { display: flex; align-items: center; }
+        .upgrade-button-main {
+            background-color: #212529; /* Dark button */
+            color: var(--background-white);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+        .upgrade-button-main:hover { background-color: #343A40; }
+        .help-icon { font-size: 20px; color: var(--text-light); margin-right: 15px; cursor: pointer; }
+        .user-avatar-top {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--border-color); /* Placeholder */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-size: 16px; /* For icon if used */
+            overflow: hidden; /* If using img */
+        }
+         .user-avatar-top i { font-size: 16px; } /* For Font Awesome icon */
+
+
+        .content-and-comments-area {
+            display: flex;
+            flex: 1; /* Take remaining space */
+            overflow: hidden; /* Manage scrolling within children */
+        }
+
+        /* Main Content (Video, Tabs) */
+        .main-content {
+            flex: 1; /* Takes up available space left of right sidebar */
+            padding: 20px 24px;
+            overflow-y: auto; /* Scroll main content if it overflows */
+            background-color: var(--background-white);
+        }
+        .video-area-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            height: var(--video-header-height);
+        }
+        .video-title-section { display: flex; align-items: center; }
+        .video-title-section i { font-size: 18px; color: var(--text-medium); margin-right: 15px; cursor: pointer; }
+        .video-title-section h2 { font-size: 18px; margin: 0; font-weight: 500; color: var(--text-dark); }
+
+        .video-meta-and-actions { display: flex; align-items: center; font-size: 13px; color: var(--text-light); }
+        .author-info { display: flex; align-items: center; margin-right: 15px; }
+        .author-avatar-small {
+            width: 24px; height: 24px; border-radius: 50%;
+            background-color: var(--border-color); margin-right: 6px; margin-left: 6px;
+            display: inline-flex; align-items: center; justify-content: center;
+        }
+        .author-avatar-small i { font-size: 12px; color: var(--text-light); }
+        .video-date { margin-right: 20px; }
+
+        .video-actions button {
+            background: none; border: 1px solid transparent; /* Or var(--border-color) for visible */
+            color: var(--text-light);
+            padding: 6px 8px;
+            margin-left: 5px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .video-actions button:hover { background-color: #E9ECEF; color: var(--text-dark); }
+        .video-actions button i { margin-right: 4px; }
+        .video-actions .share-button {
+            background-color: var(--background-light-gray); /* Light gray background for Share */
+            border: 1px solid var(--border-color);
+            color: var(--text-medium);
+        }
+
+        .video-player-container {
+            width: 100%;
+            aspect-ratio: 16 / 9; /* Maintain video aspect ratio */
+            background-color: #000;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative; /* For controls overlay */
+            margin-bottom: 20px;
+        }
+        .video-content-mock { width: 100%; height: 100%; object-fit: cover; }
+        .video-controls-mock {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background-color: rgba(0,0,0,0.6);
+            color: white;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            font-size: 13px;
+        }
+        .video-controls-mock i { margin: 0 8px; cursor: pointer; }
+        .video-controls-mock .progress-mock { flex-grow: 1; height: 4px; background-color: rgba(255,255,255,0.3); border-radius: 2px; margin: 0 10px; overflow:hidden;}
+        .video-controls-mock .progress-mock div { height:100%; background-color: var(--primary-orange); border-radius: 2px;}
+        .video-controls-mock span { margin: 0 8px; }
+
+
+        .content-tabs-nav { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); }
+        .tab-button {
+            padding: 10px 18px;
+            border: none;
+            background: none;
+            font-size: 14px;
+            color: var(--text-light);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px; /* To align with parent border */
+        }
+        .tab-button:hover { color: var(--text-dark); }
+        .tab-button.active-tab {
+            color: var(--primary-orange);
+            border-bottom-color: var(--primary-orange);
+            font-weight: 500;
+        }
+        .trial-badge {
+            font-size: 10px;
+            background-color: #E0E0E0; /* Grey badge */
+            color: var(--text-medium);
+            padding: 2px 5px;
+            border-radius: 4px;
+            margin-left: 6px;
+            text-transform: uppercase;
+            font-weight: normal;
+        }
+        .active-tab .trial-badge { /* If active tab's badge needs different style */
+            background-color: var(--primary-orange); /* Orange badge */
+            color: white;
+        }
+
+
+        .tab-content-display { display: flex; gap: 20px; }
+        .ai-feature-card {
+            flex: 1;
+            background-color: var(--background-light-gray);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: left;
+        }
+        .card-icon-container {
+            width: 40px; height: 40px;
+            border-radius: 8px;
+            background-color: var(--primary-orange-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+        .card-icon-container i { font-size: 18px; color: var(--primary-orange); }
+        .ai-feature-card h4 { font-size: 15px; margin: 0 0 8px 0; font-weight: 500; color: var(--text-dark); }
+        .ai-feature-card p { font-size: 13px; color: var(--text-light); margin: 0; line-height: 1.4; }
+
+        /* Right Sidebar (Comments) */
+        .right-sidebar-comments {
+            width: var(--right-sidebar-width);
+            background-color: var(--background-white);
+            border-left: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            flex-shrink: 0; /* Prevent shrinking */
+        }
+        .comments-header {
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0;
+        }
+        .comment-tabs button {
+            background: none; border: none;
+            font-size: 14px;
+            color: var(--text-light);
+            padding: 5px 0; /* Reduced padding */
+            margin-right: 15px;
+            cursor: pointer;
+        }
+        .comment-tabs button.active { color: var(--text-dark); font-weight: 500; }
+        .comment-count { font-size: 13px; color: var(--text-light); }
+
+        .comments-list {
+            flex: 1; /* Take available space */
+            overflow-y: auto; /* Scroll comments */
+            padding: 15px 20px;
+        }
+        .comment-item { display: flex; margin-bottom: 20px; }
+        .comment-avatar {
+            width: 32px; height: 32px; border-radius: 50%;
+            background-color: var(--border-color);
+            margin-right: 12px;
+            flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .comment-avatar i { font-size: 16px; color: var(--text-light); }
+        .comment-content { flex-grow: 1; }
+        .comment-author-time { margin-bottom: 4px; font-size: 13px; }
+        .comment-author-time strong { color: var(--text-dark); font-weight: 500; }
+        .comment-author-time .timestamp { color: var(--text-extra-light); margin-left: 6px; }
+        .comment-bubble {
+            background-color: var(--background-light-gray);
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .comment-bubble.user-bubble {
+            background-color: var(--primary-orange);
+            color: white;
+        }
+        .comment-reactions { margin-top: 6px; font-size: 12px; color: var(--text-light); }
+        .comment-reactions .reaction-count { margin-right: 10px; }
+        .comment-reactions .reaction-count i { margin-left: 2px; }
+        .emoji { font-size: 14px; /* For text emojis */ }
+
+        .comment-video-thumbnail {
+            margin-top: 8px;
+            background-color: #333; /* Dark placeholder for video */
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            width: 100%; /* Adjust as needed, maybe max-width */
+            aspect-ratio: 16/9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .comment-video-thumbnail img { width:100%; height:100%; object-fit:cover;}
+        .comment-video-thumbnail .play-icon-thumbnail {
+            color: white; font-size: 24px;
+            position: absolute;
+            opacity: 0.8;
+        }
+        .comment-video-thumbnail .video-duration-badge {
+            position: absolute;
+            bottom: 5px; right: 5px;
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            font-size: 11px;
+            padding: 2px 5px;
+            border-radius: 3px;
+        }
+
+
+        .comment-input-area {
+            padding: 10px 15px;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            background-color: var(--background-white);
+            flex-shrink: 0;
+        }
+        .comment-input-area input[type="text"] {
+            flex-grow: 1;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 18px; /* Pill shape */
+            background-color: var(--background-light-gray);
+            font-size: 14px;
+            margin: 0 8px;
+        }
+        .comment-input-area input[type="text"]:focus { outline: none; border-color: var(--primary-orange); }
+        .comment-action-button {
+            background: none; border: none;
+            font-size: 18px;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 5px;
+        }
+        .comment-action-button:hover { color: var(--text-dark); }
+
+        /* Avatar placeholder styles */
+        .avatar-placeholder {
+            width: 100%; height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #6c757d; /* Default gray */
+            color: white;
+        }
+        .avatar-placeholder.mondy { background-color: #007bff; } /* Example distinct colors */
+        .avatar-placeholder.you { background-color: #28a745; }
+        .avatar-placeholder.farhan { background-color: #dc3545; }
+        .avatar-placeholder.praja { background-color: #ffc107; color: #333; }
+
+    </style>
+</head>
+<body>
+    <div class="browser-chrome">
+        <div class="browser-controls">
+            <span class="browser-dot red"></span>
+            <span class="browser-dot yellow"></span>
+            <span class="browser-dot green"></span>
+        </div>
+        <div class="browser-nav">
+            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-arrow-right"></i>
+            <i class="fas fa-redo"></i>
+        </div>
+        <div class="address-bar">https://lodom.com/library</div>
+        <div class="browser-actions">
+            <i class="far fa-star"></i> <!-- Using far for outline star -->
+            <i class="fas fa-ellipsis-v"></i> <!-- Changed from -h to -v as per top right of browser usually -->
+        </div>
+    </div>
+
+    <div class="app-container">
+        <!-- Left Sidebar -->
+        <aside class="left-sidebar">
+            <div class="sidebar-header">
+                <div class="logo-img-placeholder">L</div> <!-- Placeholder for Lodom logo -->
+                <span class="logo-text">Lodom</span>
+            </div>
+            <div class="sidebar-search">
+                <i class="fas fa-search search-icon-sidebar"></i>
+                <input type="text" placeholder="Search videos, folder, or people">
+            </div>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#"><i class="fas fa-home"></i> Home</a></li>
+                    <li class="active"><a href="#"><i class="fas fa-folder"></i> Library</a></li>
+                    <li><a href="#"><i class="far fa-clock"></i> Watch Later</a></li> <!-- Using far for outline clock -->
+                    <li><a href="#"><i class="fas fa-history"></i> History</a></li>
+                    <li class="nav-section-title">ANALYTICS</li>
+                    <li><a href="#"><i class="fas fa-chart-pie"></i> Analytics</a></li> <!-- Changed to pie chart as often used -->
+                    <li><a href="#"><i class="fas fa-cog"></i> Settings</a></li>
+                    <li><a href="#"><i class="fas fa-gift"></i> Rewards</a></li>
+                </ul>
+            </nav>
+            <div style="flex-grow: 1;"></div> <!-- Spacer to push bottom items down -->
+            <div class="workspace-switcher">
+                <!-- Original image seems to use an "i" in a circle -->
+                <i class="fas fa-info-circle"></i>
+                <span>Izam's Workspace</span>
+                <i class="fas fa-angle-up"></i> <!-- Using angle for chevron -->
+            </div>
+            <div class="upgrade-pro-section">
+                <p><strong>Upgrade to PRO</strong></p>
+                <p class="small-text">Get more video limits and get our newest features by becoming PRO!</p>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" style="width: 48%;"></div>
+                </div>
+                <span class="progress-text">24/50 Videos Free</span>
+                <button class="upgrade-button-sidebar">Upgrade</button>
+            </div>
+        </aside>
+
+        <!-- Main View Wrapper -->
+        <div class="main-view-wrapper">
+            <header class="app-main-header">
+                 <div class="top-bar-actions">
+                    <button class="upgrade-button-main">Upgrade</button>
+                    <i class="far fa-question-circle help-icon"></i>
+                    <div class="user-avatar-top"><i class="fas fa-user"></i></div> <!-- Placeholder Avatar -->
+                </div>
+            </header>
+
+            <div class="content-and-comments-area">
+                <!-- Main content (video, tabs) -->
+                <main class="main-content">
+                    <div class="video-area-header">
+                        <div class="video-title-section">
+                            <i class="fas fa-arrow-left"></i>
+                            <h2>Screen Recording: 01-02-2024</h2>
+                        </div>
+                        <div class="video-meta-and-actions">
+                            <span class="author-info">Author
+                                <div class="author-avatar-small"><i class="fas fa-user"></i></div>Mondy Threesixty
+                            </span>
+                            <span class="video-date">1 month ago</span>
+                            <div class="video-actions">
+                                <button><i class="far fa-thumbs-up"></i> 3</button>
+                                <button><i class="far fa-thumbs-down"></i> 5</button>
+                                <button><i class="far fa-eye"></i> 30</button>
+                                <button><i class="fas fa-sync-alt"></i></button> <!-- loop/replay icon -->
+                                <button class="share-button"><i class="far fa-share-square"></i> Share</button>
+                                <button><i class="fas fa-ellipsis-v"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="video-player-container">
+                        <img src="https://user-images.githubusercontent.com/126803191/280245410-e685586a-a301-4b3a-9a3c-98c3d834e562.png" alt="Screen Recording Content" class="video-content-mock">
+                        <div class="video-controls-mock">
+                            <i class="fas fa-pause"></i>
+                            <div class="progress-mock"><div style="width:20%"></div></div>
+                            <span class="time-mock">0:13 / 2:30</span> <!-- Placeholder time -->
+                            <i class="fas fa-volume-up"></i>
+                            <i class="fas fa-cog"></i>
+                            <span>1.0x</span>
+                            <i class="fas fa-expand-arrows-alt"></i> <!-- Changed to expand-arrows-alt -->
+                        </div>
+                    </div>
+
+                    <nav class="content-tabs-nav">
+                        <button class="tab-button">Overview</button>
+                        <button class="tab-button">Speaker Insight</button>
+                        <button class="tab-button active-tab">Lodom AI <span class="trial-badge">Trial</span></button>
+                        <button class="tab-button">Chapters</button>
+                    </nav>
+
+                    <section class="tab-content-display">
+                        <div class="ai-feature-card">
+                            <div class="card-icon-container">
+                                <!-- Icon for Change Voice, e.g., magic wand or microphone variant -->
+                                <i class="fas fa-magic"></i>
+                            </div>
+                            <h4>Change Voice</h4>
+                            <p>Change the voice of this video to whoever you want.</p>
+                        </div>
+                        <div class="ai-feature-card">
+                           <div class="card-icon-container">
+                                <!-- Icon for Analyze Speakers, e.g., users or speech bubble -->
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <h4>Analyze Speakers</h4>
+                            <p>Take the essence of everything the speaker says in your video.</p>
+                        </div>
+                        <div class="ai-feature-card">
+                            <div class="card-icon-container">
+                                <!-- Icon for Automate Transcribe, e.g., file-alt or closed captioning -->
+                                <i class="far fa-file-alt"></i>
+                            </div>
+                            <h4>Automate Transcribe</h4>
+                            <p>Transcription supports more than 100 languages from around the world.</p>
+                        </div>
+                    </section>
+                </main>
+
+                <!-- Right Sidebar (Comments) -->
+                <aside class="right-sidebar-comments">
+                    <div class="comments-header">
+                        <div class="comment-tabs">
+                            <button class="comment-tab-button active">Comments</button>
+                            <button class="comment-tab-button">Transcript</button>
+                        </div>
+                        <span class="comment-count">5 comments</span>
+                    </div>
+                    <div class="comments-list">
+                        <!-- Comment 1 (You) -->
+                        <div class="comment-item">
+                            <div class="comment-avatar"><div class="avatar-placeholder you"><i class="fas fa-user"></i></div></div>
+                            <div class="comment-content">
+                                <div class="comment-author-time">
+                                    <strong>You</strong> <span class="timestamp">06:00 AM</span>
+                                </div>
+                                <div class="comment-bubble user-bubble">
+                                    Paket saya lagi dimana ya bang?
+                                </div>
+                                <div class="comment-reactions">
+                                    <span class="reaction-count">2 <i class="far fa-thumbs-up"></i></span>
+                                    <span class="reaction-count">3 <i class="far fa-comment-alt"></i></span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Comment 2 (Mondy) -->
+                        <div class="comment-item">
+                            <div class="comment-avatar"><div class="avatar-placeholder mondy"><i class="fas fa-user"></i></div></div>
+                            <div class="comment-content">
+                                <div class="comment-author-time">
+                                    <strong>Mondy Threesixty</strong> <span class="timestamp">06:30 AM</span>
+                                </div>
+                                <div class="comment-bubble">
+                                    Mahkotamu sedang di DC Cakung sir <span class="emoji">👍</span>
+                                    <div class="comment-video-thumbnail">
+                                        <!-- Placeholder for video thumbnail image -->
+                                        <i class="fas fa-play play-icon-thumbnail"></i>
+                                        <span class="video-duration-badge">01:45</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Comment 3 (Farhan) -->
+                        <div class="comment-item">
+                           <div class="comment-avatar"><div class="avatar-placeholder farhan"><i class="fas fa-user"></i></div></div>
+                            <div class="comment-content">
+                                <div class="comment-author-time">
+                                    <strong>Farhan Fauzan</strong> <span class="timestamp">06:45 AM</span>
+                                </div>
+                                <div class="comment-bubble">
+                                   Bang udah nonton anime frieren belum?
+                                </div>
+                                <div class="comment-reactions">
+                                    <span class="reaction-count">2 <span class="emoji">😥</span></span>
+                                    <span class="reaction-count">1 <span class="emoji">🤔</span></span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Comment 4 (Praja) -->
+                        <div class="comment-item">
+                            <div class="comment-avatar"><div class="avatar-placeholder praja"><i class="fas fa-user"></i></div></div>
+                            <div class="comment-content">
+                                <div class="comment-author-time">
+                                    <strong>Praja Pramuditya</strong> <span class="timestamp">07:10 AM</span>
+                                </div>
+                                <div class="comment-bubble">
+                                   Menyala Abangku <span class="emoji">🔥</span>
+                                </div>
+                            </div>
+                        </div>
+                         <!-- Comment 5 (You) -->
+                        <div class="comment-item">
+                           <div class="comment-avatar"><div class="avatar-placeholder you"><i class="fas fa-user"></i></div></div>
+                            <div class="comment-content">
+                                <div class="comment-author-time">
+                                    <strong>You</strong> <span class="timestamp">07:20 AM</span>
+                                </div>
+                                <div class="comment-bubble user-bubble">
+                                    Ini tutorial bagus banget sih. Kalo dijual kayanya jutaan harganya
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="comment-input-area">
+                        <button class="comment-action-button"><i class="fas fa-paperclip"></i></button>
+                        <input type="text" placeholder="Send message">
+                        <button class="comment-action-button"><i class="fas fa-video"></i></button> <!-- Changed to video icon for clarity from image -->
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </div>
+    <!-- Font Awesome JS (needed for SVG rendering if you use certain FA features, or just CSS works for most cases) -->
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/js/all.min.js"></script> -->
+</body>
+</html>
