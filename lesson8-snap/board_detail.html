@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Board Detail - Project Alpha</title>
+    <style>
+        :root {
+            --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            --background-color: #FFFFFF;
+            --sidebar-background: #f0f2f5;
+            --text-color: #333333;
+            --heading-color: #1F2937;
+            --plus-btn-bg: #111827;
+            --plus-btn-icon: #FFFFFF;
+            --icon-action-btn-bg: #374151;
+            --icon-action-btn-icon: #FFFFFF;
+            --top-nav-icon-color: #6B7280;
+
+            --dot-color-1: #FDBA74;
+            --dot-color-2: #FDA4AF;
+            --dot-color-3: #BFDBFE;
+            --dot-color-4: #67E8F9;
+            --dot-color-5: #A7F3D0;
+
+            /* Note card colors (can be reused or new ones for item cards) */
+            --note-color-1: #FFDAB9;
+            --note-color-2: #FFFACD;
+            --note-color-3: #FFC0CB;
+            --note-color-4: #E6E6FA;
+            --note-color-5: #F0FFF0;
+            --note-color-6: #AFEEEE;
+
+            --card-border-radius: 16px; /* General card radius */
+            --card-padding: 20px;
+            --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --card-item-bg: #FFFFFF; /* Default for item cards on detail page */
+            --card-item-border: 1px solid #E5E7EB;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: var(--font-family-sans-serif);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* --- Top Navigation (Same as before) --- */
+        .top-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 24px;
+            border-bottom: 1px solid #E5E7EB;
+            background-color: #fff;
+            height: 60px;
+        }
+        .logo-area { display: flex; align-items: center; }
+        .logo-area .logo { width: 28px; height: 28px; background-color: #FFDE03; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-family: 'Arial Black', sans-serif; font-size: 18px; color: #E53935; line-height: 1; }
+        .logo-area .brand-name { font-weight: 600; font-size: 18px; color: #111827; margin-right: 24px; }
+        .nav-link { color: #6B7280; text-decoration: none; margin-right: 16px; font-size: 14px; font-weight: 500; }
+        .nav-link.available { color: #10B981; }
+        .nav-link.follow { color: #111827; }
+        .actions-area { display: flex; align-items: center; }
+        .top-nav-icon-btn { background: none; border: none; padding: 8px; cursor: pointer; color: var(--top-nav-icon-color); margin-left: 8px; }
+        .top-nav-icon-btn svg { width: 20px; height: 20px; display: block; stroke-width: 2; }
+        .get-in-touch-btn { background-color: #1F2937; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; cursor: pointer; margin-left: 16px; transition: background-color 0.2s ease; }
+        .get-in-touch-btn:hover { background-color: #374151; }
+
+        /* --- App Container (Same as before) --- */
+        .app-container {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* --- Sidebar (Same as before) --- */
+        .sidebar {
+            width: 80px;
+            background-color: var(--sidebar-background);
+            padding-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .add-note-btn { width: 48px; height: 48px; background-color: var(--plus-btn-bg); border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 35px; transition: background-color 0.2s ease; }
+        .add-note-btn:hover { background-color: #374151; }
+        .add-note-btn svg { fill: var(--plus-btn-icon); width: 24px; height: 24px; }
+        .color-palette { list-style: none; padding: 0; margin: 0; }
+        .color-palette li { width: 24px; height: 24px; border-radius: 50%; margin-bottom: 18px; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); transition: transform 0.2s ease; }
+        .color-palette li:hover { transform: scale(1.1); }
+
+        /* --- Main Content Area --- */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px 40px;
+            background-color: var(--background-color);
+        }
+        .main-content > h1 { /* Page title */
+            font-size: 32px; /* Slightly smaller than "Notes" page title */
+            color: var(--heading-color);
+            margin-top: 0;
+            margin-bottom: 30px;
+            font-weight: 700;
+        }
+
+        /* --- Content Sections --- */
+        .content-section {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            font-size: 22px;
+            color: var(--heading-color);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #E5E7EB;
+            font-weight: 600;
+        }
+
+        /* --- Item Cards (General) --- */
+        .item-card {
+            background-color: var(--card-item-bg);
+            border: var(--card-item-border);
+            border-radius: var(--card-border-radius);
+            padding: var(--card-padding);
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .item-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        .item-card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .item-card-icon {
+            margin-right: 12px;
+            color: #6B7280; /* Icon color */
+            width: 24px;
+            height: 24px;
+        }
+        .item-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--heading-color);
+            word-break: break-word;
+            flex-grow: 1;
+        }
+        .item-card-content {
+            font-size: 14px;
+            color: var(--text-color);
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+        .item-card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: auto;
+            font-size: 13px;
+            color: #6B7280;
+        }
+        .item-card-actions button {
+            background: none;
+            border: none;
+            color: var(--icon-action-btn-bg);
+            cursor: pointer;
+            padding: 6px;
+            margin-left: 8px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .item-card-actions button:hover {
+            background-color: #f0f0f0;
+        }
+        .item-card-actions svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+
+        /* --- Grid for Photos & Videos --- */
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px;
+        }
+        .photo-card img, .video-card .video-thumbnail {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: calc(var(--card-border-radius) - 8px); /* Inner radius */
+            margin-bottom: 12px;
+            background-color: #e0e0e0; /* Placeholder bg */
+        }
+        .video-card .video-thumbnail {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .video-card .play-icon {
+            position: absolute;
+            width: 48px;
+            height: 48px;
+            fill: rgba(255,255,255,0.8);
+        }
+
+
+        /* --- List for Links, Files --- */
+        .item-list .item-card {
+            margin-bottom: 15px;
+            flex-direction: row; /* Horizontal layout for list items */
+            align-items: center;
+        }
+        .item-list .item-card-content-wrapper {
+            flex-grow: 1;
+            padding-right: 15px; /* Space before actions */
+        }
+        .item-list .item-card-header { margin-bottom: 4px; }
+        .item-list .item-card-icon { width: 20px; height: 20px;} /* Smaller icons for lists */
+        .item-list .item-card-title { font-size: 15px; }
+        .item-list .item-card-description {
+            font-size: 13px;
+            color: #6B7280;
+            word-break: break-all; /* For long URLs */
+            max-height: 40px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+        .item-list .item-card-actions {
+            margin-left: auto; /* Push actions to the right */
+            flex-shrink: 0;
+        }
+
+
+        /* --- Notes Section (reusing styles from previous page if needed) --- */
+        .notes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .note-card { /* Copied from previous for consistency, if you use this class */
+            padding: var(--card-padding);
+            border-radius: var(--card-border-radius);
+            box-shadow: var(--card-shadow);
+            min-height: 150px; /* Adjust as needed */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: #1F2937;
+            font-size: 15px;
+            line-height: 1.5;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .note-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+        .note-card p { margin-top: 0; margin-bottom: 15px; flex-grow: 1; word-break: break-word; font-weight: 500; }
+        .note-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
+        .note-footer .date { font-size: 13px; color: #6B7280; }
+        .note-action-btn { background-color: var(--icon-action-btn-bg); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; transition: background-color 0.2s ease; }
+        .note-action-btn:hover { background-color: #4B5563; }
+        .note-action-btn svg { fill: var(--icon-action-btn-icon); width: 18px; height: 18px; }
+        .star-btn svg { fill: #FBBF24; }
+        .note-color-1 { background-color: var(--note-color-1); }
+        .note-color-2 { background-color: var(--note-color-2); }
+
+    </style>
+</head>
+<body>
+    <!-- Top Navigation (Same as before) -->
+    <header class="top-nav">
+        <div class="logo-area">
+            <div class="logo">A</div>
+            <span class="brand-name">Awsmd</span>
+            <a href="#" class="nav-link available">Available for work</a>
+            <a href="#" class="nav-link follow">Follow</a>
+        </div>
+        <div class="actions-area">
+            <button class="top-nav-icon-btn" aria-label="Like">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path></svg>
+            </button>
+            <button class="top-nav-icon-btn" aria-label="Bookmark">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"></path></svg>
+            </button>
+            <button class="get-in-touch-btn">Get in touch</button>
+        </div>
+    </header>
+
+    <div class="app-container">
+        <!-- Sidebar (Same as before) -->
+        <aside class="sidebar">
+            <button class="add-note-btn" aria-label="Add new item">
+                <svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
+            </button>
+            <ul class="color-palette">
+                <li style="background-color: var(--dot-color-1);" aria-label="Orange yellow color filter"></li>
+                <li style="background-color: var(--dot-color-2);" aria-label="Peach color filter"></li>
+                <li style="background-color: var(--dot-color-3);" aria-label="Light purple color filter"></li>
+                <li style="background-color: var(--dot-color-4);" aria-label="Cyan color filter"></li>
+                <li style="background-color: var(--dot-color-5);" aria-label="Light green color filter"></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <h1>Board: Project Alpha Launch Plan</h1>
+
+            <!-- Photos Section -->
+            <section class="content-section">
+                <h2 class="section-title">Photos</h2>
+                <div class="item-grid photo-grid">
+                    <div class="item-card photo-card">
+                        <img src="https://via.placeholder.com/300x200/FFA07A/FFFFFF?text=Moodboard+1" alt="Moodboard Image 1">
+                        <div class="item-card-footer">
+                            <span>moodboard_final.jpg</span>
+                            <div class="item-card-actions">
+                                <button aria-label="View Photo"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg></button>
+                                <button aria-label="Delete Photo"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="item-card photo-card">
+                        <img src="https://via.placeholder.com/300x200/ADD8E6/FFFFFF?text=User+Persona" alt="User Persona Image">
+                         <div class="item-card-footer">
+                            <span>persona_jane.png</span>
+                            <div class="item-card-actions">
+                                <button aria-label="View Photo"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg></button>
+                                <button aria-label="Delete Photo"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg></button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Add more photo cards -->
+                </div>
+            </section>
+
+            <!-- Links Section -->
+            <section class="content-section">
+                <h2 class="section-title">Links</h2>
+                <div class="item-list link-list">
+                    <div class="item-card">
+                        <svg class="item-card-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path></svg>
+                        <div class="item-card-content-wrapper">
+                            <div class="item-card-header">
+                                <span class="item-card-title">Competitor Analysis - Product Hunt</span>
+                            </div>
+                            <p class="item-card-description">https://www.producthunt.com/topics/project-management</p>
+                        </div>
+                        <div class="item-card-actions">
+                            <button aria-label="Open Link"><svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path></svg></button>
+                            <button aria-label="Delete Link"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="item-card">
+                        <svg class="item-card-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path></svg>
+                        <div class="item-card-content-wrapper">
+                            <div class="item-card-header">
+                                <span class="item-card-title">Inspiration - Dribbble</span>
+                            </div>
+                             <p class="item-card-description">https://dribbble.com/search/project-management-dashboard</p>
+                        </div>
+                        <div class="item-card-actions">
+                             <button aria-label="Open Link"><svg viewBox="0 0 24 24"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path></svg></button>
+                            <button aria-label="Delete Link"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg></button>
+                        </div>
+                    </div>
+                    <!-- Add more link cards -->
+                </div>
+            </section>
+
+            <!-- Files Section -->
+            <section class="content-section">
+                <h2 class="section-title">Files</h2>
+                <div class="item-list file-list">
+                     <div class="item-card">
+                        <svg class="item-card-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"></path></svg>
+                        <div class="item-card-content-wrapper">
+                            <div class="item-card-header">
+                                <span class="item-card-title">Project Brief v3.pdf</span>
+                            </div>
+                            <p class="item-card-description">PDF Document - 2.3 MB - Last updated: 2 days ago</p>
+                        </div>
+                        <div class="item-card-actions">
+                            <button aria-label="Download File"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"></path></svg></button>
+                            <button aria-label="Delete File"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg></button>
+                        </div>
+                    </div>
+                    <div class="item-card">
+                         <svg class="item-card-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM17 13l-5 5-5-5h3V9h4v4h3z"></path></svg>
+                        <div class="item-card-content-wrapper">
+                            <div class="item-card-header">
+                                <span class="item-card-title">Marketing_Assets.zip</span>
+                            </div>
+                            <p class="item-card-description">ZIP Archive - 15.7 MB - Uploaded: 1 week ago</p>
+                        </div>
+                        <div class="item-card-actions">
+                            <button aria-label="Download File"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"></path></svg></button>
+                            <button aria-label="Delete File"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg></button>
+                        </div>
+                    </div>
+                    <!-- Add more file cards -->
+                </div>
+            </section>
+
+            <!-- Notes Section -->
+            <section class="content-section">
+                <h2 class="section-title">Notes</h2>
+                 <div class="notes-grid">
+                    <div class="note-card note-color-1">
+                        <p>Remember to schedule a follow-up meeting with the stakeholders next Tuesday.</p>
+                        <div class="note-footer">
+                            <span class="date">May 28, 2020</span>
+                             <button class="note-action-btn" aria-label="Edit note">
+                                <svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="note-card note-color-2">
+                        <p>Key feedback from user testing: Simplify the onboarding process.</p>
+                        <div class="note-footer">
+                            <span class="date">May 26, 2020</span>
+                            <button class="note-action-btn star-btn" aria-label="Favorite note">
+                                <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Add more note cards -->
+                </div>
+            </section>
+
+            <!-- Videos Section -->
+            <section class="content-section">
+                <h2 class="section-title">Videos</h2>
+                <div class="item-grid video-grid">
+                     <div class="item-card video-card">
+                        <div class="video-thumbnail" style="background-image: url('https://via.placeholder.com/300x200/87CEEB/FFFFFF?text=Demo+Video');">
+                            <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+                        </div>
+                        <div class="item-card-header" style="margin-top: 12px; margin-bottom: 0;">
+                             <span class="item-card-title">Product Demo Recording (Internal)</span>
+                        </div>
+                        <div class="item-card-footer">
+                            <span>12:34 min</span>
+                            <div class="item-card-actions">
+                                <button aria-label="Play Video"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg></button>
+                                <button aria-label="Delete Video"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg></button>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="item-card video-card">
+                        <div class="video-thumbnail" style="background-image: url('https://via.placeholder.com/300x200/90EE90/FFFFFF?text=Tutorial'); background-size: cover;">
+                             <svg class="play-icon" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+                        </div>
+                         <div class="item-card-header" style="margin-top: 12px; margin-bottom: 0;">
+                             <span class="item-card-title">Onboarding Tutorial for New Users</span>
+                        </div>
+                        <div class="item-card-footer">
+                            <span>05:12 min</span>
+                             <div class="item-card-actions">
+                                <button aria-label="Play Video"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg></button>
+                                <button aria-label="Delete Video"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg></button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Add more video cards -->
+                </div>
+            </section>
+
+        </main>
+    </div>
+    <script>
+        // Basic JS for interactivity if needed (e.g., opening modals, handling clicks)
+        // For this example, it's mostly static.
+        document.querySelectorAll('.item-card-actions button, .note-action-btn').forEach(button => {
+            button.addEventListener('click', (e) => {
+                e.preventDefault(); // Prevent default link behavior if buttons are wrapped in <a>
+                const action = button.getAttribute('aria-label');
+                alert(`Action: ${action}`);
+                // Here you would implement the actual functionality
+            });
+        });
+    </script>
+</body>
+</html>
