@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Board Detail - Project Alpha</title>
+    <title>All Items - Project Alpha</title>
     <style>
         :root {
             --font-family-sans-serif: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
@@ -17,41 +17,35 @@
             --icon-action-btn-icon: #FFFFFF;
             --top-nav-icon-color: #6B7280;
             --link-color: #3B82F6;
+            --table-border-color: #E5E7EB;
+            --table-header-bg: #F9FAFB;
+            --table-row-hover-bg: #F3F4F6;
 
-            --dot-color-1: #FDBA74; /* Sidebar dots */
-            --dot-color-2: #FDA4AF;
-            --dot-color-3: #BFDBFE;
-            --dot-color-4: #67E8F9;
-            --dot-color-5: #A7F3D0;
-
-            /* Colors for Gallery Cards (can be expanded or randomized) */
+            /* Colors for Gallery Cards */
             --gallery-color-1: #FFDAB9; /* Peach */
             --gallery-color-2: #FFFACD; /* LemonChiffon */
             --gallery-color-3: #FFC0CB; /* Pink */
             --gallery-color-4: #E6E6FA; /* Lavender */
             --gallery-color-5: #F0FFF0; /* Honeydew */
             --gallery-color-6: #AFEEEE; /* PaleTurquoise */
-            --gallery-color-7: #ADD8E6; /* LightBlue */
-            --gallery-color-8: #D8BFD8; /* Thistle */
 
+            /* Thumbnail box colors */
+            --thumb-box-note-bg: #E6E6FA;
+            --thumb-box-file-bg: #F0FFF0;
+            --thumb-box-link-bg: #E0F2FE;
+            --thumb-box-default-icon-color: #52525B;
 
+            --thumbnail-size: 72px;
             --card-border-radius: 16px;
             --card-padding: 20px;
             --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            --card-item-bg: #FFFFFF; /* For list view items */
-            --card-item-border: 1px solid #E5E7EB;
-
-            --view-toggle-btn-bg: #E5E7EB;
-            --view-toggle-btn-text: #374151;
-            --view-toggle-btn-bg-active: #3B82F6; /* Blue */
-            --view-toggle-btn-text-active: #FFFFFF;
         }
 
         *, *::before, *::after { box-sizing: border-box; }
         body { margin: 0; font-family: var(--font-family-sans-serif); background-color: var(--background-color); color: var(--text-color); line-height: 1.6; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 
-        /* --- Top Navigation (Same as before) --- */
-        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; border-bottom: 1px solid #E5E7EB; background-color: #fff; height: 60px; }
+        /* --- Top Navigation --- */
+        .top-nav { display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; border-bottom: 1px solid var(--table-border-color); background-color: #fff; height: 60px; }
         .logo-area { display: flex; align-items: center; }
         .logo-area .logo { width: 28px; height: 28px; background-color: #FFDE03; border-radius: 6px; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-family: 'Arial Black', sans-serif; font-size: 18px; color: #E53935; line-height: 1; }
         .logo-area .brand-name { font-weight: 600; font-size: 18px; color: #111827; margin-right: 24px; }
@@ -64,10 +58,10 @@
         .get-in-touch-btn { background-color: #1F2937; color: white; border: none; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 500; cursor: pointer; margin-left: 16px; transition: background-color 0.2s ease; }
         .get-in-touch-btn:hover { background-color: #374151; }
 
-        /* --- App Container (Same as before) --- */
+        /* --- App Container --- */
         .app-container { display: flex; min-height: calc(100vh - 60px); }
 
-        /* --- Sidebar (Same as before) --- */
+        /* --- Sidebar --- */
         .sidebar { width: 80px; background-color: var(--sidebar-background); padding-top: 30px; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
         .add-note-btn { width: 48px; height: 48px; background-color: var(--plus-btn-bg); border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 35px; transition: background-color 0.2s ease; }
         .add-note-btn:hover { background-color: #374151; }
@@ -75,8 +69,6 @@
         .color-palette { list-style: none; padding: 0; margin: 0; }
         .color-palette li { width: 24px; height: 24px; border-radius: 50%; margin-bottom: 18px; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); transition: transform 0.2s ease; }
         .color-palette li:hover { transform: scale(1.1); }
-        .color-palette li:nth-child(1) { background-color: var(--dot-color-1); } /* etc. */
-
 
         /* --- Main Content Area --- */
         .main-content { flex-grow: 1; padding: 30px 40px; background-color: var(--background-color); }
@@ -91,8 +83,8 @@
             font-weight: 500;
             border: none;
             border-radius: 8px;
-            background-color: var(--view-toggle-btn-bg);
-            color: var(--view-toggle-btn-text);
+            background-color: #E5E7EB;
+            color: #374151;
             cursor: pointer;
             transition: background-color 0.2s ease, color 0.2s ease;
             display: flex;
@@ -100,154 +92,187 @@
             gap: 6px;
         }
         .view-toggle-btn svg { width: 16px; height: 16px; fill: currentColor; }
-        .view-toggle-btn:hover { background-color: #D1D5DB; /* Gray 300 */ }
-        .view-toggle-btn.active {
-            background-color: var(--view-toggle-btn-bg-active);
-            color: var(--view-toggle-btn-text-active);
-        }
+        .view-toggle-btn:hover { background-color: #D1D5DB; }
+        .view-toggle-btn.active { background-color: #3B82F6; color: #FFFFFF; }
 
-        /* --- Content Sections --- */
-        .content-section { margin-bottom: 40px; }
-        .section-title { font-size: 22px; color: var(--heading-color); margin-bottom: 20px; padding-bottom: 10px; border-bottom: 1px solid #E5E7EB; font-weight: 600; }
-
-        /* --- List View Item Cards (Styles from previous Board Detail) --- */
-        .list-view-content .item-card { /* Targeting item-card specifically within list-view-content */
-            background-color: var(--card-item-bg); border: var(--card-item-border); border-radius: var(--card-border-radius); padding: var(--card-padding); box-shadow: var(--card-shadow); display: flex; flex-direction: column; transition: transform 0.2s ease, box-shadow 0.2s ease; margin-bottom: 15px;
+        /* --- List View Styles --- */
+        .list-view-content {
+            overflow-x: auto;
         }
-        .list-view-content .item-card:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); }
-        .list-view-content .item-card-header { display: flex; align-items: center; margin-bottom: 12px; }
-        .list-view-content .item-card-icon { margin-right: 12px; color: #6B7280; width: 24px; height: 24px; }
-        .list-view-content .item-card-title { font-size: 16px; font-weight: 600; color: var(--heading-color); word-break: break-word; flex-grow: 1; }
-        .list-view-content .item-card-content { font-size: 14px; color: var(--text-color); margin-bottom: 15px; flex-grow: 1; }
-        .list-view-content .item-card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; font-size: 13px; color: #6B7280; }
-        .list-view-content .item-card-actions button { background: none; border: none; color: var(--icon-action-btn-bg); cursor: pointer; padding: 6px; margin-left: 8px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
-        .list-view-content .item-card-actions button:hover { background-color: #f0f0f0; }
-        .list-view-content .item-card-actions svg { width: 18px; height: 18px; fill: currentColor; }
-        .list-view-content .photo-card img, .list-view-content .video-card .video-thumbnail { /* List view specific thumbnails */
-            width: 100px; height: 70px; object-fit: cover; border-radius: 8px; margin-right: 15px; background-color: #e0e0e0;
-        }
-        .list-view-content .item-card { flex-direction: row; align-items: center; } /* Adjust item-card for list view */
-        .list-view-content .item-card-content-wrapper { flex-grow: 1; }
-
-        /* --- Gallery View Grid and Cards --- */
-        .gallery-view-content {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Adjust minmax for desired card size */
-            gap: 25px;
-        }
-        .gallery-item-card {
-            border-radius: var(--card-border-radius);
-            box-shadow: var(--card-shadow);
-            padding: var(--card-padding);
-            min-height: 220px; /* Adjust as needed */
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            color: #1F2937; /* Darker text for notes */
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            overflow: hidden; /* For image fitting */
-        }
-        .gallery-item-card:hover { transform: translateY(-3px); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1); }
-
-        .gallery-item-card .item-preview {
+        .compact-table {
             width: 100%;
-            height: 130px; /* Fixed height for preview area in gallery card */
-            margin-bottom: 15px;
-            border-radius: 10px; /* Inner radius for preview */
+            border-collapse: collapse;
+            font-size: 14px;
+            min-width: 850px;
+        }
+        .compact-table th,
+        .compact-table td {
+            padding: 12px 15px;
+            text-align: left;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--table-border-color);
+        }
+        .compact-table th {
+            background-color: var(--table-header-bg);
+            font-weight: 600;
+            color: #374151;
+            white-space: nowrap;
+        }
+        .compact-table tbody tr:hover {
+            background-color: var(--table-row-hover-bg);
+        }
+
+        .col-thumbnail {
+            width: calc(var(--thumbnail-size) + 10px);
+        }
+        .thumbnail-container {
+            width: var(--thumbnail-size);
+            height: var(--thumbnail-size);
+            border-radius: 8px;
             overflow: hidden;
-            background-color: rgba(0,0,0,0.05); /* Fallback for missing content */
+            position: relative;
+            background-color: #e9ecef;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative; /* For play icon */
         }
-        .gallery-item-card .item-preview img { width: 100%; height: 100%; object-fit: cover; }
-        .gallery-item-card .item-preview .play-icon-overlay {
-            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-            width: 48px; height: 48px; background-color: rgba(0,0,0,0.5); border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
+        .thumbnail-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
-        .gallery-item-card .item-preview .play-icon-overlay svg { width: 24px; height: 24px; fill: white; }
 
-        .gallery-item-card .item-icon-lg { /* For File, Link type cards */
-            font-size: 40px; /* SVG will scale */
-            color: rgba(0,0,0,0.5); /* Default icon color, can be overridden */
+        .col-details {
+            min-width: 280px;
         }
-        .gallery-item-card .item-icon-lg svg { width: 48px; height: 48px; fill: currentColor; }
-
-
-        .gallery-item-card .item-title {
-            font-size: 16px;
+        .col-details .item-title {
             font-weight: 600;
-            margin-bottom: 8px;
+            color: var(--heading-color);
+            display: block;
+            margin-bottom: 2px;
             word-break: break-word;
-            /* For text truncation */
-            display: -webkit-box;
-            -webkit-line-clamp: 2; /* Max 2 lines */
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            line-height: 1.3; /* Adjust for better two-line display */
-            max-height: calc(1.3em * 2); /* line-height * number of lines */
-
+            font-size: 15px;
         }
-        .gallery-item-card .item-description {
+        .col-details .item-desc {
             font-size: 13px;
-            color: #4B5563; /* Slightly lighter than title */
-            margin-bottom: 12px;
-            flex-grow: 1;
-             /* For text truncation */
-            display: -webkit-box;
-            -webkit-line-clamp: 3; /* Max 3 lines for description */
-            -webkit-box-orient: vertical;
+            color: #6B7280;
+            white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            line-height: 1.4;
-            max-height: calc(1.4em * 3);
+            max-width: 400px;
         }
-         .gallery-item-card .item-note-content { /* Specific for note text */
+
+        .col-date { width: 130px; white-space: nowrap; }
+        .col-price { width: 90px; text-align: right; white-space: nowrap; }
+        .col-source { width: 150px; }
+        .col-source a { color: var(--link-color); text-decoration: none; font-weight: 500; }
+        .col-source a:hover { text-decoration: underline; }
+        .col-source .no-source { color: #9CA3AF; }
+
+        .col-actions { width: 60px; text-align: center; }
+        .action-btn {
+            background: none;
+            border: none;
+            padding: 6px;
+            cursor: pointer;
+            color: #6B7280;
+            border-radius: 50%;
+        }
+        .action-btn:hover {
+            background-color: #E5E7EB;
+            color: #1F2937;
+        }
+        .action-btn svg {
+            width: 18px;
+            height: 18px;
+            display: block;
+        }
+
+        /* --- Gallery View Styles --- */
+        .gallery-view-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .gallery-item-card {
+            padding: var(--card-padding);
+            border-radius: var(--card-border-radius);
+            box-shadow: var(--card-shadow);
+            min-height: 200px;
+            height: 280px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            color: #1F2937;
             font-size: 15px;
             line-height: 1.5;
-            flex-grow: 1;
-            margin-bottom: 10px;
-            display: -webkit-box;
-            -webkit-line-clamp: 5; /* Max 5 lines for notes */
-            -webkit-box-orient: vertical;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
             overflow: hidden;
-            text-overflow: ellipsis;
+        }
+        .gallery-item-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .gallery-item-card .item-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1F2937;
+            margin: 0 0 8px 0;
+            line-height: 1.2;
+        }
+
+        .gallery-item-card .item-description {
+            font-size: 13px;
+            line-height: 1.4;
+            color: #4B5563;
+            margin: 0 0 12px 0;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+        }
+
+        .gallery-item-card .content-preview {
+            margin: 8px 0;
+            position: relative;
+            flex: 1;
+        }
+
+        .gallery-item-card .thumbnail-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            margin-bottom: 8px;
+        }
+
+        .gallery-item-card .thumbnail {
+            width: 100%;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 4px;
         }
 
         .gallery-item-card .item-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 12px;
+            margin-top: auto;
+            padding-top: 8px;
+            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            font-size: 11px;
             color: #6B7280;
-            margin-top: auto; /* Pushes to bottom */
         }
-        .gallery-item-card .item-footer .date { /* If date is needed */ }
-        .gallery-item-card .item-footer .action-icon { /* Simple action icon if needed */
-            cursor: pointer;
-        }
-        .gallery-item-card .item-footer .action-icon svg { width: 18px; height: 18px; fill: #6B7280; }
 
-
-        /* --- Note Card Styles (reused for gallery notes) --- */
-        .gallery-view-content .note-card { /* Target note-card specifically in gallery */
-            /* Inherits from gallery-item-card, override if needed */
-             padding: var(--card-padding);
-        }
-        .gallery-view-content .note-card p { margin-top: 0; margin-bottom: 15px; flex-grow: 1; word-break: break-word; font-weight: 500; font-size: 15px; line-height: 1.5; }
-        .gallery-view-content .note-footer { display: flex; justify-content: space-between; align-items: center; margin-top: auto; }
-        .gallery-view-content .note-footer .date { font-size: 13px; color: #6B7280; }
-        .gallery-view-content .note-action-btn { background-color: var(--icon-action-btn-bg); border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; transition: background-color 0.2s ease; }
-        .gallery-view-content .note-action-btn:hover { background-color: #4B5563; }
-        .gallery-view-content .note-action-btn svg { fill: var(--icon-action-btn-icon); width: 18px; height: 18px; }
-        .gallery-view-content .star-btn svg { fill: #FBBF24; }
-        /* Apply gallery colors to note cards in gallery */
-        .gallery-view-content .note-card.color-1 { background-color: var(--gallery-color-1); }
-        .gallery-view-content .note-card.color-2 { background-color: var(--gallery-color-2); }
-        /* etc. for other colors */
+        /* Gallery colors */
+        .color-1 { background-color: var(--gallery-color-1); }
+        .color-2 { background-color: var(--gallery-color-2); }
+        .color-3 { background-color: var(--gallery-color-3); }
+        .color-4 { background-color: var(--gallery-color-4); }
+        .color-5 { background-color: var(--gallery-color-5); }
+        .color-6 { background-color: var(--gallery-color-6); }
 
     </style>
 </head>
@@ -271,12 +296,18 @@
         <!-- Sidebar -->
         <aside class="sidebar">
              <button class="add-note-btn" aria-label="Add new item"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg></button>
-            <ul class="color-palette"> <li style="background-color: var(--dot-color-1);"></li> <li style="background-color: var(--dot-color-2);"></li> <li style="background-color: var(--dot-color-3);"></li> <li style="background-color: var(--dot-color-4);"></li> <li style="background-color: var(--dot-color-5);"></li> </ul>
+            <ul class="color-palette">
+                <li style="background-color: var(--dot-color-1);"></li>
+                <li style="background-color: var(--dot-color-2);"></li>
+                <li style="background-color: var(--dot-color-3);"></li>
+                <li style="background-color: var(--dot-color-4);"></li>
+                <li style="background-color: var(--dot-color-5);"></li>
+            </ul>
         </aside>
 
         <main class="main-content">
             <div class="page-header">
-                <h1>Board: Project Alpha Launch Plan</h1>
+                <h1>All Items</h1>
                 <div class="view-toggle-controls">
                     <button class="view-toggle-btn active" data-view-mode="gallery" aria-pressed="true">
                         <svg viewBox="0 0 20 20"><path d="M3 3h14a2 2 0 012 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V5a2 2 0 012-2zm0 2v4h4V5H3zm0 6v4h4v-4H3zm6-6v4h4V5H9zm0 6v4h4v-4H9zm6-6v4h4V5h-4zm0 6v4h4v-4h-4z"></path></svg>
@@ -289,104 +320,231 @@
                 </div>
             </div>
 
-            <!-- Photos Section -->
-            <section class="content-section">
-                <h2 class="section-title">Photos</h2>
-                <!-- Gallery View -->
-                <div class="gallery-view-content view-content-area">
-                    <div class="gallery-item-card" style="background-color: var(--gallery-color-1);">
-                        <div class="item-preview"><img src="https://via.placeholder.com/300x200/FFA07A/FFFFFF?text=Moodboard+1" alt="Moodboard Image 1"></div>
-                        <div class="item-title">Moodboard Final</div>
-                        <div class="item-description">Key visuals for the new campaign.</div>
-                        <div class="item-footer"><span class="date">Uploaded: 2 days ago</span> <span class="action-icon" title="Options"><svg viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"></path></svg></span></div>
+            <!-- Gallery View -->
+            <div class="gallery-view-content view-content-area">
+                <div class="gallery-item-card color-1">
+                    <h3 class="item-title">Mountain Sunrise</h3>
+                    <p class="item-description">Vibrant colors during early morning. Captured from a hike.</p>
+                    <div class="content-preview">
+                        <img src="https://picsum.photos/200/200?random=1" alt="Photo Preview" style="width: 100%; border-radius: 8px;">
                     </div>
-                    <div class="gallery-item-card" style="background-color: var(--gallery-color-7);">
-                        <div class="item-preview"><img src="https://via.placeholder.com/300x200/ADD8E6/FFFFFF?text=User+Persona" alt="User Persona Image"></div>
-                        <div class="item-title">User Persona: Jane Doe</div>
-                        <div class="item-description">Target audience profile.</div>
-                        <div class="item-footer"><span class="date">Uploaded: 3 days ago</span> <span class="action-icon" title="Options"><svg viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"></path></svg></span></div>
+                    <div class="item-footer">
+                        <span class="date">Oct 26, 2023</span>
                     </div>
                 </div>
-                <!-- List View -->
-                <div class="list-view-content view-content-area" style="display: none;">
-                    <div class="item-card photo-card"> <!-- list item -->
-                        <img src="https://via.placeholder.com/300x200/FFA07A/FFFFFF?text=Moodboard+1" alt="Moodboard Image 1">
-                        <div class="item-card-content-wrapper">
-                            <div class="item-card-header"><span class="item-card-title">Moodboard Final</span></div>
-                            <div class="item-card-content">Key visuals for the new campaign.</div>
-                            <div class="item-card-footer"><span>moodboard_final.jpg</span> <div class="item-card-actions"><button aria-label="View"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg></button><button aria-label="Delete"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg></button></div></div>
-                        </div>
-                    </div>
-                     <div class="item-card photo-card"> <!-- list item -->
-                        <img src="https://via.placeholder.com/300x200/ADD8E6/FFFFFF?text=User+Persona" alt="User Persona Image">
-                        <div class="item-card-content-wrapper">
-                            <div class="item-card-header"><span class="item-card-title">User Persona: Jane Doe</span></div>
-                            <div class="item-card-content">Target audience profile.</div>
-                            <div class="item-card-footer"><span>persona_jane.png</span> <div class="item-card-actions"><button aria-label="View"><svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"></path></svg></button><button aria-label="Delete"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg></button></div></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
 
-            <!-- Files Section -->
-            <section class="content-section">
-                <h2 class="section-title">Files</h2>
-                 <!-- Gallery View -->
-                <div class="gallery-view-content view-content-area">
-                    <div class="gallery-item-card" style="background-color: var(--gallery-color-5);">
-                        <div class="item-preview item-icon-lg">
-                            <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"></path></svg>
-                        </div>
-                        <div class="item-title">Project Brief v3.pdf</div>
-                        <div class="item-description">Contains all project requirements and scope.</div>
-                        <div class="item-footer"><span class="date">2.3 MB</span> <span class="action-icon" title="Options"><svg viewBox="0 0 20 20"><path d="M10 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"></path></svg></span></div>
-                    </div>
-                </div>
-                <!-- List View -->
-                <div class="list-view-content view-content-area" style="display: none;">
-                     <div class="item-card file-card"> <!-- list item -->
-                        <svg class="item-card-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"></path></svg>
-                        <div class="item-card-content-wrapper">
-                            <div class="item-card-header"><span class="item-card-title">Project Brief v3.pdf</span></div>
-                            <div class="item-card-content">PDF Document - 2.3 MB - Last updated: 2 days ago</div>
-                            <div class="item-card-footer"><span>2.3MB</span> <div class="item-card-actions"><button aria-label="Download"><svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"></path></svg></button><button aria-label="Delete"><svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"></path></svg></button></div></div>
+                <div class="gallery-item-card color-2">
+                    <h3 class="item-title">New Feature Walkthrough</h3>
+                    <p class="item-description">A short demo of the latest app update.</p>
+                    <div class="content-preview">
+                        <img src="https://picsum.photos/200/200?random=2" alt="Video Preview" style="width: 100%; border-radius: 8px;">
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
+                            <svg viewBox="0 0 24 24" style="width: 24px; height: 24px; fill: white;"><path d="M8 5v14l11-7z"></path></svg>
                         </div>
                     </div>
+                    <div class="item-footer">
+                        <span class="date">Oct 25, 2023</span>
+                    </div>
                 </div>
-            </section>
 
-            <!-- Notes Section -->
-            <section class="content-section">
-                <h2 class="section-title">Notes</h2>
-                 <!-- Gallery View -->
-                <div class="gallery-view-content view-content-area">
-                    <div class="gallery-item-card note-card color-1"> <!-- Use note-card specific classes -->
-                        <p class="item-note-content">Remember to schedule a follow-up meeting with the stakeholders next Tuesday regarding the budget allocation and timeline adjustments.</p>
-                        <div class="note-footer">
-                            <span class="date">May 28, 2020</span>
-                             <button class="note-action-btn" aria-label="Edit note"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg></button>
+                <div class="gallery-item-card color-3">
+                    <h3 class="item-title">Client Meeting Recap</h3>
+                    <p class="item-description">Key action items: follow up on budget, send proposal by EOD.</p>
+                    <div class="content-preview">
+                        <div style="text-align: center; padding: 20px;">
+                            <svg viewBox="0 0 24 24" style="width: 48px; height: 48px; fill: currentColor;">
+                                <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm4 9H7v-2h10v2zm0-4H7v-2h10v2zm-2-4H7V8h8v2z"></path>
+                            </svg>
                         </div>
                     </div>
-                     <div class="gallery-item-card note-card color-2"> <!-- Use note-card specific classes -->
-                        <p class="item-note-content">Key feedback from user testing: Simplify the onboarding process. Users found steps 3 and 4 confusing. Consider a wizard or visual guide.</p>
-                        <div class="note-footer">
-                            <span class="date">May 26, 2020</span>
-                            <button class="note-action-btn star-btn" aria-label="Favorite note"><svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"></path></svg></button>
+                    <div class="item-footer">
+                        <span class="date">Oct 24, 2023</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item-card color-4">
+                    <h3 class="item-title">Presentation_Slides_Final.pptx</h3>
+                    <p class="item-description">Ready for the Q4 review meeting. Contains latest figures.</p>
+                    <div class="content-preview">
+                        <div style="text-align: center; padding: 20px;">
+                            <svg viewBox="0 0 24 24" style="width: 48px; height: 48px; fill: currentColor;">
+                                <path d="M13 9H5v2h8V9zm-2 4H5v2h6v-2zm4-8H5C3.89 5 3 5.9 3 7v10c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2h-4zm2-4H5C3.89 1 3 1.9 3 3h14c1.1 0 2 .9 2 2v2h3V3c0-1.1-.89-2-2-2z" opacity=".3"></path>
+                                <path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-8 12H5v-2h6v2zm2-4H5v-2h8v2zm0-4H5V7h8v2z"></path>
+                            </svg>
                         </div>
                     </div>
-                </div>
-                <!-- List View -->
-                <div class="list-view-content view-content-area" style="display: none;">
-                    <!-- Standard list view note cards from previous example -->
-                    <div class="item-card note-card" style="background-color: var(--gallery-color-1);">
-                         <div class="item-card-content-wrapper">
-                            <p>Remember to schedule a follow-up meeting with the stakeholders next Tuesday.</p>
-                            <div class="note-footer"> <span class="date">May 28, 2020</span> <button class="note-action-btn" aria-label="Edit note"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"></path></svg></button> </div>
-                         </div>
+                    <div class="item-footer">
+                        <span class="date">Oct 23, 2023</span>
                     </div>
                 </div>
-            </section>
-            <!-- Add more sections (Links, Videos) following the same pattern -->
+
+                <div class="gallery-item-card color-5">
+                    <h3 class="item-title">Style Guide - Company Branding</h3>
+                    <p class="item-description">Official guidelines for logo usage, colors, and typography.</p>
+                    <div class="content-preview">
+                        <div style="text-align: center; padding: 20px;">
+                            <svg viewBox="0 0 24 24" style="width: 48px; height: 48px; fill: currentColor;">
+                                <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="item-footer">
+                        <span class="date">Oct 22, 2023</span>
+                    </div>
+                </div>
+
+                <div class="gallery-item-card color-6">
+                    <h3 class="item-title">Smart Coffee Mug</h3>
+                    <p class="item-description">Temperature controlled, app-connected. Keeps coffee perfect.</p>
+                    <div class="content-preview">
+                        <img src="https://picsum.photos/200/200?random=3" alt="Product Preview" style="width: 100%; border-radius: 8px;">
+                    </div>
+                    <div class="item-footer">
+                        <span class="date">Oct 21, 2023</span>
+                        <span>$149.50</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- List View -->
+            <div class="list-view-content view-content-area" style="display: none;">
+                <table class="compact-table">
+                    <thead>
+                        <tr>
+                            <th class="col-thumbnail">Preview</th>
+                            <th class="col-details">Details</th>
+                            <th class="col-date">Added</th>
+                            <th class="col-price">Price</th>
+                            <th class="col-source">Source</th>
+                            <th class="col-actions">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="col-thumbnail">
+                                <div class="thumbnail-container">
+                                    <img src="https://picsum.photos/200/200?random=1" alt="Photo Preview">
+                                    <div class="type-icon-badge">
+                                        <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"></path></svg>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="col-details">
+                                <span class="item-title">Mountain Sunrise</span>
+                                <span class="item-desc">Vibrant colors during early morning. Captured from a hike.</span>
+                            </td>
+                            <td class="col-date">Oct 26, 2023</td>
+                            <td class="col-price">N/A</td>
+                            <td class="col-source"><a href="https://unsplash.com/photos/example1" target="_blank">Unsplash</a></td>
+                            <td class="col-actions">
+                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="col-thumbnail">
+                                <div class="thumbnail-container">
+                                    <img src="https://picsum.photos/200/200?random=2" alt="Video Preview">
+                                    <div class="play-icon-overlay">
+                                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="col-details">
+                                <span class="item-title">New Feature Walkthrough</span>
+                                <span class="item-desc">A short demo of the latest app update.</span>
+                            </td>
+                            <td class="col-date">Oct 25, 2023</td>
+                            <td class="col-price">N/A</td>
+                            <td class="col-source"><a href="https://vimeo.com/example" target="_blank">Vimeo</a></td>
+                            <td class="col-actions">
+                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="col-thumbnail">
+                                <div class="thumbnail-container">
+                                    <div class="thumb-box thumb-note">
+                                        <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm4 9H7v-2h10v2zm0-4H7v-2h10v2zm-2-4H7V8h8v2z"></path></svg>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="col-details">
+                                <span class="item-title">Client Meeting Recap</span>
+                                <span class="item-desc">Key action items: follow up on budget, send proposal by EOD.</span>
+                            </td>
+                            <td class="col-date">Oct 24, 2023</td>
+                            <td class="col-price">N/A</td>
+                            <td class="col-source"><span class="no-source">Internal Note</span></td>
+                            <td class="col-actions">
+                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="col-thumbnail">
+                                <div class="thumbnail-container">
+                                    <div class="thumb-box thumb-file">
+                                        <svg viewBox="0 0 24 24"><path d="M13 9H5v2h8V9zm-2 4H5v2h6v-2zm4-8H5C3.89 5 3 5.9 3 7v10c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2h-4zm2-4H5C3.89 1 3 1.9 3 3h14c1.1 0 2 .9 2 2v2h3V3c0-1.1-.89-2-2-2z" opacity=".3"></path><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm-8 12H5v-2h6v2zm2-4H5v-2h8v2zm0-4H5V7h8v2z"></path></svg>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="col-details">
+                                <span class="item-title">Presentation_Slides_Final.pptx</span>
+                                <span class="item-desc">Ready for the Q4 review meeting. Contains latest figures.</span>
+                            </td>
+                            <td class="col-date">Oct 23, 2023</td>
+                            <td class="col-price">N/A</td>
+                            <td class="col-source"><span class="no-source">Local File</span></td>
+                            <td class="col-actions">
+                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="col-thumbnail">
+                                <div class="thumbnail-container">
+                                    <div class="thumb-box thumb-link">
+                                        <svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path></svg>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="col-details">
+                                <span class="item-title">Style Guide - Company Branding</span>
+                                <span class="item-desc">Official guidelines for logo usage, colors, and typography.</span>
+                            </td>
+                            <td class="col-date">Oct 22, 2023</td>
+                            <td class="col-price">N/A</td>
+                            <td class="col-source"><a href="https://company.sharepoint.com/branding" target="_blank">SharePoint</a></td>
+                            <td class="col-actions">
+                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="col-thumbnail">
+                                <div class="thumbnail-container">
+                                    <img src="https://picsum.photos/200/200?random=3" alt="Product Preview">
+                                    <div class="type-icon-badge">
+                                        <svg viewBox="0 0 24 24"><path d="M17.21 9l-4.38-6.36c-.19-.28-.51-.42-.83-.42-.32 0-.64.14-.83.43L6.79 9H2c-.55 0-1 .45-1 1 0 .09.01.18.04.27l2.54 9.27c.23.84 1 1.46 1.92 1.46h13c.92 0 1.69-.62 1.93-1.46l2.54-9.27L23 10c0-.55-.45-1-1-1h-4.79zM9 9l3-4.4L15 9H9zm3 8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"></path></svg>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="col-details">
+                                <span class="item-title">Smart Coffee Mug</span>
+                                <span class="item-desc">Temperature controlled, app-connected. Keeps coffee perfect.</span>
+                            </td>
+                            <td class="col-date">Oct 21, 2023</td>
+                            <td class="col-price">$149.50</td>
+                            <td class="col-source"><a href="https://fancytech.com/smart-mug" target="_blank">FancyTech Store</a></td>
+                            <td class="col-actions">
+                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
         </main>
     </div>
@@ -394,51 +552,38 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             const viewToggleButtons = document.querySelectorAll('.view-toggle-btn');
-            const contentSections = document.querySelectorAll('.content-section');
-            const defaultView = 'gallery'; // Or 'list'
+            const galleryView = document.querySelector('.gallery-view-content');
+            const listView = document.querySelector('.list-view-content');
+            const defaultView = 'gallery';
 
             function setViewMode(mode) {
-                // Update button states
                 viewToggleButtons.forEach(button => {
-                    if (button.dataset.viewMode === mode) {
-                        button.classList.add('active');
-                        button.setAttribute('aria-pressed', 'true');
-                    } else {
-                        button.classList.remove('active');
-                        button.setAttribute('aria-pressed', 'false');
-                    }
+                    const isActive = button.dataset.viewMode === mode;
+                    button.classList.toggle('active', isActive);
+                    button.setAttribute('aria-pressed', isActive);
                 });
 
-                // Update content visibility for all sections
-                contentSections.forEach(section => {
-                    const galleryView = section.querySelector('.gallery-view-content');
-                    const listView = section.querySelector('.list-view-content');
+                if (mode === 'gallery') {
+                    galleryView.style.display = '';
+                    listView.style.display = 'none';
+                } else {
+                    galleryView.style.display = 'none';
+                    listView.style.display = '';
+                }
 
-                    if (galleryView && listView) {
-                        if (mode === 'gallery') {
-                            galleryView.style.display = ''; // Or 'grid' if it was set to that specifically
-                            listView.style.display = 'none';
-                        } else { // mode === 'list'
-                            galleryView.style.display = 'none';
-                            listView.style.display = ''; // Or 'block' / 'flex' depending on list item style
-                        }
-                    }
-                });
-                // Optional: Save preference to localStorage
-                localStorage.setItem('boardDetailViewMode', mode);
+                localStorage.setItem('itemsViewMode', mode);
             }
 
             viewToggleButtons.forEach(button => {
                 button.addEventListener('click', function () {
-                    const selectedMode = this.dataset.viewMode;
-                    setViewMode(selectedMode);
+                    setViewMode(this.dataset.viewMode);
                 });
             });
 
-            // Load preferred view or set default
-            const preferredView = localStorage.getItem('boardDetailViewMode') || defaultView;
+            const preferredView = localStorage.getItem('itemsViewMode') || defaultView;
             setViewMode(preferredView);
         });
     </script>
 </body>
+</html>
 </html>
