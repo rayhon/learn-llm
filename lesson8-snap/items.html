@@ -704,6 +704,252 @@
             height: 14px;
         }
 
+        /* Chat Overlay Styles */
+        .chat-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #FFFFFF;
+            z-index: 1000;
+            display: none;
+            color: #111827;
+        }
+
+        .chat-overlay.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-overlay-header {
+            width: 70%;
+            margin: 0 auto;
+            padding: 24px 0;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: none;
+        }
+
+        .chat-overlay-logo {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #10A37F;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-overlay-logo svg {
+            width: 20px;
+            height: 20px;
+            color: white;
+        }
+
+        .chat-overlay-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .chat-overlay-subtitle {
+            font-size: 14px;
+            color: #6B7280;
+            margin-top: 2px;
+        }
+
+        .chat-overlay-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 70%;
+            margin: 0 auto;
+        }
+
+        .chat-overlay-prompt {
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 32px;
+        }
+
+        .chat-overlay-prompt h3 {
+            font-size: 30px;
+            font-weight: 600;
+            margin: 0 0 12px 0;
+            color: #111827;
+        }
+
+        .chat-overlay-prompt p {
+            font-size: 16px;
+            color: #6B7280;
+            margin: 0;
+        }
+
+        .chat-overlay-suggestions {
+            display: flex;
+            gap: 12px;
+            width: 70%;
+            margin: 0 auto;
+        }
+
+        .chat-suggestion-card {
+            flex: 1;
+            min-width: 200px;
+            background: rgba(32, 33, 35, 0.1);
+            border-radius: 20px;
+            padding: 24px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            border: none;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .chat-suggestion-card:hover {
+            background: rgba(32, 33, 35, 0.15);
+        }
+
+        .chat-suggestion-card h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            margin: 0 0 8px 0;
+            text-decoration: none;
+        }
+
+        .chat-suggestion-card p {
+            font-size: 14px;
+            color: #6B7280;
+            margin: 0;
+            line-height: 1.4;
+            text-decoration: none;
+            opacity: 0.8;
+        }
+
+        /* Add a "Prompt" label and arrow at the bottom */
+        .chat-suggestion-card::after {
+            content: "Prompt";
+            display: block;
+            font-size: 12px;
+            color: #6B7280;
+            margin-top: 16px;
+            opacity: 0.8;
+        }
+
+        .chat-overlay-input-container {
+            width: 70%;
+            margin: 0 auto;
+            padding: 24px 0;
+            background: #FFFFFF;
+            border-top: none;
+        }
+
+        .chat-overlay-input-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 8px 12px;
+            max-width: 768px;
+            margin: 0 auto;
+        }
+
+        .chat-overlay-input-wrapper .add-btn,
+        .chat-overlay-input-wrapper .voice-btn {
+            background: none;
+            border: none;
+            padding: 8px;
+            color: #6B7280;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-overlay-input-wrapper .add-btn:hover,
+        .chat-overlay-input-wrapper .voice-btn:hover {
+            color: #111827;
+        }
+
+        .chat-overlay-input-wrapper .add-btn svg,
+        .chat-overlay-input-wrapper .voice-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .chat-overlay-input {
+            flex: 1;
+            border: none;
+            background: none;
+            color: #111827;
+            font-size: 14px;
+            padding: 8px;
+        }
+
+        .chat-overlay-input:focus {
+            outline: none;
+        }
+
+        .chat-overlay-input::placeholder {
+            color: #9CA3AF;
+        }
+
+        .chat-overlay-send-btn {
+            background: none;
+            border: none;
+            padding: 8px;
+            color: #6B7280;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chat-overlay-send-btn:hover {
+            color: #111827;
+        }
+
+        .chat-overlay-send-btn svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        .close-chat-overlay {
+            position: absolute;
+            top: 24px;
+            right: 15%;
+            background: none;
+            border: none;
+            color: #6B7280;
+            cursor: pointer;
+            padding: 12px;
+            z-index: 1;
+        }
+
+        .close-chat-overlay:hover {
+            color: #111827;
+        }
+
+        .close-chat-overlay svg {
+            width: 28px;
+            height: 28px;
+        }
+
+        /* Remove any underlines from links */
+        .chat-overlay a,
+        .chat-overlay-suggestions a,
+        .chat-suggestion-card a {
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
@@ -761,35 +1007,24 @@
 
                 <!-- Gallery View -->
                 <div class="gallery-view-content view-content-area">
-                    ${itemsData.map(item => `
-                        <div class="gallery-item-card ${item.color}">
-                            <button class="card-action-btn" aria-label="More actions">
-                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
-                            </button>
-                            <h3 class="item-title">${item.title}</h3>
-                            <p class="item-description">${item.description}</p>
-                            <div class="content-preview">
-                                ${item.thumbnail.type === 'image' ? `
-                                    <img src="${item.thumbnail.url}" alt="${item.title}">
-                                    <div class="type-indicator">
-                                        ${item.thumbnail.indicator}
-                                    </div>
-                                ` : item.thumbnail.type === 'note' ? `
-                                    <div class="thumb-box note" style="background: ${item.thumbnail.galleryStyle.background}">
-                                        ${item.thumbnail.galleryStyle.icon}
-                                    </div>
-                                ` : `
-                                    <div class="thumb-box ${item.thumbnail.type}" style="background: ${item.thumbnail.background}">
-                                        ${item.thumbnail.icon}
-                                    </div>
-                                `}
-                            </div>
-                            <div class="item-footer">
-                                <span class="date">${item.date}</span>
-                                <span>${item.source}</span>
+                    <div class="gallery-item-card color-1">
+                        <button class="card-action-btn" aria-label="More actions">
+                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+                        </button>
+                        <h3 class="item-title">Design Resources</h3>
+                        <p class="item-description">Collection of useful design tools and resources for UI/UX designers.</p>
+                        <div class="content-preview">
+                            <div class="thumb-box link" style="background: #f0f2f5">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2">
+                                    <path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
                             </div>
                         </div>
-                    `).join('')}
+                        <div class="item-footer">
+                            <span class="date">Oct 27, 2023</span>
+                            <span>Resource Link</span>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- List View -->
@@ -806,44 +1041,45 @@
                             </tr>
                         </thead>
                         <tbody>
-                            ${itemsData.map(item => `
-                                <tr>
-                                    <td class="col-thumbnail">
-                                        <div class="thumbnail-container">
-                                            ${item.thumbnail.type === 'image' ? `
-                                                <img src="${item.thumbnail.url}" alt="${item.title}">
-                                                <div class="type-indicator">
-                                                    ${item.thumbnail.indicator}
-                                                </div>
-                                            ` : item.thumbnail.type === 'note' ? `
-                                                <div class="thumb-box note" style="background: ${item.thumbnail.listStyle.background}">
-                                                    ${item.thumbnail.listStyle.icon}
-                                                </div>
-                                            ` : `
-                                                <div class="thumb-box ${item.thumbnail.type}" style="background: ${item.thumbnail.background}">
-                                                    ${item.thumbnail.icon}
-                                                </div>
-                                            `}
-                                        </div>
-                                    </td>
-                                    <td class="col-details">
-                                        <span class="item-title">${item.title}</span>
-                                        <span class="item-desc">${item.description}</span>
-                                    </td>
-                                    <td class="col-date">${item.date}</td>
-                                    <td class="col-price">${item.price}</td>
-                                    <td class="col-source">
-                                        ${item.sourceUrl ? 
-                                            `<a href="${item.sourceUrl}" target="_blank">${item.source}</a>` : 
-                                            `<span class="no-source">${item.source}</span>`}
-                                    </td>
-                                    <td class="col-actions">
-                                        <button class="action-btn" aria-label="More actions">
-                                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
-                                            </button>
-                                    </td>
-                                </tr>
-                            `).join('')}
+                            ${itemsData.map(item => 
+                                '<tr>' +
+                                    '<td class="col-thumbnail">' +
+                                        '<div class="thumbnail-container">' +
+                                            (item.thumbnail.type === 'image' ? 
+                                                '<img src="' + item.thumbnail.url + '" alt="' + item.title + '">' +
+                                                '<div class="type-indicator">' +
+                                                    item.thumbnail.indicator +
+                                                '</div>'
+                                            : item.thumbnail.type === 'note' ? 
+                                                '<div class="thumb-box note" style="background: ' + item.thumbnail.listStyle.background + '">' +
+                                                    item.thumbnail.listStyle.icon +
+                                                '</div>'
+                                            : 
+                                                '<div class="thumb-box ' + item.thumbnail.type + '" style="background: ' + item.thumbnail.background + '">' +
+                                                    item.thumbnail.icon +
+                                                '</div>'
+                                            ) +
+                                        '</div>' +
+                                    '</td>' +
+                                    '<td class="col-details">' +
+                                        '<span class="item-title">' + item.title + '</span>' +
+                                        '<span class="item-desc">' + item.description + '</span>' +
+                                    '</td>' +
+                                    '<td class="col-date">' + item.date + '</td>' +
+                                    '<td class="col-price">' + item.price + '</td>' +
+                                    '<td class="col-source">' +
+                                        (item.sourceUrl ? 
+                                            '<a href="' + item.sourceUrl + '" target="_blank">' + item.source + '</a>' 
+                                            : '<span class="no-source">' + item.source + '</span>'
+                                        ) +
+                                    '</td>' +
+                                    '<td class="col-actions">' +
+                                        '<button class="action-btn" aria-label="More actions">' +
+                                            '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>' +
+                                        '</button>' +
+                                    '</td>' +
+                                '</tr>'
+                            ).join('')}
                         </tbody>
                     </table>
                 </div>
@@ -927,35 +1163,76 @@
         </div>
     </div>
 
-    <!-- Add before the closing </body> tag -->
-    <div class="chat-box">
-        <div class="chat-header">CHAT AGENT</div>
-        <div class="chat-input-container">
-            <button class="voice-input-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+    <!-- Chat Overlay -->
+    <div class="chat-overlay">
+        <button class="close-chat-overlay">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+        </button>
+        
+        <div class="chat-overlay-header">
+            <div class="chat-overlay-logo">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M22.2819 9.8211a5.9847 5.9847 0 0 0-.5157-4.9108 6.0462 6.0462 0 0 0-6.5098-2.9A6.0651 6.0651 0 0 0 4.9807 4.1818a5.9847 5.9847 0 0 0-3.9977 2.9 6.0462 6.0462 0 0 0 .7427 7.0966 5.98 5.98 0 0 0 .511 4.9107 6.051 6.051 0 0 0 6.5146 2.9001A5.9847 5.9847 0 0 0 13.2599 24a6.0557 6.0557 0 0 0 5.7718-4.2058 5.9894 5.9894 0 0 0 3.9977-2.9001 6.0557 6.0557 0 0 0-.7475-7.0729z"/>
                 </svg>
-            </button>
-            <input type="text" class="chat-input" placeholder="What's on my calendar tomorrow?">
-            <button class="send-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
-                </svg>
-            </button>
+            </div>
+            <div>
+                <div class="chat-overlay-title">ChatGPT</div>
+                <div class="chat-overlay-subtitle">How can I help you today?</div>
+            </div>
         </div>
-        <div class="quick-actions">
-            <button class="quick-action-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                Deep Search
-            </button>
-            <button class="quick-action-btn">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
-                Create Images
-            </button>
+
+        <div class="chat-overlay-content">
+            <div class="chat-overlay-prompt">
+                <h3>Welcome to ChatGPT</h3>
+                <p>I'm an AI that can engage in conversations, answer questions, and help with various tasks.</p>
+            </div>
+
+            <div class="chat-overlay-suggestions">
+                <div class="chat-suggestion-card">
+                    <h4>Help me study</h4>
+                    <p>vocabulary for a college entrance exam</p>
+                </div>
+                <div class="chat-suggestion-card">
+                    <h4>Give me ideas</h4>
+                    <p>for what to do with my kids' art</p>
+                </div>
+                <div class="chat-suggestion-card">
+                    <h4>Overcome procrastination</h4>
+                    <p>give me tips</p>
+                </div>
+                <div class="chat-suggestion-card">
+                    <h4>Tell me a fun fact</h4>
+                    <p>about the Roman Empire</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-overlay-input-container">
+            <div class="chat-overlay-input-wrapper">
+                <button class="add-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                    </svg>
+                </button>
+                <input type="text" class="chat-overlay-input" placeholder="Message ChatGPT...">
+                <button class="voice-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.5c3.5 0 6.5-2.9 6.5-6.5V6c0-3.5-3-6-6.5-6S5.5 2.5 5.5 6v6c0 3.6 3 6.5 6.5 6.5z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 9.5v2c0 4.5 3.5 8 8 8s8-3.5 8-8v-2"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.5V22"/>
+                    </svg>
+                </button>
+                <button class="chat-overlay-send-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+                    </svg>
+                </button>
+            </div>
+            <div style="text-align: center; margin-top: 12px; color: #6B7280; font-size: 12px;">
+                ChatGPT can make mistakes. Consider checking important information.
+            </div>
         </div>
     </div>
 
@@ -1122,7 +1399,7 @@
                         type: "image",
                         url: "https://picsum.photos/200/200?random=3",
                         indicator: `<svg viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M17 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm0-3l1.1-2h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1v2h2l3.6 7.59L5.25 14c-.19.37-.3.79-.3 1.23 0 1.38 1.12 2.5 2.5 2.5h12v-2H7.42c-.14 0-.25-.11-.25-.25z"/>
+                            <path d="M17 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zm0-3l1.1-2h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1v2h2l3.6 7.59L5.25 14c-.19.37-.3.79-.3 1.23 0 1.38 1.12 2.5 2.5 2.5h12v-2H7.42c-.14 0-.25-.11-.25-.25z"/>
                         </svg>`
                     }
                 }
@@ -1130,7 +1407,8 @@
 
             // Render functions
             function renderGalleryView() {
-                const galleryHtml = itemsData.map(item => `
+                const galleryContent = document.querySelector('.gallery-view-content');
+                galleryContent.innerHTML = itemsData.map(item => `
                     <div class="gallery-item-card ${item.color}">
                         <button class="card-action-btn" aria-label="More actions">
                             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
@@ -1138,20 +1416,7 @@
                         <h3 class="item-title">${item.title}</h3>
                         <p class="item-description">${item.description}</p>
                         <div class="content-preview">
-                            ${item.thumbnail.type === 'image' ? `
-                                <img src="${item.thumbnail.url}" alt="${item.title}">
-                                <div class="type-indicator">
-                                    ${item.thumbnail.indicator}
-                                </div>
-                            ` : item.thumbnail.type === 'note' ? `
-                                <div class="thumb-box note" style="background: ${item.thumbnail.galleryStyle.background}">
-                                    ${item.thumbnail.galleryStyle.icon}
-                                </div>
-                            ` : `
-                                <div class="thumb-box ${item.thumbnail.type}" style="background: ${item.thumbnail.background}">
-                                    ${item.thumbnail.icon}
-                                </div>
-                            `}
+                            ${renderThumbnail(item)}
                         </div>
                         <div class="item-footer">
                             <span class="date">${item.date}</span>
@@ -1159,12 +1424,34 @@
                         </div>
                     </div>
                 `).join('');
+            }
 
-                document.querySelector('.gallery-view-content').innerHTML = galleryHtml;
+            function renderThumbnail(item) {
+                if (item.thumbnail.type === 'image') {
+                    return `
+                        <img src="${item.thumbnail.url}" alt="${item.title}">
+                        <div class="type-indicator">
+                            ${item.thumbnail.indicator}
+                        </div>
+                    `;
+                } else if (item.thumbnail.type === 'note') {
+                    return `
+                        <div class="thumb-box note" style="background: ${item.thumbnail.galleryStyle.background}">
+                            ${item.thumbnail.galleryStyle.icon}
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="thumb-box ${item.thumbnail.type}" style="background: ${item.thumbnail.background}">
+                            ${item.thumbnail.icon}
+                        </div>
+                    `;
+                }
             }
 
             function renderListView() {
-                const listHtml = `
+                const listContent = document.querySelector('.list-view-content');
+                listContent.innerHTML = `
                     <table class="compact-table">
                         <thead>
                             <tr>
@@ -1181,20 +1468,7 @@
                                 <tr>
                                     <td class="col-thumbnail">
                                         <div class="thumbnail-container">
-                                            ${item.thumbnail.type === 'image' ? `
-                                                <img src="${item.thumbnail.url}" alt="${item.title}">
-                                                <div class="type-indicator">
-                                                    ${item.thumbnail.indicator}
-                                                </div>
-                                            ` : item.thumbnail.type === 'note' ? `
-                                                <div class="thumb-box note" style="background: ${item.thumbnail.listStyle.background}">
-                                                    ${item.thumbnail.listStyle.icon}
-                                                </div>
-                                            ` : `
-                                                <div class="thumb-box ${item.thumbnail.type}" style="background: ${item.thumbnail.background}">
-                                                    ${item.thumbnail.icon}
-                                                </div>
-                                            `}
+                                            ${renderThumbnail(item)}
                                         </div>
                                     </td>
                                     <td class="col-details">
@@ -1211,17 +1485,97 @@
                                     <td class="col-actions">
                                         <button class="action-btn" aria-label="More actions">
                                             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
-                                            </button>
+                                        </button>
                                     </td>
                                 </tr>
                             `).join('')}
                         </tbody>
                     </table>
                 `;
-
-                document.querySelector('.list-view-content').innerHTML = listHtml;
             }
 
+            // Initialize prompt click handlers
+            function initializePromptHandlers() {
+                const chatOverlay = document.querySelector('.chat-overlay');
+                const closeOverlayBtn = document.querySelector('.close-chat-overlay');
+                const chatInput = document.querySelector('.chat-overlay-input');
+                const chatSendBtn = document.querySelector('.chat-overlay-send-btn');
+                const suggestionCards = document.querySelectorAll('.chat-suggestion-card');
+
+                // Function to open overlay with suggestion content
+                function openOverlay(title, description) {
+                    const promptTitle = document.querySelector('.chat-overlay-prompt h3');
+                    const promptDesc = document.querySelector('.chat-overlay-prompt p');
+                    
+                    promptTitle.textContent = title;
+                    promptDesc.textContent = description;
+                    chatOverlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    
+                    // Focus the input field
+                    setTimeout(() => chatInput.focus(), 100);
+                }
+
+                // Function to close overlay
+                function closeOverlay() {
+                    chatOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                    chatInput.value = '';
+                }
+
+                // Add click event listeners to suggestion cards
+                suggestionCards.forEach(card => {
+                    card.addEventListener('click', () => {
+                        const title = card.querySelector('h4').textContent;
+                        const description = card.querySelector('p').textContent;
+                        chatInput.value = description;
+                        chatInput.focus();
+                    });
+                });
+
+                // Handle chat input submission
+                function handleChatSubmit() {
+                    const message = chatInput.value.trim();
+                    if (message) {
+                        console.log('Submitted message:', message);
+                        chatInput.value = '';
+                        chatInput.focus();
+                    }
+                }
+
+                // Close overlay when clicking the close button
+                closeOverlayBtn.addEventListener('click', closeOverlay);
+
+                // Close overlay when pressing Escape key
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape' && chatOverlay.classList.contains('active')) {
+                        closeOverlay();
+                    }
+                });
+
+                // Handle chat submission
+                chatSendBtn.addEventListener('click', handleChatSubmit);
+                chatInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        handleChatSubmit();
+                    }
+                });
+
+                // Add click event listeners to prompt cards in the sidebar
+                const promptCards = document.querySelectorAll('.prompt-card');
+                promptCards.forEach(card => {
+                    card.addEventListener('click', (e) => {
+                        if (!e.target.closest('.use-prompt-btn')) {
+                            const title = card.querySelector('h3').textContent;
+                            const description = card.querySelector('.prompt-description').textContent;
+                            openOverlay(title, description);
+                        }
+                    });
+                });
+            }
+
+            // Set up view toggling
             const viewToggleButtons = document.querySelectorAll('.view-toggle-btn');
             const galleryView = document.querySelector('.gallery-view-content');
             const listView = document.querySelector('.list-view-content');
@@ -1245,87 +1599,21 @@
                 localStorage.setItem('itemsViewMode', mode);
             }
 
-            // Initial render of both views
+            // Initial setup
             renderGalleryView();
             renderListView();
+            initializePromptHandlers();
 
-            viewToggleButtons.forEach(button => {
-                button.addEventListener('click', function () {
-                    setViewMode(this.dataset.viewMode);
-                });
-            });
-
-            const preferredView = localStorage.getItem('itemsViewMode') || defaultView;
-            setViewMode(preferredView);
-
-            // Action button functionality
-            function setupActionButtons() {
-                document.querySelectorAll('.card-action-btn, .action-btn').forEach(button => {
-                    let title;
-                    let container;
-                    
-                    if (button.classList.contains('card-action-btn')) {
-                        container = button.closest('.gallery-item-card');
-                        title = container.querySelector('.item-title').textContent;
-                    } else {
-                        container = button.closest('tr');
-                        title = container.querySelector('.item-title').textContent;
-                    }
-
-                    const item = itemsData.find(item => item.title === title);
-                    const existingDropdown = container.querySelector('.action-dropdown');
-                    if (existingDropdown) {
-                        existingDropdown.remove();
-                    }
-
-                    let dropdownMenu;
-                    switch(item.type) {
-                        case 'photo':
-                            dropdownMenu = createPhotoActionMenu();
-                            break;
-                        case 'video':
-                            dropdownMenu = createVideoActionMenu();
-                            break;
-                        case 'link':
-                            dropdownMenu = createDefaultActionMenu();
-                            break;
-                        default:
-                            dropdownMenu = createDefaultActionMenu();
-                    }
-
-                    button.insertAdjacentHTML('afterend', dropdownMenu);
-
-                    button.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const dropdown = container.querySelector('.action-dropdown');
-                        if (dropdown) {
-                            document.querySelectorAll('.action-dropdown.show').forEach(d => {
-                                if (d !== dropdown) d.classList.remove('show');
-                            });
-                            dropdown.classList.toggle('show');
-                        }
-                    });
-                });
-            }
-
-            // Re-setup action buttons after view changes
+            // Set up view toggle handlers
             viewToggleButtons.forEach(button => {
                 button.addEventListener('click', () => {
-                    setTimeout(setupActionButtons, 100);
+                    setViewMode(button.dataset.viewMode);
                 });
             });
 
-            // Initial setup of action buttons
-            setupActionButtons();
-
-            // Close dropdowns when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!e.target.closest('.card-action-btn') && !e.target.closest('.action-btn')) {
-                    document.querySelectorAll('.action-dropdown.show').forEach(dropdown => {
-                        dropdown.classList.remove('show');
-                    });
-                }
-            });
+            // Set initial view
+            const preferredView = localStorage.getItem('itemsViewMode') || defaultView;
+            setViewMode(preferredView);
         });
     </script>
 </body>
