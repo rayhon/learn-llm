@@ -657,32 +657,33 @@
         .prompt-cards {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 8px;
         }
 
         .prompt-card {
-            background: #1F2937;
-            border-radius: 12px;
-            padding: 16px;
-            color: white;
+            background: #F3F4F6;
+            border-radius: 8px;
+            padding: 12px;
+            color: #111827;
         }
 
         .prompt-card h3 {
-            font-size: 18px;
-            margin: 0 0 8px 0;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 0 0 2px 0;
         }
 
         .prompt-description {
-            color: #9CA3AF;
-            font-size: 14px;
-            margin: 0 0 16px 0;
+            color: #6B7280;
+            font-size: 12px;
+            margin: 0 0 8px 0;
         }
 
         .prompt-footer {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 12px;
+            font-size: 11px;
             color: #6B7280;
         }
 
@@ -694,9 +695,13 @@
             color: #6B7280;
         }
 
+        .use-prompt-btn:hover {
+            color: #111827;
+        }
+
         .use-prompt-btn svg {
-            width: 16px;
-            height: 16px;
+            width: 14px;
+            height: 14px;
         }
 
     </style>
@@ -850,11 +855,6 @@
                 <div class="recommendation-section">
                     <h4 class="section-title">Recommend</h4>
                     <img src="https://picsum.photos/seed/1/800/600" alt="3D Render Example" class="recommendation-image">
-                    <div class="recommendation-info">
-                        <h3 class="recommendation-title">My first render</h3>
-                        <p class="recommendation-type">PNG-Image</p>
-                        <p class="recommendation-description">So this is my first attempt with 3D art. I'm trying out Adobe Dimension, and curious as to what other programs people recommend for 3D modeling.</p>
-                    </div>
                 </div>
 
                 <!-- 3. Actions (Prompt Cards) -->
@@ -864,6 +864,42 @@
                         <div class="prompt-card">
                             <h3>Help me study</h3>
                             <p class="prompt-description">vocabulary for a college entrance exam</p>
+                            <div class="prompt-footer">
+                                <span>Prompt</span>
+                                <button class="use-prompt-btn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="prompt-card">
+                            <h3>Write a blog post</h3>
+                            <p class="prompt-description">about the future of AI in education</p>
+                            <div class="prompt-footer">
+                                <span>Prompt</span>
+                                <button class="use-prompt-btn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="prompt-card">
+                            <h3>Generate an image</h3>
+                            <p class="prompt-description">of a futuristic city at sunset</p>
+                            <div class="prompt-footer">
+                                <span>Prompt</span>
+                                <button class="use-prompt-btn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="prompt-card">
+                            <h3>Explain a concept</h3>
+                            <p class="prompt-description">quantum computing for beginners</p>
                             <div class="prompt-footer">
                                 <span>Prompt</span>
                                 <button class="use-prompt-btn">
