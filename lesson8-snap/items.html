@@ -142,6 +142,53 @@
             object-fit: cover;
             display: block;
         }
+        
+        /* Type indicator badge */
+        .type-indicator {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .type-indicator svg {
+            width: 12px;
+            height: 12px;
+            color: #374151;
+        }
+
+        /* Colorful file type boxes */
+        .thumb-box {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+        }
+        .thumb-box svg {
+            width: 32px;
+            height: 32px;
+            color: #FFFFFF;
+        }
+        .thumb-box.doc-file {
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+        }
+        .thumb-box.ppt-file {
+            background: linear-gradient(135deg, #EA580C, #DC2626);
+        }
+        .thumb-box.link {
+            background: linear-gradient(135deg, #0EA5E9, #2563EB);
+        }
+        .thumb-box.note {
+            background: linear-gradient(135deg, #059669, #10B981);
+        }
 
         .col-details {
             min-width: 280px;
@@ -536,8 +583,8 @@
                             <td class="col-thumbnail">
                                 <div class="thumbnail-container">
                                     <img src="https://picsum.photos/200/200?random=1" alt="Photo Preview">
-                                    <div class="type-icon-badge">
-                                        <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"></path></svg>
+                                    <div class="type-indicator">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h13l5 5v11a2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2zm0 7v9h16v-9H4zm0-2h16.172l-3-3H4v3zm7 6a2 2 0 110-4 2 2 0 010 4z"/></svg>
                                     </div>
                                 </div>
                             </td>
@@ -557,8 +604,8 @@
                             <td class="col-thumbnail">
                                 <div class="thumbnail-container">
                                     <img src="https://picsum.photos/200/200?random=2" alt="Video Preview">
-                                    <div class="play-icon-overlay">
-                                        <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"></path></svg>
+                                    <div class="type-indicator">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm0 2v12h16V6H4zm6 2l6 4-6 4V8z"/></svg>
                                     </div>
                                 </div>
                             </td>
@@ -577,8 +624,8 @@
                         <tr>
                             <td class="col-thumbnail">
                                 <div class="thumbnail-container">
-                                    <div class="thumb-box thumb-note">
-                                        <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zm4 9H7v-2h10v2zm0-4H7v-2h10v2zm-2-4H7V8h8v2z"></path></svg>
+                                    <div class="thumb-box note">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 000-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
                                     </div>
                                 </div>
                             </td>
@@ -597,8 +644,8 @@
                         <tr>
                             <td class="col-thumbnail">
                                 <div class="thumbnail-container">
-                                    <div class="thumb-box thumb-file">
-                                        <svg viewBox="0 0 24 24"><path d="M13 9H5v2h8V9zm-2 4H5v2h6v-2zm4-8H5C3.89 5 3 5.9 3 7v10c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2h-4zm2-4H5C3.89 1 3 1.9 3 3h14c1.1 0 2 .9 2 2v2h3V3c0-1.1-.89-2-2-2zm-8 12H5v-2h6v2zm2-4H5v-2h8v2zm0-4H5V7h8v2z"></path></svg>
+                                    <div class="thumb-box ppt-file">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 4v16h20V4H2zm18 14H4V6h16v12zM13.5 7.5c0 .83-.67 1.5-1.5 1.5H9v1h2v5h2V7.5h.5z"/></svg>
                                     </div>
                                 </div>
                             </td>
@@ -617,8 +664,8 @@
                         <tr>
                             <td class="col-thumbnail">
                                 <div class="thumbnail-container">
-                                    <div class="thumb-box thumb-link">
-                                        <svg viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path></svg>
+                                    <div class="thumb-box link">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path></svg>
                                     </div>
                                 </div>
                             </td>
@@ -638,8 +685,8 @@
                             <td class="col-thumbnail">
                                 <div class="thumbnail-container">
                                     <img src="https://picsum.photos/200/200?random=3" alt="Product Preview">
-                                    <div class="type-icon-badge">
-                                        <svg viewBox="0 0 24 24"><path d="M17.21 9l-4.38-6.36c-.19-.28-.51-.42-.83-.42-.32 0-.64.14-.83.43L6.79 9H2c-.55 0-1 .45-1 1 0 .09.01.18.04.27l2.54 9.27c.23.84 1 1.46 1.92 1.46h13c.92 0 1.69-.62 1.93-1.46l2.54-9.27L23 10c0-.55-.45-1-1-1h-4.79zM9 9l3-4.4L15 9H9zm3 8c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"></path></svg>
+                                    <div class="type-indicator">
+                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
                                     </div>
                                 </div>
                             </td>
