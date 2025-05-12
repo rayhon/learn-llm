@@ -156,6 +156,7 @@
         .content-area {
             flex: 1;
             padding: 30px 40px;
+            padding-bottom: 200px;
             min-width: 0;
             overflow: auto;
             height: calc(100vh - 60px);
@@ -676,6 +677,110 @@
             color: #374151;
         }
 
+        /* --- Floating Chat Box --- */
+        .chat-box {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+            padding: 16px;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-header {
+            color: #9333EA;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .chat-input-container {
+            display: flex;
+            align-items: center;
+            background: #F9FAFB;
+            border-radius: 24px;
+            padding: 6px 12px;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .voice-input-btn {
+            background: none;
+            border: none;
+            padding: 4px;
+            cursor: pointer;
+            color: #6B7280;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .voice-input-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .chat-input {
+            flex: 1;
+            border: none;
+            background: none;
+            font-size: 14px;
+            color: #374151;
+            padding: 4px 0;
+            min-height: 24px;
+            outline: none;
+        }
+
+        .send-btn {
+            background: #9333EA;
+            border: none;
+            padding: 6px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: white;
+        }
+
+        .send-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .quick-action-btn {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: #F3F4F6;
+            border: none;
+            border-radius: 14px;
+            color: #374151;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .quick-action-btn svg {
+            width: 12px;
+            height: 12px;
+        }
+
     </style>
 </head>
 <body>
@@ -865,6 +970,38 @@
                     </div>
                 </div>
             </aside>
+        </div>
+    </div>
+
+    <!-- Add before the closing </body> tag -->
+    <div class="chat-box">
+        <div class="chat-header">CHAT AGENT</div>
+        <div class="chat-input-container">
+            <button class="voice-input-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path>
+                </svg>
+            </button>
+            <input type="text" class="chat-input" placeholder="What's on my calendar tomorrow?">
+            <button class="send-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                </svg>
+            </button>
+        </div>
+        <div class="quick-actions">
+            <button class="quick-action-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                Deep Search
+            </button>
+            <button class="quick-action-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                Create Images
+            </button>
         </div>
     </div>
 
