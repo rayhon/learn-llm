@@ -238,6 +238,13 @@
             box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
         }
 
+        /* Add styles for clickable card */
+        .note-card.clickable {
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+        }
+
         /* Board title styles - more compact */
         .board-title {
             font-size: 18px;
@@ -381,7 +388,7 @@
             <h1>Boards</h1>
             <div class="notes-grid">
                 <!-- Note Card 1 - Images Example -->
-                <div class="note-card note-color-1">
+                <a href="items.html" class="note-card note-color-1 clickable">
                     <h3 class="board-title">Travel Photography</h3>
                     <p>Captured moments from our Japan trip 2023.</p>
                     <div class="content-preview">
@@ -395,7 +402,7 @@
                     <div class="note-footer">
                         <span class="date">Jun 15, 2023</span>
                     </div>
-                </div>
+                </a>
 
                 <!-- Note Card 2 - YouTube Video Example -->
                 <div class="note-card note-color-2">
