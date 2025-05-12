@@ -178,6 +178,45 @@
         }
         .page-header h1 { font-size: 32px; color: var(--heading-color); margin: 0; font-weight: 700; }
 
+        /* View Toggle and Share Area */
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+
+        .share-avatars {
+            display: flex;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid white;
+            margin-right: -8px;
+        }
+
+        .add-share {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .add-share svg {
+            width: 16px;
+            height: 16px;
+            color: #374151;
+        }
+
         /* View Toggle Buttons */
         .view-toggle-controls { display: flex; gap: 8px; }
         .view-toggle-btn {
@@ -544,12 +583,20 @@
             overflow-y: auto;
         }
 
-        .recommendation-card {
-            background: white;
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 16px;
+        }
+
+        .recommendation-section,
+        .prompt-cards-section,
+        .tag-section {
+            margin-bottom: 32px;
+            padding: 0;
+            background: none;
+            box-shadow: none;
         }
 
         .recommendation-image {
@@ -558,35 +605,6 @@
             border-radius: 12px;
             object-fit: cover;
             margin-bottom: 16px;
-        }
-
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 16px;
-        }
-
-        .action-button {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: none;
-            background-color: #f3f4f6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .action-button:hover {
-            background-color: #e5e7eb;
-        }
-
-        .action-button svg {
-            width: 20px;
-            height: 20px;
-            color: #374151;
         }
 
         .recommendation-title {
@@ -636,149 +654,49 @@
             margin-bottom: 8px;
         }
 
-        .share-section {
-            margin-top: 20px;
-        }
-
-        .share-title {
-            font-size: 14px;
-            color: #374151;
-            margin-bottom: 12px;
-        }
-
-        .share-avatars {
+        .prompt-cards {
             display: flex;
-            align-items: center;
+            flex-direction: column;
+            gap: 16px;
         }
 
-        .avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 2px solid white;
-            margin-right: -8px;
-        }
-
-        .add-share {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background-color: #f3f4f6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-left: 8px;
-            cursor: pointer;
-        }
-
-        .add-share svg {
-            width: 16px;
-            height: 16px;
-            color: #374151;
-        }
-
-        /* --- Floating Chat Box --- */
-        .chat-box {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 600px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            box-shadow: 0 4px 24px rgba(0, 0, 0, 0.1);
+        .prompt-card {
+            background: #1F2937;
+            border-radius: 12px;
             padding: 16px;
-            z-index: 1000;
-            backdrop-filter: blur(10px);
+            color: white;
         }
 
-        .chat-header {
-            color: #9333EA;
-            font-size: 12px;
-            font-weight: 500;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .prompt-card h3 {
+            font-size: 18px;
+            margin: 0 0 8px 0;
         }
 
-        .chat-input-container {
+        .prompt-description {
+            color: #9CA3AF;
+            font-size: 14px;
+            margin: 0 0 16px 0;
+        }
+
+        .prompt-footer {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            background: #F9FAFB;
-            border-radius: 24px;
-            padding: 6px 12px;
-            gap: 8px;
-            margin-bottom: 12px;
+            font-size: 12px;
+            color: #6B7280;
         }
 
-        .voice-input-btn {
+        .use-prompt-btn {
             background: none;
             border: none;
             padding: 4px;
             cursor: pointer;
             color: #6B7280;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
-        .voice-input-btn svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        .chat-input {
-            flex: 1;
-            border: none;
-            background: none;
-            font-size: 14px;
-            color: #374151;
-            padding: 4px 0;
-            min-height: 24px;
-            outline: none;
-        }
-
-        .send-btn {
-            background: #9333EA;
-            border: none;
-            padding: 6px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            color: white;
-        }
-
-        .send-btn svg {
-            width: 18px;
-            height: 18px;
-        }
-
-        .quick-actions {
-            display: flex;
-            gap: 6px;
-            margin-top: 8px;
-            flex-wrap: wrap;
-        }
-
-        .quick-action-btn {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            padding: 4px 10px;
-            background: #F3F4F6;
-            border: none;
-            border-radius: 14px;
-            color: #374151;
-            font-size: 12px;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .quick-action-btn svg {
-            width: 12px;
-            height: 12px;
+        .use-prompt-btn svg {
+            width: 16px;
+            height: 16px;
         }
 
     </style>
@@ -814,15 +732,25 @@
             <div class="content-area">
                 <div class="page-header">
                     <h1>All Items</h1>
-                    <div class="view-toggle-controls">
-                        <button class="view-toggle-btn active" data-view-mode="gallery" aria-pressed="true">
-                            <svg viewBox="0 0 20 20"><path d="M3 3h14a2 2 0 012 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V5a2 2 0 012-2zm0 2v4h4V5H3zm0 6v4h4v-4H3zm6-6v4h4V5H9zm0 6v4h4v-4H9zm6-6v4h4V5h-4zm0 6v4h4v-4h-4z"></path></svg>
-                            Gallery
-                        </button>
-                        <button class="view-toggle-btn" data-view-mode="list" aria-pressed="false">
-                            <svg viewBox="0 0 20 20"><path d="M3 4h14a1 1 0 010 2H3a1 1 0 110-2zm0 5h14a1 1 0 010 2H3a1 1 0 110-2zm0 5h14a1 1 0 010 2H3a1 1 0 110-2z"></path></svg>
-                            List
-                        </button>
+                    <div class="header-actions">
+                        <div class="share-avatars">
+                            <img src="https://randomuser.me/api/portraits/women/1.jpg" alt="User 1" class="avatar">
+                            <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User 2" class="avatar">
+                            <img src="https://randomuser.me/api/portraits/men/2.jpg" alt="User 3" class="avatar">
+                            <button class="add-share">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            </button>
+                        </div>
+                        <div class="view-toggle-controls">
+                            <button class="view-toggle-btn active" data-view-mode="gallery" aria-pressed="true">
+                                <svg viewBox="0 0 20 20"><path d="M3 3h14a2 2 0 012 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V5a2 2 0 012-2zm0 2v4h4V5H3zm0 6v4h4v-4H3zm6-6v4h4V5H9zm0 6v4h4v-4H9zm6-6v4h4V5h-4zm0 6v4h4v-4h-4z"></path></svg>
+                                Gallery
+                            </button>
+                            <button class="view-toggle-btn" data-view-mode="list" aria-pressed="false">
+                                <svg viewBox="0 0 20 20"><path d="M3 4h14a1 1 0 010 2H3a1 1 0 110-2zm0 5h14a1 1 0 010 2H3a1 1 0 110-2zm0 5h14a1 1 0 010 2H3a1 1 0 110-2z"></path></svg>
+                                List
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -918,55 +846,45 @@
 
             <!-- Right Sidebar -->
             <aside class="right-sidebar">
-                <div class="recommendation-card">
+                <!-- 2. Recommend -->
+                <div class="recommendation-section">
+                    <h4 class="section-title">Recommend</h4>
                     <img src="https://picsum.photos/seed/1/800/600" alt="3D Render Example" class="recommendation-image">
-                    <div class="action-buttons">
-                        <button class="action-button">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                        </button>
-                        <button class="action-button">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
-                        </button>
-                        <button class="action-button">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                        </button>
-                        <button class="action-button">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
-                        </button>
-                        <button class="action-button">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        </button>
+                    <div class="recommendation-info">
+                        <h3 class="recommendation-title">My first render</h3>
+                        <p class="recommendation-type">PNG-Image</p>
+                        <p class="recommendation-description">So this is my first attempt with 3D art. I'm trying out Adobe Dimension, and curious as to what other programs people recommend for 3D modeling.</p>
                     </div>
-                    <h3 class="recommendation-title">My first render</h3>
-                    <p class="recommendation-type">PNG-Image</p>
+                </div>
+
+                <!-- 3. Actions (Prompt Cards) -->
+                <div class="prompt-cards-section">
+                    <h4 class="section-title">Suggested</h4>
+                    <div class="prompt-cards">
+                        <div class="prompt-card">
+                            <h3>Help me study</h3>
+                            <p class="prompt-description">vocabulary for a college entrance exam</p>
+                            <div class="prompt-footer">
+                                <span>Prompt</span>
+                                <button class="use-prompt-btn">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Tags -->
+                <div class="tag-section">
+                    <h4 class="section-title">Tags</h4>
                     <div class="tag-list">
                         <span class="tag">3d concept</span>
                         <span class="tag">futuristic</span>
                         <span class="tag">purple</span>
                         <span class="tag">minimalistic</span>
                         <span class="tag">highly detailed</span>
-                    </div>
-                    <p class="recommendation-description">So this is my first attempt with 3D art. I'm trying out Adobe Dimension, and curious as to what other programs people recommend for 3D modeling.</p>
-                    <div class="recommendation-info">
-                        <div class="info-row">
-                            <span>Size</span>
-                            <span>3840 x 2160</span>
-                        </div>
-                        <div class="info-row">
-                            <span>Date</span>
-                            <span>18 sep 2022</span>
-                        </div>
-                    </div>
-                    <div class="share-section">
-                        <h4 class="share-title">Share with</h4>
-                        <div class="share-avatars">
-                            <img src="https://randomuser.me/api/portraits/women/1.jpg" alt="User 1" class="avatar">
-                            <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User 2" class="avatar">
-                            <img src="https://randomuser.me/api/portraits/men/2.jpg" alt="User 3" class="avatar">
-                            <button class="add-share">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
-                            </button>
-                        </div>
                     </div>
                 </div>
             </aside>
