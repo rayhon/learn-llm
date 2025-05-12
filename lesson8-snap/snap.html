@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drag & Drop Preview (Debug PDF)</title>
+    <!-- PDF.js library from a reliable CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.min.mjs" type="module"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.2.67/pdf.worker.min.mjs" type="module"></script>
+
+
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+
+        #drop-zone {
+            width: 400px;
+            height: 300px;
+            border: 4px dashed #ccc;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            color: #aaa;
+            font-size: 1.2em;
+            transition: border-color 0.3s, background-color 0.3s;
+            background-color: #fff;
+            padding: 20px;
+            box-sizing: border-box;
+            position: relative; /* Needed for absolute positioning */
+            overflow: hidden; /* Hide overflow */
+        }
+
+        #drop-zone.drag-over {
+            border-color: #3498db;
+            background-color: #eaf5fc;
+            color: #3498db;
+        }
+
+        #preview-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative; /* Context for absolute canvas */
+        }
+
+        #preview-image {
+            max-width: 100%;
+            max-height: 100%;
+            display: none; /* Hide initially */
+            object-fit: contain;
+        }
+
+        #pdf-canvas {
+            max-width: 100%;
+            max-height: 100%;
+            display: none; /* Hide initially */
+            border: 1px solid #eee; /* Add border to see canvas area */
+        }
+
+        #drop-message {
+             position: absolute; /* Position over potentially visible canvas/img */
+             top: 50%;
+             left: 50%;
+             transform: translate(-50%, -50%);
+             pointer-events: none;
+             z-index: 1; /* Ensure it's above canvas/img */
+             background-color: rgba(255, 255, 255, 0.8); /* Slight background */
+             padding: 10px;
+             border-radius: 5px;
+             display: block; /* Show initially */
+        }
+
+         #status-message {
+            position: absolute;
+            bottom: 5px;
+            left: 5px;
+            right: 5px;
+            font-size: 0.8em;
+            color: #555;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 3px;
+            border-radius: 3px;
+            text-align: center;
+            min-height: 1.2em;
+            z-index: 2; /* Above canvas/image */
+        }
+
+        #status-message.error { color: #e74c3c; font-weight: bold; }
+        #status-message.success { color: #27ae60; }
+        #status-message.info { color: #3498db; }
+
+    </style>
+</head>
+<body>
+
+    <div id="drop-zone">
+        <div id="preview-container">
+            <!-- Image Preview Element -->
+            <img id="preview-image" src="#" alt="Image preview">
+            <!-- PDF Preview Element -->
+            <canvas id="pdf-canvas"></canvas>
+        </div>
+        <!-- Message shown initially and when no preview available -->
+        <p id="drop-message">Drag & Drop Image or PDF Here</p>
+        <!-- Status Message Area -->
+        <div id="status-message"></div>
+    </div>
+
+    <script type="module">
+        // Import the pdfjs library components
+        // Make sure the paths in <head> are correct and loading!
+        const { pdfjsLib } = globalThis; // Access the library loaded globally
+
+        // *** Crucial: Set the worker source explicitly ***
+        // Make sure the path matches the worker script included in <head>
+        if (pdfjsLib) {
+            pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.mjs`;
+            console.log("PDF.js workerSrc set to:", pdfjsLib.GlobalWorkerOptions.workerSrc);
+        } else {
+            console.error("PDF.js library (pdfjsLib) not loaded!");
+            setStatus('Critical Error: PDF library failed to load.', 'error');
+        }
+
+        const dropZone = document.getElementById('drop-zone');
+        const previewImage = document.getElementById('preview-image');
+        const pdfCanvas = document.getElementById('pdf-canvas');
+        const dropMessage = document.getElementById('drop-message');
+        const statusMessage = document.getElementById('status-message');
+        const previewContainer = document.getElementById('preview-container');
+
+        // --- Event Listeners (Drag/Drop) ---
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+            document.body.addEventListener(eventName, preventDefaults, false);
+        });
+        function preventDefaults(e) { e.preventDefault(); e.stopPropagation(); }
+        ['dragenter', 'dragover'].forEach(eventName => dropZone.addEventListener(eventName, highlight, false));
+        ['dragleave', 'drop'].forEach(eventName => dropZone.addEventListener(eventName, unhighlight, false));
+        function highlight(e) { dropZone.classList.add('drag-over'); }
+        function unhighlight(e) { dropZone.classList.remove('drag-over'); }
+        dropZone.addEventListener('drop', handleDrop, false);
+        // --- End Event Listeners ---
+
+        function handleDrop(e) {
+            console.log("Drop event detected.");
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            clearPreview(); // Clear previous preview
+
+            if (!files || files.length === 0) {
+                 setStatus('No file dropped.', 'error');
+                 console.log("No files found in drop event.");
+                 return;
+            }
+
+             if (files.length > 1) {
+                 setStatus('Please drop only one file.', 'error');
+                 console.log("Multiple files dropped.");
+                 return;
+            }
+
+            const file = files[0];
+            console.log(`File dropped: Name: ${file.name}, Type: ${file.type}, Size: ${file.size}`);
+            setStatus(`Processing: ${file.name}`, 'info');
+
+            handleFile(file); // Process the single file
+        }
+
+        async function handleFile(file) {
+            // Defensive check for PDF library
+            if (!pdfjsLib) {
+                setStatus('Error: PDF library not available.', 'error');
+                console.error("handleFile called but pdfjsLib is missing.");
+                return;
+            }
+
+            // --- Image File Handling ---
+            if (file.type.startsWith('image/')) {
+                console.log("Handling as Image");
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                    dropMessage.style.display = 'none';
+                    setStatus(`Displaying image: ${file.name}`, 'success');
+                    console.log("Image loaded and displayed.");
+                }
+                reader.onerror = function(err) {
+                    setStatus('Error reading image file.', 'error');
+                    console.error("FileReader error (Image):", err);
+                }
+                reader.readAsDataURL(file);
+            }
+            // --- PDF File Handling ---
+            else if (file.type === 'application/pdf') {
+                console.log("Handling as PDF");
+                const reader = new FileReader();
+
+                reader.onload = async function(e) {
+                    console.log("FileReader finished reading PDF.");
+                    const typedarray = new Uint8Array(e.target.result);
+                    setStatus(`Loading PDF: ${file.name}...`, 'info');
+                    console.log(`PDF ArrayBuffer size: ${typedarray.byteLength}`);
+
+                    try {
+                        console.log("Calling pdfjsLib.getDocument...");
+                        const loadingTask = pdfjsLib.getDocument({ data: typedarray });
+                        const pdf = await loadingTask.promise;
+                        console.log(`PDF document loaded successfully. Pages: ${pdf.numPages}`);
+                        setStatus(`Rendering first page of ${pdf.numPages}-page PDF...`, 'info');
+
+                        // Fetch the first page
+                        console.log("Getting page 1...");
+                        const page = await pdf.getPage(1); // Page number starts from 1
+                        console.log("Got page 1.");
+
+                        const desiredWidth = previewContainer.clientWidth * 0.95; // Target width (95% of container)
+                        const viewport = page.getViewport({ scale: 1 }); // Get viewport at scale 1
+                        const scale = desiredWidth / viewport.width; // Calculate scale based on width
+                        const scaledViewport = page.getViewport({ scale: scale }); // Get scaled viewport
+                        console.log(`Calculated scale: ${scale.toFixed(2)}, Viewport: w=${scaledViewport.width.toFixed(0)} h=${scaledViewport.height.toFixed(0)}`);
+
+
+                        // Prepare canvas using PDF page dimensions adjusted to fit container
+                        const canvasContext = pdfCanvas.getContext('2d');
+                        pdfCanvas.height = scaledViewport.height;
+                        pdfCanvas.width = scaledViewport.width;
+
+                        // Ensure canvas is visible *before* rendering
+                        pdfCanvas.style.display = 'block';
+                        dropMessage.style.display = 'none';
+                        console.log("Canvas dimensions set and displayed.");
+
+
+                        // Render PDF page into canvas context
+                        const renderContext = {
+                            canvasContext: canvasContext,
+                            viewport: scaledViewport
+                        };
+                        console.log("Starting page.render...");
+                        await page.render(renderContext).promise;
+                        console.log("Page rendered successfully.");
+                        setStatus(`Displayed first page of PDF: ${file.name}`, 'success');
+
+                    } catch (error) {
+                         // Log the detailed error object
+                         console.error("****** PDF Processing Error ******:", error);
+                         // Provide a user-friendly message
+                         let errorMessage = 'Error processing PDF';
+                         if (error.name === 'PasswordException') {
+                             errorMessage = 'PDF is password protected.';
+                         } else if (error.message) {
+                             // Try to show a relevant part of the error message
+                             errorMessage = `Error rendering PDF: ${error.name || ''} - ${error.message.substring(0, 100)}`;
+                         } else {
+                             errorMessage = `Error rendering PDF. Check console for details.`;
+                         }
+                         setStatus(errorMessage, 'error');
+                         clearPreview(); // Clear canvas on error
+                    }
+                }
+                 reader.onerror = function(err) {
+                    setStatus('Error reading PDF file.', 'error');
+                    console.error("FileReader error (PDF):", err);
+                }
+                // Read PDF as ArrayBuffer - this is crucial for PDF.js
+                console.log("Calling reader.readAsArrayBuffer for PDF...");
+                reader.readAsArrayBuffer(file);
+            }
+            // --- Other File Types ---
+            else {
+                console.log(`File type "${file.type}" not handled for preview.`);
+                setStatus(`Preview not available for ${file.type || 'this file type'} (${file.name}).`, 'info');
+            }
+        }
+
+         function clearPreview() {
+            console.log("Clearing preview area.");
+            previewImage.style.display = 'none';
+            previewImage.src = '#';
+
+            pdfCanvas.style.display = 'none';
+            // Clear canvas content safely
+            try {
+                const ctx = pdfCanvas.getContext('2d');
+                ctx.clearRect(0, 0, pdfCanvas.width, pdfCanvas.height);
+            } catch (e) {
+                 console.warn("Could not clear canvas context, maybe it wasn't ready.");
+            }
+
+
+            dropMessage.style.display = 'block'; // Show the default message again
+            setStatus(''); // Clear status
+        }
+
+         function setStatus(message, type = '') {
+            statusMessage.textContent = message;
+            statusMessage.className = 'status-message'; // Reset class
+            if (type) {
+                statusMessage.classList.add(type);
+            }
+        }
+
+        // Initial setup
+        clearPreview();
+        // Check if library loaded on startup
+        if (!pdfjsLib) {
+             console.error("PDF.js (pdfjsLib) was not found on initial load!");
+             setStatus("Error: PDF library failed to load properly.", "error");
+        } else {
+             console.log(`PDF.js v${pdfjsLib.version} loaded.`);
+        }
+
+    </script>
+
+</body>
+</html>

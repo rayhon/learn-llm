@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Drive URL Thumbnail (Icon Demo)</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column; /* Stack elements vertically */
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f4f7f6;
+            margin: 20px;
+            color: #333;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+        }
+
+        h1 {
+            color: #4CAF50; /* Google-ish Green */
+            margin-bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+        }
+
+        #url-input {
+            flex-grow: 1;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 1em;
+        }
+
+        #fetch-button {
+            padding: 10px 20px;
+            background-color: #4285F4; /* Google Blue */
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #fetch-button:hover {
+            background-color: #357ae8;
+        }
+
+        #preview-area {
+            margin-top: 20px;
+            min-height: 150px; /* Reserve space */
+            border: 1px dashed #ddd;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 15px;
+            background-color: #f9f9f9;
+        }
+
+        #preview-image {
+            max-width: 100px; /* Control icon size */
+            max-height: 100px;
+            margin-bottom: 10px;
+            display: none; /* Hide initially */
+        }
+
+         #status-message {
+            font-size: 0.9em;
+            color: #555;
+            min-height: 1.2em;
+            margin-top: 5px;
+        }
+
+        #file-id-display {
+            font-size: 0.8em;
+            color: #777;
+            word-break: break-all; /* Prevent long IDs from overflowing */
+            margin-top: 5px;
+        }
+
+        #status-message.error {
+            color: #e74c3c; /* Red */
+            font-weight: bold;
+        }
+         #status-message.info {
+            color: #3498db; /* Blue */
+         }
+         #status-message.warning {
+            color: #f39c12; /* Orange */
+         }
+
+        .explanation {
+            font-size: 0.8em;
+            color: #777;
+            margin-top: 15px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Google Drive File Icon Preview</h1>
+        <p>Paste a Google Doc, Sheet, or Slide URL below.</p>
+
+        <div class="input-group">
+            <input type="url" id="url-input" placeholder="Paste Google Drive URL here...">
+            <button id="fetch-button">Get Icon</button>
+        </div>
+
+        <div id="preview-area">
+            <img id="preview-image" src="#" alt="File icon preview">
+            <div id="status-message">Enter a URL and click "Get Icon".</div>
+            <div id="file-id-display"></div>
+             <div class="explanation">
+                <strong>Note:</strong> This demo shows a generic file type icon. Fetching the actual file thumbnail requires server-side authentication (Google Drive API & OAuth 2.0) which cannot be done securely in this static example.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const urlInput = document.getElementById('url-input');
+        const fetchButton = document.getElementById('fetch-button');
+        const previewImage = document.getElementById('preview-image');
+        const statusMessage = document.getElementById('status-message');
+        const fileIdDisplay = document.getElementById('file-id-display');
+
+        fetchButton.addEventListener('click', handleFetchRequest);
+        // Optional: Trigger on pressing Enter in the input field
+        urlInput.addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Prevent potential form submission
+                handleFetchRequest();
+            }
+        });
+
+
+        function handleFetchRequest() {
+            const url = urlInput.value.trim();
+            clearPreview(); // Clear previous results
+
+            if (!url) {
+                setStatus('Please paste a URL first.', 'error');
+                return;
+            }
+
+            // Basic check for Google domains
+            if (!url.includes('docs.google.com')) {
+                 setStatus('Invalid URL. Please use a docs.google.com URL.', 'error');
+                 return;
+            }
+
+            const fileId = extractFileId(url);
+
+            if (!fileId) {
+                 setStatus('Could not extract File ID from the URL.', 'error');
+                 return;
+            }
+
+            // Display the extracted file ID
+            fileIdDisplay.textContent = `Extracted File ID: ${fileId}`;
+
+            // Determine file type and get a generic icon URL
+            const iconUrl = getFileTypeIcon(url);
+
+            if (iconUrl) {
+                previewImage.src = iconUrl;
+                previewImage.style.display = 'block';
+                setStatus('Displaying generic file type icon.', 'info');
+            } else {
+                 setStatus('Could not determine file type for icon.', 'warning');
+            }
+        }
+
+        function extractFileId(url) {
+            // Regex to find the string between /d/ and the next /
+            // Accounts for various URL endings like /edit, /view, /copy, /#gid=... etc.
+            const regex = /\/d\/([a-zA-Z0-9-_]+)(?:\/|$)/;
+            const match = url.match(regex);
+            return match ? match[1] : null; // Return the captured group (the ID) or null
+        }
+
+        function getFileTypeIcon(url) {
+            // Use known (but potentially unstable) Google icon URLs
+            // These might change without notice! A more robust solution
+            // would use local SVGs or a proper API.
+             const iconBaseUrl = 'https://ssl.gstatic.com/docs/doclist/images/mediatype/icon_1_'; // Common base
+
+            if (url.includes('/document/')) {
+                // Google Doc
+                return `${iconBaseUrl}document_x16.png`; // Or use a larger size if available e.g., _x48
+            } else if (url.includes('/spreadsheets/')) {
+                 // Google Sheet
+                 return `${iconBaseUrl}spreadsheet_x16.png`;
+            } else if (url.includes('/presentation/')) {
+                 // Google Slides
+                 return `${iconBaseUrl}presentation_x16.png`;
+            } else if (url.includes('/forms/')) {
+                // Google Forms
+                return `${iconBaseUrl}form_x16.png`;
+            } else if (url.includes('/drawings/')) {
+                // Google Drawings
+                return `${iconBaseUrl}drawing_x16.png`;
+            }
+            // Add more types if needed (e.g., folders)
+
+            // Fallback or unknown type
+            return `${iconBaseUrl}generic_x16.png`; // Generic file icon
+        }
+
+        function clearPreview() {
+            previewImage.style.display = 'none';
+            previewImage.src = '#';
+            setStatus('Enter a URL and click "Get Icon".', '');
+            fileIdDisplay.textContent = ''; // Clear the file ID display
+        }
+
+        function setStatus(message, type = '') { // type can be 'error', 'info', 'warning' or empty
+            statusMessage.textContent = message;
+            statusMessage.className = 'status-message'; // Reset class
+            if (type) {
+                statusMessage.classList.add(type);
+            }
+        }
+
+        // Initial state
+        clearPreview();
+
+    </script>
+
+</body>
+</html>

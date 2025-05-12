@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UFC Fight Night</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        #fight-banner {
+            width: 728px;
+            height: 90px;
+            background: linear-gradient(135deg, #ff0000, #800000);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            position: relative;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+            display: flex;
+            align-items: center;
+        }
+
+        .fighter-video-container {
+            width: 90px;
+            height: 90px;
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin: 0 15px;
+            cursor: pointer;
+        }
+
+        .play-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+        }
+
+        .play-overlay.hidden {
+            opacity: 0;
+        }
+
+        .play-overlay svg {
+            width: 30px;
+            height: 30px;
+            fill: white;
+        }
+
+        .fighter-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .fighter-video-container:hover {
+            transform: scale(1.05);
+        }
+
+        .banner-content {
+            flex-grow: 1;
+            padding: 0 20px;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .text-content {
+            flex-grow: 1;
+        }
+
+        .headline {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin: 0 0 5px 0;
+            line-height: 1.2;
+        }
+
+        .details {
+            font-size: 0.9em;
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 8px 20px;
+            background-color: #ffffff;
+            color: #cc0000;
+            font-size: 0.9em;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 20px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .cta-button:hover {
+            background-color: #f0f0f0;
+            transform: translateY(-2px);
+        }
+
+        .button-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .stats-button {
+            width: 32px;
+            height: 32px;
+            background-color: #ffffff;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .stats-button:hover {
+            transform: scale(1.1);
+        }
+
+        .stats-button svg {
+            width: 18px;
+            height: 18px;
+            fill: #cc0000;
+        }
+
+        #fight-banner.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .background-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.2;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="fight-banner">
+        <img src="mma_scene.png" class="background-image" alt="MMA Scene">
+        <div class="fighter-video-container">
+            <div class="play-overlay">
+                <svg viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+            </div>
+            <video class="fighter-video" loop playsinline preload="auto">
+                <source src="mfc_demo_compressed.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+        </div>
+        <div class="banner-content">
+            <div class="text-content">
+                <h1 class="headline">UFC Fight Night</h1>
+                <p class="details">Live on Pay-Per-View • This Saturday 10PM/7PM ETPT</p>
+            </div>
+            <div class="button-container">
+                <div class="stats-button" onclick="showStats()">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M19 3H5C3.89 3 3 3.89 3 5V19C3 20.11 3.89 21 5 21H19C20.11 21 21 20.11 21 19V5C21 3.89 20.11 3 19 3M19 19H5V5H19V19M17 17H7V7H17V17M15 15H9V9H15V15"/>
+                    </svg>
+                </div>
+                <a href="#" class="cta-button">Get Tickets</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('fight-banner').classList.add('visible');
+            
+            const videoContainer = document.querySelector('.fighter-video-container');
+            const video = document.querySelector('.fighter-video');
+            const playOverlay = document.querySelector('.play-overlay');
+            let isPlaying = false;
+
+            // Handle click to play/pause
+            videoContainer.addEventListener('click', function() {
+                if (!isPlaying) {
+                    video.play().then(() => {
+                        isPlaying = true;
+                        playOverlay.classList.add('hidden');
+                    }).catch(error => {
+                        console.error('Error playing video:', error);
+                    });
+                } else {
+                    video.pause();
+                    isPlaying = false;
+                    playOverlay.classList.remove('hidden');
+                }
+            });
+
+            // Show play button when video ends
+            video.addEventListener('ended', function() {
+                isPlaying = false;
+                playOverlay.classList.remove('hidden');
+            });
+
+            video.addEventListener('error', function() {
+                console.error('Error loading video:', video.error);
+            });
+        });
+
+        function showStats() {
+            alert('Fighter Stats:\nRecord: 25-2-0\nKO/TKO: 18\nSubmissions: 5');
+        }
+    </script>
+</body>
+</html>
