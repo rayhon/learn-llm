@@ -184,11 +184,17 @@
             height: 32px;
             color: #FFFFFF;
         }
-        .thumb-box.doc-file {
-            background: linear-gradient(135deg, #4F46E5, #7C3AED);
-        }
         .thumb-box.ppt-file {
-            background: linear-gradient(135deg, #EA580C, #DC2626);
+            background: linear-gradient(135deg, #FF4B4B, #D10000);
+        }
+        .thumb-box.pdf-file {
+            background: linear-gradient(135deg, #FF3B30, #DC2626);
+        }
+        .thumb-box.doc-file {
+            background: linear-gradient(135deg, #2563EB, #1E40AF);
+        }
+        .thumb-box.excel-file {
+            background: linear-gradient(135deg, #059669, #047857);
         }
         .thumb-box.link {
             background: linear-gradient(135deg, #0EA5E9, #2563EB);
@@ -656,7 +662,9 @@
                             <td class="col-thumbnail">
                                 <div class="thumbnail-container">
                                     <div class="thumb-box ppt-file">
-                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2 4v16h20V4H2zm18 14H4V6h16v12zM13.5 7.5c0 .83-.67 1.5-1.5 1.5H9v1h2v5h2V7.5h.5z"/></svg>
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19 3H5C3.89 3 3 3.9 3 5v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-4-8h-3v-2h3c.55 0 1-.45 1-1s-.45-1-1-1h-3c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h3v2h-3c-.55 0-1 .45-1 1s.45 1 1 1h3c1.1 0 2-.9 2-2v-2c0-1.1-.9-2-2-2z"/>
+                                        </svg>
                                     </div>
                                 </div>
                             </td>
@@ -675,18 +683,64 @@
                         <tr>
                             <td class="col-thumbnail">
                                 <div class="thumbnail-container">
-                                    <div class="thumb-box link">
-                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path></svg>
+                                    <div class="thumb-box pdf-file">
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5h3v-1h-2v-1h2V6H9v5h2.5v-1.5zM19 17H8V4h11v13zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6z"/>
+                                        </svg>
                                     </div>
                                 </div>
                             </td>
                             <td class="col-details">
-                                <span class="item-title">Style Guide - Company Branding</span>
-                                <span class="item-desc">Official guidelines for logo usage, colors, and typography.</span>
+                                <span class="item-title">Annual_Report_2023.pdf</span>
+                                <span class="item-desc">Complete annual report with financial statements.</span>
                             </td>
-                            <td class="col-date">Oct 22, 2023</td>
+                            <td class="col-date">Oct 19, 2023</td>
                             <td class="col-price">N/A</td>
-                            <td class="col-source"><a href="https://company.sharepoint.com/branding" target="_blank">SharePoint</a></td>
+                            <td class="col-source"><span class="no-source">Local File</span></td>
+                            <td class="col-actions">
+                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="col-thumbnail">
+                                <div class="thumbnail-container">
+                                    <div class="thumb-box doc-file">
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM13.5 13h-6v-2h6V9l4 3-4 3z"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="col-details">
+                                <span class="item-title">Project_Proposal.docx</span>
+                                <span class="item-desc">New project initiative and implementation plan.</span>
+                            </td>
+                            <td class="col-date">Oct 18, 2023</td>
+                            <td class="col-price">N/A</td>
+                            <td class="col-source"><span class="no-source">Local File</span></td>
+                            <td class="col-actions">
+                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td class="col-thumbnail">
+                                <div class="thumbnail-container">
+                                    <div class="thumb-box excel-file">
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19 3H5C3.89 3 3 3.9 3 5v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-4-8h-3v-2h3c.55 0 1-.45 1-1s-.45-1-1-1h-3c-1.1 0-2 .9-2 2v2c0 1.1.9 2 2 2h3v2h-3c-.55 0-1 .45-1 1s.45 1 1 1h3c1.1 0 2-.9 2-2v-2c0-1.1-.9-2-2-2z"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="col-details">
+                                <span class="item-title">Budget_Analysis.xlsx</span>
+                                <span class="item-desc">Detailed budget breakdown and forecasts.</span>
+                            </td>
+                            <td class="col-date">Oct 17, 2023</td>
+                            <td class="col-price">N/A</td>
+                            <td class="col-source"><span class="no-source">Local File</span></td>
                             <td class="col-actions">
                                 <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
                             </td>
@@ -698,7 +752,7 @@
                                     <img src="https://picsum.photos/200/200?random=3" alt="Product Preview">
                                     <div class="type-indicator">
                                         <svg viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M22 9h-4.79l-4.38-6.56c-.19-.28-.51-.42-.83-.42s-.64.14-.83.43L6.79 9H2c-.55 0-1 .45-1 1 0 .09.01.18.04.27l2.54 9.27c.23.84 1 1.46 1.92 1.46h13c.92 0 1.69-.62 1.93-1.46l2.54-9.27L23 10c0-.55-.45-1-1-1zM12 4.8L14.8 9H9.2L12 4.8zM18.5 19l-12.99.01L3.31 11H20.7l-2.2 8z"/>
+                                            <path d="M17 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm0-3l1.1-2h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1v2h2l3.6 7.59L5.25 14c-.19.37-.3.79-.3 1.23 0 1.38 1.12 2.5 2.5 2.5h12v-2H7.42c-.14 0-.25-.11-.25-.25z"/>
                                         </svg>
                                     </div>
                                 </div>
@@ -709,7 +763,7 @@
                             </td>
                             <td class="col-date">Oct 21, 2023</td>
                             <td class="col-price">$149.50</td>
-                            <td class="col-source"><a href="https://fancytech.com/smart-mug" target="_blank">FancyTech Store</a></td>
+                            <td class="col-source"><span class="no-source">Product</span></td>
                             <td class="col-actions">
                                 <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
                             </td>
