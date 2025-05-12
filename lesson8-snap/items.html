@@ -151,16 +151,23 @@
             width: 20px;
             height: 20px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.9);
             display: flex;
             align-items: center;
             justify-content: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: rgba(0, 0, 0, 0.85);
         }
         .type-indicator svg {
             width: 12px;
             height: 12px;
-            color: #374151;
+            color: #FFFFFF;
+        }
+        /* Special style for photo and video icons */
+        .type-indicator.media-type {
+            background: rgba(0, 0, 0, 0.85);
+        }
+        .type-indicator.media-type svg {
+            color: #FFFFFF;
         }
 
         /* Colorful file type boxes */
@@ -584,7 +591,9 @@
                                 <div class="thumbnail-container">
                                     <img src="https://picsum.photos/200/200?random=1" alt="Photo Preview">
                                     <div class="type-indicator">
-                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 5h13l5 5v11a2 2 0 01-2 2H4a2 2 0 01-2-2V7a2 2 0 012-2zm0 7v9h16v-9H4zm0-2h16.172l-3-3H4v3zm7 6a2 2 0 110-4 2 2 0 010 4z"/></svg>
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                        </svg>
                                     </div>
                                 </div>
                             </td>
@@ -605,7 +614,9 @@
                                 <div class="thumbnail-container">
                                     <img src="https://picsum.photos/200/200?random=2" alt="Video Preview">
                                     <div class="type-indicator">
-                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16a2 2 0 012 2v12a2 2 0 01-2 2H4a2 2 0 01-2-2V6a2 2 0 012-2zm0 2v12h16V6H4zm6 2l6 4-6 4V8z"/></svg>
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18c.62-.39.62-1.29 0-1.69L9.54 5.98C8.87 5.55 8 6.03 8 6.82z"/>
+                                        </svg>
                                     </div>
                                 </div>
                             </td>
@@ -686,7 +697,9 @@
                                 <div class="thumbnail-container">
                                     <img src="https://picsum.photos/200/200?random=3" alt="Product Preview">
                                     <div class="type-indicator">
-                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 3c1.93 0 3.5 1.57 3.5 3.5S13.93 13 12 13s-3.5-1.57-3.5-3.5S10.07 6 12 6zm7 13H5v-.23c0-.62.28-1.2.76-1.58C7.47 15.82 9.64 15 12 15s4.53.82 6.24 2.19c.48.38.76.97.76 1.58V19z"/></svg>
+                                        <svg viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M22 9h-4.79l-4.38-6.56c-.19-.28-.51-.42-.83-.42s-.64.14-.83.43L6.79 9H2c-.55 0-1 .45-1 1 0 .09.01.18.04.27l2.54 9.27c.23.84 1 1.46 1.92 1.46h13c.92 0 1.69-.62 1.93-1.46l2.54-9.27L23 10c0-.55-.45-1-1-1zM12 4.8L14.8 9H9.2L12 4.8zM18.5 19l-12.99.01L3.31 11H20.7l-2.2 8z"/>
+                                        </svg>
                                     </div>
                                 </div>
                             </td>
