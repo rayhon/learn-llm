@@ -59,19 +59,83 @@
         .get-in-touch-btn:hover { background-color: #374151; }
 
         /* --- App Container --- */
-        .app-container { display: flex; min-height: calc(100vh - 60px); }
+        .app-container {
+            display: flex;
+            min-height: calc(100vh - 60px);
+        }
 
-        /* --- Sidebar --- */
-        .sidebar { width: 80px; background-color: var(--sidebar-background); padding-top: 30px; display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
-        .add-note-btn { width: 48px; height: 48px; background-color: var(--plus-btn-bg); border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 35px; transition: background-color 0.2s ease; }
-        .add-note-btn:hover { background-color: #374151; }
-        .add-note-btn svg { fill: var(--plus-btn-icon); width: 24px; height: 24px; }
-        .color-palette { list-style: none; padding: 0; margin: 0; }
-        .color-palette li { width: 24px; height: 24px; border-radius: 50%; margin-bottom: 18px; cursor: pointer; border: 1px solid rgba(0,0,0,0.05); transition: transform 0.2s ease; }
-        .color-palette li:hover { transform: scale(1.1); }
+        /* --- Left Sidebar --- */
+        .sidebar {
+            width: 80px;
+            background-color: var(--sidebar-background);
+            padding-top: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex-shrink: 0;
+            position: sticky;
+            top: 60px;
+            height: calc(100vh - 60px);
+        }
+
+        .add-note-btn {
+            width: 48px;
+            height: 48px;
+            background-color: var(--plus-btn-bg);
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-bottom: 35px;
+            transition: background-color 0.2s ease;
+        }
+
+        .add-note-btn:hover {
+            background-color: #374151;
+        }
+
+        .add-note-btn svg {
+            fill: var(--plus-btn-icon);
+            width: 24px;
+            height: 24px;
+        }
+
+        .color-palette {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .color-palette li {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            margin-bottom: 18px;
+            cursor: pointer;
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: transform 0.2s ease;
+        }
+
+        .color-palette li:hover {
+            transform: scale(1.1);
+        }
 
         /* --- Main Content Area --- */
-        .main-content { flex-grow: 1; padding: 30px 40px; background-color: var(--background-color); }
+        .main-content {
+            display: flex;
+            flex: 1;
+            background-color: var(--background-color);
+            min-width: 0;
+        }
+
+        .content-area {
+            flex: 1;
+            padding: 30px 40px;
+            min-width: 0;
+        }
+
         .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
         .page-header h1 { font-size: 32px; color: var(--heading-color); margin: 0; font-weight: 700; }
 
@@ -426,6 +490,152 @@
             color: #6B7280;
         }
 
+        /* Add styles for right sidebar */
+        .right-sidebar {
+            width: 300px;
+            background-color: var(--background-color);
+            border-left: 1px solid var(--table-border-color);
+            padding: 24px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 60px;
+            height: calc(100vh - 60px);
+            overflow-y: auto;
+        }
+
+        .recommendation-card {
+            background: white;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .recommendation-image {
+            width: 100%;
+            height: 160px;
+            border-radius: 12px;
+            object-fit: cover;
+            margin-bottom: 16px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .action-button {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background-color: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .action-button:hover {
+            background-color: #e5e7eb;
+        }
+
+        .action-button svg {
+            width: 20px;
+            height: 20px;
+            color: #374151;
+        }
+
+        .recommendation-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .recommendation-type {
+            font-size: 13px;
+            color: #6B7280;
+            margin-bottom: 12px;
+        }
+
+        .tag-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            background-color: #f3f4f6;
+            border-radius: 16px;
+            font-size: 13px;
+            color: #374151;
+        }
+
+        .recommendation-description {
+            font-size: 14px;
+            color: #6B7280;
+            line-height: 1.5;
+            margin-bottom: 16px;
+        }
+
+        .recommendation-info {
+            margin-top: 16px;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #6B7280;
+            margin-bottom: 8px;
+        }
+
+        .share-section {
+            margin-top: 20px;
+        }
+
+        .share-title {
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 12px;
+        }
+
+        .share-avatars {
+            display: flex;
+            align-items: center;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: 2px solid white;
+            margin-right: -8px;
+        }
+
+        .add-share {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-left: 8px;
+            cursor: pointer;
+        }
+
+        .add-share svg {
+            width: 16px;
+            height: 16px;
+            color: #374151;
+        }
+
     </style>
 </head>
 <body>
@@ -445,9 +655,8 @@
     </header>
 
     <div class="app-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-             <button class="add-note-btn" aria-label="Add new item"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg></button>
+        <nav class="sidebar">
+            <button class="add-note-btn" aria-label="Add new item"><svg viewBox="0 0 24 24" width="24" height="24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg></button>
             <ul class="color-palette">
                 <li style="background-color: var(--dot-color-1);"></li>
                 <li style="background-color: var(--dot-color-2);"></li>
@@ -455,351 +664,168 @@
                 <li style="background-color: var(--dot-color-4);"></li>
                 <li style="background-color: var(--dot-color-5);"></li>
             </ul>
-        </aside>
-
-        <main class="main-content">
-            <div class="page-header">
-                <h1>All Items</h1>
-                <div class="view-toggle-controls">
-                    <button class="view-toggle-btn active" data-view-mode="gallery" aria-pressed="true">
-                        <svg viewBox="0 0 20 20"><path d="M3 3h14a2 2 0 012 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V5a2 2 0 012-2zm0 2v4h4V5H3zm0 6v4h4v-4H3zm6-6v4h4V5H9zm0 6v4h4v-4H9zm6-6v4h4V5h-4zm0 6v4h4v-4h-4z"></path></svg>
-                        Gallery
-                    </button>
-                    <button class="view-toggle-btn" data-view-mode="list" aria-pressed="false">
-                         <svg viewBox="0 0 20 20"><path d="M3 4h14a1 1 0 010 2H3a1 1 0 110-2zm0 5h14a1 1 0 010 2H3a1 1 0 110-2zm0 5h14a1 1 0 010 2H3a1 1 0 110-2z"></path></svg>
-                        List
-                    </button>
+        </nav>
+        <div class="main-content">
+            <div class="content-area">
+                <div class="page-header">
+                    <h1>All Items</h1>
+                    <div class="view-toggle-controls">
+                        <button class="view-toggle-btn active" data-view-mode="gallery" aria-pressed="true">
+                            <svg viewBox="0 0 20 20"><path d="M3 3h14a2 2 0 012 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V5a2 2 0 012-2zm0 2v4h4V5H3zm0 6v4h4v-4H3zm6-6v4h4V5H9zm0 6v4h4v-4H9zm6-6v4h4V5h-4zm0 6v4h4v-4h-4z"></path></svg>
+                            Gallery
+                        </button>
+                        <button class="view-toggle-btn" data-view-mode="list" aria-pressed="false">
+                            <svg viewBox="0 0 20 20"><path d="M3 4h14a1 1 0 010 2H3a1 1 0 110-2zm0 5h14a1 1 0 010 2H3a1 1 0 110-2zm0 5h14a1 1 0 010 2H3a1 1 0 110-2z"></path></svg>
+                            List
+                        </button>
+                    </div>
                 </div>
-            </div>
 
                 <!-- Gallery View -->
                 <div class="gallery-view-content view-content-area">
-                <div class="gallery-item-card color-1">
-                    <button class="card-action-btn" aria-label="More actions">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
-                    </button>
-                    <h3 class="item-title">Design Resources</h3>
-                    <p class="item-description">Collection of useful design tools and resources for UI/UX designers.</p>
-                    <div class="content-preview">
-                        <div class="thumb-box link" style="background: #f0f2f5;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2">
-                                <path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                    ${itemsData.map(item => `
+                        <div class="gallery-item-card ${item.color}">
+                            <button class="card-action-btn" aria-label="More actions">
+                                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+                            </button>
+                            <h3 class="item-title">${item.title}</h3>
+                            <p class="item-description">${item.description}</p>
+                            <div class="content-preview">
+                                ${item.thumbnail.type === 'image' ? `
+                                    <img src="${item.thumbnail.url}" alt="${item.title}">
+                                    <div class="type-indicator">
+                                        ${item.thumbnail.indicator}
+                                    </div>
+                                ` : item.thumbnail.type === 'note' ? `
+                                    <div class="thumb-box note" style="background: ${item.thumbnail.galleryStyle.background}">
+                                        ${item.thumbnail.galleryStyle.icon}
+                                    </div>
+                                ` : `
+                                    <div class="thumb-box ${item.thumbnail.type}" style="background: ${item.thumbnail.background}">
+                                        ${item.thumbnail.icon}
+                                    </div>
+                                `}
+                            </div>
+                            <div class="item-footer">
+                                <span class="date">${item.date}</span>
+                                <span>${item.source}</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="item-footer">
-                        <span class="date">Oct 27, 2023</span>
-                        <span>Resource Link</span>
-                    </div>
+                    `).join('')}
                 </div>
 
-                <div class="gallery-item-card color-2">
-                    <button class="card-action-btn" aria-label="More actions">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
-                    </button>
-                    <h3 class="item-title">Mountain Sunrise</h3>
-                    <p class="item-description">Vibrant colors during early morning. Captured from a hike.</p>
-                    <div class="content-preview">
-                        <img src="https://picsum.photos/200/200?random=1" alt="Photo Preview">
-                        <div class="type-indicator">
-                            <svg viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="item-footer">
-                        <span class="date">Oct 26, 2023</span>
-                        <span>From Unsplash</span>
-                    </div>
-                </div>
-
-                <div class="gallery-item-card color-3">
-                    <button class="card-action-btn" aria-label="More actions">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
-                    </button>
-                    <h3 class="item-title">New Feature Walkthrough</h3>
-                    <p class="item-description">A short demo of the latest app update.</p>
-                    <div class="content-preview">
-                        <img src="https://picsum.photos/200/200?random=2" alt="Video Preview">
-                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(0,0,0,0.7); border-radius: 50%; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">
-                            <svg viewBox="0 0 24 24" style="width: 24px; height: 24px; fill: white;"><path d="M8 5v14l11-7z"></path></svg>
-                        </div>
-                    </div>
-                    <div class="item-footer">
-                        <span class="date">Oct 25, 2023</span>
-                        <span>From Vimeo</span>
-                    </div>
-                </div>
-
-                <div class="gallery-item-card color-4">
-                    <button class="card-action-btn" aria-label="More actions">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
-                    </button>
-                    <h3 class="item-title">Presentation_Slides_Final.pptx</h3>
-                    <p class="item-description">Ready for the Q4 review meeting. Contains latest figures.</p>
-                    <div class="content-preview">
-                        <div style="text-align: center; padding: 20px;">
-                            <svg viewBox="0 0 24 24" style="width: 48px; height: 48px; fill: currentColor;">
-                                <path d="M13 9H5v2h8V9zm-2 4H5v2h6v-2zm4-8H5C3.89 5 3 5.9 3 7v10c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2h-4zm2-4H5C3.89 1 3 1.9 3 3h14c1.1 0 2 .9 2 2v2h3V3c0-1.1-.89-2-2-2zm-8 12H5v-2h6v2zm2-4H5v-2h8v2zm0-4H5V7h8v2z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="item-footer">
-                        <span class="date">Oct 23, 2023</span>
-                    </div>
-                </div>
-
-                <div class="gallery-item-card color-5">
-                    <button class="card-action-btn" aria-label="More actions">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
-                    </button>
-                    <h3 class="item-title">Style Guide - Company Branding</h3>
-                    <p class="item-description">Official guidelines for logo usage, colors, and typography.</p>
-                    <div class="content-preview">
-                        <div style="text-align: center; padding: 20px;">
-                            <svg viewBox="0 0 24 24" style="width: 48px; height: 48px; fill: currentColor;">
-                                <path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <div class="item-footer">
-                        <span class="date">Oct 22, 2023</span>
-                    </div>
-                </div>
-
-                <div class="gallery-item-card color-6">
-                    <button class="card-action-btn" aria-label="More actions">
-                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
-                    </button>
-                    <h3 class="item-title">Smart Coffee Mug</h3>
-                    <p class="item-description">Temperature controlled, app-connected. Keeps coffee perfect.</p>
-                    <div class="content-preview">
-                        <img src="https://picsum.photos/200/200?random=3" alt="Product Preview" style="width: 100%; border-radius: 8px;">
-                         </div>
-                    <div class="item-footer">
-                        <span class="date">Oct 21, 2023</span>
-                        <span>$149.50</span>
-                    </div>
+                <!-- List View -->
+                <div class="list-view-content view-content-area" style="display: none;">
+                    <table class="compact-table">
+                        <thead>
+                            <tr>
+                                <th class="col-thumbnail">Preview</th>
+                                <th class="col-details">Details</th>
+                                <th class="col-date">Added</th>
+                                <th class="col-price">Price</th>
+                                <th class="col-source">Source</th>
+                                <th class="col-actions">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${itemsData.map(item => `
+                                <tr>
+                                    <td class="col-thumbnail">
+                                        <div class="thumbnail-container">
+                                            ${item.thumbnail.type === 'image' ? `
+                                                <img src="${item.thumbnail.url}" alt="${item.title}">
+                                                <div class="type-indicator">
+                                                    ${item.thumbnail.indicator}
+                                                </div>
+                                            ` : item.thumbnail.type === 'note' ? `
+                                                <div class="thumb-box note" style="background: ${item.thumbnail.listStyle.background}">
+                                                    ${item.thumbnail.listStyle.icon}
+                                                </div>
+                                            ` : `
+                                                <div class="thumb-box ${item.thumbnail.type}" style="background: ${item.thumbnail.background}">
+                                                    ${item.thumbnail.icon}
+                                                </div>
+                                            `}
+                                        </div>
+                                    </td>
+                                    <td class="col-details">
+                                        <span class="item-title">${item.title}</span>
+                                        <span class="item-desc">${item.description}</span>
+                                    </td>
+                                    <td class="col-date">${item.date}</td>
+                                    <td class="col-price">${item.price}</td>
+                                    <td class="col-source">
+                                        ${item.sourceUrl ? 
+                                            `<a href="${item.sourceUrl}" target="_blank">${item.source}</a>` : 
+                                            `<span class="no-source">${item.source}</span>`}
+                                    </td>
+                                    <td class="col-actions">
+                                        <button class="action-btn" aria-label="More actions">
+                                            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+                                            </button>
+                                    </td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
-            <!-- List View -->
-            <div class="list-view-content view-content-area">
-                <table class="compact-table">
-                    <thead>
-                        <tr>
-                            <th class="col-thumbnail">Preview</th>
-                            <th class="col-details">Details</th>
-                            <th class="col-date">Added</th>
-                            <th class="col-price">Price</th>
-                            <th class="col-source">Source</th>
-                            <th class="col-actions">Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="col-thumbnail">
-                                <div class="thumbnail-container">
-                                    <img src="https://picsum.photos/200/200?random=1" alt="Photo Preview">
-                                    <div class="type-indicator">
-                                        <svg viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="col-details">
-                                <span class="item-title">Mountain Sunrise</span>
-                                <span class="item-desc">Vibrant colors during early morning. Captured from a hike.</span>
-                            </td>
-                            <td class="col-date">Oct 26, 2023</td>
-                            <td class="col-price">N/A</td>
-                            <td class="col-source"><a href="https://unsplash.com/photos/example1" target="_blank">Unsplash</a></td>
-                            <td class="col-actions">
-                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="col-thumbnail">
-                                <div class="thumbnail-container">
-                                    <div class="thumb-box link" style="background: #f0f2f5;">
-                                        <svg viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2">
-                                            <path d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="col-details">
-                                <span class="item-title">Design Resources</span>
-                                <span class="item-desc">Collection of useful design tools and resources for UI/UX designers.</span>
-                            </td>
-                            <td class="col-date">Oct 27, 2023</td>
-                            <td class="col-price">N/A</td>
-                            <td class="col-source"><span class="no-source">Resource Link</span></td>
-                            <td class="col-actions">
-                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="col-thumbnail">
-                                <div class="thumbnail-container">
-                                    <img src="https://picsum.photos/200/200?random=2" alt="Video Preview">
-                                    <div class="type-indicator">
-                                        <svg viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M8 6.82v10.36c0 .79.87 1.27 1.54.84l8.14-5.18c.62-.39.62-1.29 0-1.69L9.54 5.98C8.87 5.55 8 6.03 8 6.82z"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="col-details">
-                                <span class="item-title">New Feature Walkthrough</span>
-                                <span class="item-desc">A short demo of the latest app update.</span>
-                            </td>
-                            <td class="col-date">Oct 25, 2023</td>
-                            <td class="col-price">N/A</td>
-                            <td class="col-source"><a href="https://vimeo.com/example" target="_blank">Vimeo</a></td>
-                            <td class="col-actions">
-                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="col-thumbnail">
-                                <div class="thumbnail-container">
-                                    <div class="thumb-box note">
-                                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 000-1.41l-2.34-2.34a.996.996 0 00-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="col-details">
-                                <span class="item-title">Client Meeting Recap</span>
-                                <span class="item-desc">Key action items: follow up on budget, send proposal by EOD.</span>
-                            </td>
-                            <td class="col-date">Oct 24, 2023</td>
-                            <td class="col-price">N/A</td>
-                            <td class="col-source"><span class="no-source">Internal Note</span></td>
-                            <td class="col-actions">
-                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="col-thumbnail">
-                                <div class="thumbnail-container">
-                                    <div class="thumb-box ppt-file">
-                                        <svg width="32px" height="32px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#FFFFFF" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: bold;">PPT</text>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="col-details">
-                                <span class="item-title">Presentation_Slides_Final.pptx</span>
-                                <span class="item-desc">Ready for the Q4 review meeting. Contains latest figures.</span>
-                            </td>
-                            <td class="col-date">Oct 23, 2023</td>
-                            <td class="col-price">N/A</td>
-                            <td class="col-source"><span class="no-source">Local File</span></td>
-                            <td class="col-actions">
-                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="col-thumbnail">
-                                <div class="thumbnail-container">
-                                    <div class="thumb-box pdf-file">
-                                        <svg width="32px" height="32px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#FFFFFF" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: bold;">PDF</text>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="col-details">
-                                <span class="item-title">Annual_Report_2023.pdf</span>
-                                <span class="item-desc">Complete annual report with financial statements.</span>
-                            </td>
-                            <td class="col-date">Oct 19, 2023</td>
-                            <td class="col-price">N/A</td>
-                            <td class="col-source"><span class="no-source">Local File</span></td>
-                            <td class="col-actions">
-                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="col-thumbnail">
-                                <div class="thumbnail-container">
-                                    <div class="thumb-box doc-file">
-                                        <svg width="32px" height="32px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#FFFFFF" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: bold;">DOC</text>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="col-details">
-                                <span class="item-title">Project_Proposal.docx</span>
-                                <span class="item-desc">New project initiative and implementation plan.</span>
-                            </td>
-                            <td class="col-date">Oct 18, 2023</td>
-                            <td class="col-price">N/A</td>
-                            <td class="col-source"><span class="no-source">Local File</span></td>
-                            <td class="col-actions">
-                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="col-thumbnail">
-                                <div class="thumbnail-container">
-                                    <div class="thumb-box excel-file">
-                                        <svg width="32px" height="32px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                            <text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="#FFFFFF" style="font-family: Arial, sans-serif; font-size: 12px; font-weight: bold;">XLS</text>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="col-details">
-                                <span class="item-title">Budget_Analysis.xlsx</span>
-                                <span class="item-desc">Detailed budget breakdown and forecasts.</span>
-                            </td>
-                            <td class="col-date">Oct 17, 2023</td>
-                            <td class="col-price">N/A</td>
-                            <td class="col-source"><span class="no-source">Local File</span></td>
-                            <td class="col-actions">
-                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td class="col-thumbnail">
-                                <div class="thumbnail-container">
-                                    <img src="https://picsum.photos/200/200?random=3" alt="Product Preview">
-                                    <div class="type-indicator">
-                                        <svg viewBox="0 0 24 24" fill="currentColor">
-                                            <path d="M17 18c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2zM7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm0-3l1.1-2h7.45c.75 0 1.41-.41 1.75-1.03L21.7 4H5.21l-.94-2H1v2h2l3.6 7.59L5.25 14c-.19.37-.3.79-.3 1.23 0 1.38 1.12 2.5 2.5 2.5h12v-2H7.42c-.14 0-.25-.11-.25-.25z"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </td>
-                            <td class="col-details">
-                                <span class="item-title">Smart Coffee Mug</span>
-                                <span class="item-desc">Temperature controlled, app-connected. Keeps coffee perfect.</span>
-                            </td>
-                            <td class="col-date">Oct 21, 2023</td>
-                            <td class="col-price">$149.50</td>
-                            <td class="col-source"><span class="no-source">Product</span></td>
-                            <td class="col-actions">
-                                <button class="action-btn" aria-label="More actions"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg></button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-        </main>
+            <!-- Right Sidebar -->
+            <aside class="right-sidebar">
+                <div class="recommendation-card">
+                    <img src="https://picsum.photos/seed/1/800/600" alt="3D Render Example" class="recommendation-image">
+                    <div class="action-buttons">
+                        <button class="action-button">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        </button>
+                        <button class="action-button">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"></path></svg>
+                        </button>
+                        <button class="action-button">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                        <button class="action-button">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"></path></svg>
+                        </button>
+                        <button class="action-button">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </button>
+                    </div>
+                    <h3 class="recommendation-title">My first render</h3>
+                    <p class="recommendation-type">PNG-Image</p>
+                    <div class="tag-list">
+                        <span class="tag">3d concept</span>
+                        <span class="tag">futuristic</span>
+                        <span class="tag">purple</span>
+                        <span class="tag">minimalistic</span>
+                        <span class="tag">highly detailed</span>
+                    </div>
+                    <p class="recommendation-description">So this is my first attempt with 3D art. I'm trying out Adobe Dimension, and curious as to what other programs people recommend for 3D modeling.</p>
+                    <div class="recommendation-info">
+                        <div class="info-row">
+                            <span>Size</span>
+                            <span>3840 x 2160</span>
+                        </div>
+                        <div class="info-row">
+                            <span>Date</span>
+                            <span>18 sep 2022</span>
+                        </div>
+                    </div>
+                    <div class="share-section">
+                        <h4 class="share-title">Share with</h4>
+                        <div class="share-avatars">
+                            <img src="https://randomuser.me/api/portraits/women/1.jpg" alt="User 1" class="avatar">
+                            <img src="https://randomuser.me/api/portraits/men/1.jpg" alt="User 2" class="avatar">
+                            <img src="https://randomuser.me/api/portraits/men/2.jpg" alt="User 3" class="avatar">
+                            <button class="add-share">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+        </div>
     </div>
 
     <script>
@@ -1054,7 +1080,7 @@
                                     <td class="col-actions">
                                         <button class="action-btn" aria-label="More actions">
                                             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"></path></svg>
-                                        </button>
+                                            </button>
                                     </td>
                                 </tr>
                             `).join('')}
